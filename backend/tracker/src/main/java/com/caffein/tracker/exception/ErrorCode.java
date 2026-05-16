@@ -1,0 +1,30 @@
+package com.caffein.tracker.exception;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
+import org.springframework.http.HttpStatus;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public enum ErrorCode {
+
+    EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email already exists", CONFLICT),
+    PASSWORD_MISMATCH("PASSWORD_MISMATCH", "Password does not match", BAD_REQUEST),
+    BAD_CREDENTIALS("BAD_CREDENTIALS", "Email or password is incorrect", UNAUTHORIZED),
+    INVALID_JWT_TOKEN("INVALID_JWT_TOKEN", "Invalid JWT token", UNAUTHORIZED),
+    INVALID_TOKEN_TYPE("INVALID_TOKEN_TYPE", "Invalid token type", UNAUTHORIZED),
+    REFRESH_TOKEN_EXPIRED("REFRESH_TOKEN_EXPIRED", "Refresh token expired", UNAUTHORIZED),
+    IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "Could not upload image", INTERNAL_SERVER_ERROR),
+    INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Something went wrong", INTERNAL_SERVER_ERROR);
+
+    private final String code;
+    private final String defaultMessage;
+    private final HttpStatus status;
+
+}

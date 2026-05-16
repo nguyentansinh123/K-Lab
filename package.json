@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,green \"npm --prefix frontend run dev\" \"./backend/tracker/mvnw -f backend/tracker/pom.xml spring-boot:run\"",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "./backend/tracker/mvnw -f backend/tracker/pom.xml spring-boot:run"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
+

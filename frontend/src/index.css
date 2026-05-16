@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Space Grotesk", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+
+  --color-surface-container-low: #131313;
+  --color-on-tertiary: #436600;
+  --color-on-primary-fixed: #00440a;
+  --color-surface-variant: #262626;
+  --color-inverse-surface: #fcf8f8;
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #adaaaa;
+  --color-on-error: #450900;
+  --color-secondary-dim: #ade2ab;
+  --color-surface-dim: #0e0e0e;
+  --color-tertiary-container: #abfc00;
+  --color-primary-fixed: #00fc40;
+  --color-error-container: #b92902;
+  --color-inverse-on-surface: #565554;
+  --color-surface-container: #1a1919;
+  --color-inverse-primary: #006f16;
+  --color-tertiary: #deffab;
+  --color-error: #ff7351;
+  --color-tertiary-fixed: #abfc00;
+  --color-secondary-fixed-dim: #ade2ab;
+  --color-surface-container-highest: #262626;
+  --color-surface-container-high: #201f1f;
+  --color-secondary-fixed: #bbf0b9;
+  --color-surface-tint: #9cff93;
+  --color-tertiary-dim: #a0ed00;
+  --color-on-secondary: #2d5b32;
+  --color-on-primary-fixed-variant: #006513;
+  --color-on-tertiary-container: #3c5c00;
+  --color-background: #0e0e0e;
+  --color-secondary-container: #225027;
+  --color-on-tertiary-fixed: #2e4800;
+  --color-surface-bright: #2c2c2c;
+  --color-primary-fixed-dim: #00ec3b;
+  --color-surface-container-lowest: #000000;
+  --color-on-tertiary-fixed-variant: #446700;
+  --color-on-secondary-fixed-variant: #37663b;
+  --color-secondary: #bbf0b9;
+  --color-on-background: #ffffff;
+  --color-primary: #9cff93;
+  --color-tertiary-fixed-dim: #a0ed00;
+  --color-surface: #0e0e0e;
+  --color-primary-dim: #00ec3b;
+  --color-on-primary-container: #005a10;
+  --color-outline-variant: #494847;
+  --color-on-secondary-container: #a9dda8;
+  --color-outline: #777575;
+  --color-error-dim: #d53d18;
+  --color-on-secondary-fixed: #1a4821;
+  --color-on-primary: #006413;
+  --color-on-error-container: #ffd2c8;
+  --color-primary-container: #00fc40;
+
+  --radius-DEFAULT: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0e0e0e;
+  background-image: radial-gradient(circle at 50% 0%, #00fc4015 0%, #0e0e0e 70%);
+  font-family: "Space Grotesk", sans-serif;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: rgba(0, 252, 64, 0.25);
+  color: #ffffff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0e0e0e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #494847;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00fc40;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.neon-glow-sm {
+  box-shadow: 0 0 15px rgba(0, 252, 64, 0.2);
+}
+
+.neon-glow-lg {
+  box-shadow: 0 0 40px rgba(0, 252, 64, 0.15);
+}
+
+.ion-trace:hover {
+  background-color: #00ec3b;
+  transition: background-color 0.1s ease;
+}
+
+/* Card hover glow */
+.card-glow {
+  transition: all 0.25s ease;
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 252, 64, 0.08), 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Stagger children entrance */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+/* HUD bar fill animation */
+@keyframes bar-fill {
+  from { width: 0%; }
+  to { width: 75%; }
+}
+
+.animate-bar-fill {
+  animation: bar-fill 1.2s ease-out 0.8s both;
+}
+
+@keyframes bar-fill-60 {
+  from { width: 0%; }
+  to { width: 60%; }
+}
+
+.animate-bar-fill-60 {
+  animation: bar-fill-60 1.2s ease-out 1s both;
+}
+
+@keyframes bar-fill-45 {
+  from { width: 0%; }
+  to { width: 45%; }
+}
+
+.animate-bar-fill-45 {
+  animation: bar-fill-45 1.2s ease-out 1.2s both;
+}
+
+/* SVG arc gauge animation */
+@keyframes arc-draw {
+  from { stroke-dashoffset: 440; }
+  to { stroke-dashoffset: 123.2; }  /* 440 - (440 * 0.72) */
+}
+
+.animate-arc {
+  animation: arc-draw 1.4s ease-out 0.6s both;
+}
+
+/* Slow spin for HUD indicator */
+@keyframes slow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Ping pulse for indicator dot */
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 0.8; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2.5s ease-out infinite;
+}
+
+/* HUD scan line */
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* 404 page — glitch */
+@keyframes glitch-404 {
+  0% { transform: translate(0); text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.025em -0.05em 0 rgba(0,255,65,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75); }
+  20% { transform: translate(-3px, 1px); }
+  40% { transform: translate(-1px, -2px); }
+  60% { transform: translate(3px, 2px); }
+  80% { transform: translate(1px, -1px); }
+  100% { transform: translate(0); text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.025em -0.05em 0 rgba(0,255,65,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75); }
+}
+
+.glitch-404 {
+  text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.025em -0.05em 0 rgba(0,255,65,0.75), 0.025em 0.05em 0 rgba(0,0,255,0.75);
+  animation: glitch-404 1.5s infinite linear alternate-reverse;
+}
+
+/* 404 page — cursor blink */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* 404 page — scan sweep on button */
+@keyframes scan-vertical {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scan-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.15), transparent);
+  animation: scan-vertical 2s linear infinite;
+}
+
+/* 404 page — scrolling code marquee */
+@keyframes marquee {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}

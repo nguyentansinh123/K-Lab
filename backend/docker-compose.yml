@@ -1,0 +1,22 @@
+services:
+  studytracker-db:
+    image: mysql:8.4
+    container_name: studytracker-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: studytracker
+      MYSQL_USER: ${DB_USER:-tracker}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-trackerpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - studytracker-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  studytracker-db-data:
