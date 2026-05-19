@@ -4,6 +4,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 
 import org.springframework.http.HttpStatus;
 
@@ -21,7 +23,9 @@ public enum ErrorCode {
     INVALID_TOKEN_TYPE("INVALID_TOKEN_TYPE", "Invalid token type", UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED("REFRESH_TOKEN_EXPIRED", "Refresh token expired", UNAUTHORIZED),
     IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "Could not upload image", INTERNAL_SERVER_ERROR),
-    INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Something went wrong", INTERNAL_SERVER_ERROR);
+    INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Something went wrong", INTERNAL_SERVER_ERROR),
+    STUDY_SESSION_NOT_FOUND("STUDY_SESSION_NOT_FOUND", "Study session not found", NOT_FOUND),
+    ACTIVITY_NOT_FOUND("ACTIVITY_NOT_FOUND", "Activity not found", NOT_FOUND);
 
     private final String code;
     private final String defaultMessage;

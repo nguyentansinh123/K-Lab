@@ -16,6 +16,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +47,9 @@ public class User implements UserDetails {
     private String password;
 
     private Boolean emailVerified;
+
+    @OneToMany(mappedBy = "user")
+    private List<StudySession> studySessions;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
