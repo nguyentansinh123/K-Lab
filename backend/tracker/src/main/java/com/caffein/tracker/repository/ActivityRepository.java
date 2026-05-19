@@ -11,5 +11,5 @@ import com.caffein.tracker.model.User;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, String>{
-    List<Activity> findByUserAndDate(User user, LocalDate date);
+    List<Activity> findByStudySessionUserAndStudySessionDate(User user, LocalDate date);
 }

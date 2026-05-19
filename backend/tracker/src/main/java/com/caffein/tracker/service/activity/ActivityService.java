@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.stereotype.Service;
 
 import com.caffein.tracker.exception.AppException;
@@ -75,12 +74,12 @@ public class ActivityService implements IActivityService {
     @Override
     public List<Activity> getTodayActivities(User user) {
         LocalDate date = LocalDate.now();
-        return activityRepository.findByUserAndDate(user, date);
+        return activityRepository.findByStudySessionUserAndStudySessionDate(user, date);
     }
 
     @Override
     public List<Activity> getActivitiesByDate(User user, LocalDate date) {
-        return activityRepository.findByUserAndDate(user, date);
+        return activityRepository.findByStudySessionUserAndStudySessionDate(user, date);
     }
 
     @Override
