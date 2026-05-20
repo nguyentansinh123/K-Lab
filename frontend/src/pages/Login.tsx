@@ -112,7 +112,7 @@ export default function Login() {
                   value={loginData.email}
                   onChange={handleLoginChange}
                   placeholder="operative@kineticlab.sys"
-                  className="w-full bg-surface-container-lowest border-0 border-b border-outline-variant text-on-surface focus:ring-0 placeholder:text-outline-variant py-4 px-3 font-body text-sm transition-all duration-300 focus:border-primary"
+                  className="w-full bg-surface-container-lowest border-0 border-b border-outline-variant text-on-surface focus:outline-none focus:ring-0 placeholder:text-outline-variant py-4 px-3 font-body text-sm transition-all duration-300 focus:border-primary"
                 />
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full" />
               </div>
@@ -134,7 +134,7 @@ export default function Login() {
                   value={loginData.password}
                   onChange={handleLoginChange}
                   placeholder="••••••••••••"
-                  className="w-full bg-surface-container-lowest border-0 border-b border-outline-variant text-on-surface focus:ring-0 placeholder:text-outline-variant py-4 px-3 font-body text-sm transition-all duration-300 focus:border-primary"
+                  className="w-full bg-surface-container-lowest border-0 border-b border-outline-variant text-on-surface focus:outline-none focus:ring-0 placeholder:text-outline-variant py-4 px-3 font-body text-sm transition-all duration-300 focus:border-primary"
                 />
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-focus-within:w-full" />
               </div>
@@ -145,7 +145,7 @@ export default function Login() {
               <label className="flex items-center gap-2.5 cursor-pointer group">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded-none border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-surface accent-primary"
+                  className="w-4 h-4 rounded-none border-outline-variant bg-surface-container-lowest text-primary focus:outline-none focus:ring-0 focus:ring-offset-surface accent-primary"
                 />
                 <span className="font-headline text-[10px] tracking-widest text-on-surface-variant group-hover:text-primary transition-colors uppercase">
                   RETAIN SESSION

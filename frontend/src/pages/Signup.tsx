@@ -85,7 +85,7 @@ export default function Signup() {
                 value={registerData.firstName}
                 onChange={handleRegisterChange}
                 placeholder="FIRST_NAME"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
+                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
               />
             </div>
 
@@ -101,7 +101,7 @@ export default function Signup() {
                 value={registerData.lastName}
                 onChange={handleRegisterChange}
                 placeholder="LAST_NAME"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
+                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
               />
             </div>
             {/* Email */}
@@ -116,7 +116,7 @@ export default function Signup() {
                 value={registerData.email}
                 onChange={handleRegisterChange}
                 placeholder="ACADEMIC_EMAIL@LAB.NET"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
+                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
               />
             </div>
 
@@ -132,7 +132,7 @@ export default function Signup() {
                 value={registerData.password}
                 onChange={handleRegisterChange}
                 placeholder="••••••••••••"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
+                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function Signup() {
                 value={registerData.confirmPassword}
                 onChange={handleRegisterChange}
                 placeholder="••••••••••••"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
+                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
               />
             </div>
 

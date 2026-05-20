@@ -249,3 +249,35 @@ body {
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
+
+/* ── Dashboard utilities ─────────────────────────────────────── */
+
+/* Hide scrollbar entirely (used on main scroll areas) */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Thin scrollbar (used on inner scroll panels) */
+.scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: #494847 transparent;
+}
+.scroll-area::-webkit-scrollbar { width: 4px; }
+.scroll-area::-webkit-scrollbar-thumb { background: #494847; }
+
+/* Neon primary glow (box shadow) */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(156, 255, 147, 0.2);
+}
+
+/* Neon primary glow (text shadow) */
+.glow-text-primary {
+  text-shadow: 0 0 12px rgba(156, 255, 147, 0.55);
+}
+
+/* Terminal-style ">" bullet */
+.terminal-bullet::before {
+  content: ">";
+  margin-right: 8px;
+  color: #9cff93;
+  font-weight: bold;
+}
