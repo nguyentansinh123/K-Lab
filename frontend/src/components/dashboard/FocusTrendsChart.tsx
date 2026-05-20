@@ -1,4 +1,13 @@
-// Swap `data` prop with real API response when ready
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
 export interface FocusDay {
   label: string;
   hours: number;
@@ -22,6 +31,52 @@ const defaultData: FocusDay[] = [
   { label: "TODAY", hours: 9.5, isToday: true },
 ];
 
+const getBarColor = (hours: number, isToday: boolean | undefined, peak: number) => {
+  if (isToday) return "#9cff93";
+  const r = hours / peak;
+  if (r > 0.8) return "rgba(156,255,147,0.5)";
+  if (r > 0.6) return "rgba(156,255,147,0.4)";
+  if (r > 0.35) return "rgba(156,255,147,0.3)";
+  return "rgba(156,255,147,0.2)";
+};
+
+interface TooltipContentProps {
+  active?: boolean;
+  payload?: Array<{ payload: FocusDay }>;
+}
+
+const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="bg-surface-container-highest border border-outline-variant/20 px-3 py-2">
+      <div className="text-[10px] font-label text-primary uppercase">{d.label}</div>
+      <div className="text-sm font-headline font-bold text-on-surface">{d.hours}h</div>
+    </div>
+  );
+};
+
+const BarShape = (props: {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  fill?: string;
+  isToday?: boolean;
+}) => {
+  const { x = 0, y = 0, width = 0, height = 0, fill, isToday } = props;
+  return (
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      fill={fill}
+      filter={isToday ? "url(#barGlow)" : undefined}
+    />
+  );
+};
+
 export default function FocusTrendsChart({
   data = defaultData,
   percentageChange = 12.4,
@@ -29,15 +84,10 @@ export default function FocusTrendsChart({
   maxHours = 8.2,
 }: FocusTrendsChartProps) {
   const peak = Math.max(...data.map((d) => d.hours));
-
-  const getBarClass = (hours: number, isToday?: boolean) => {
-    if (isToday) return "bg-primary glow-primary";
-    const ratio = hours / peak;
-    if (ratio > 0.8) return "bg-primary/50";
-    if (ratio > 0.6) return "bg-primary/40";
-    if (ratio > 0.35) return "bg-primary/30";
-    return "bg-primary/20";
-  };
+  const chartData = data.map((d) => ({
+    ...d,
+    fill: getBarColor(d.hours, d.isToday, peak),
+  }));
 
   return (
     <div className="bg-surface-container p-6 border border-outline-variant/10 relative overflow-hidden h-64 flex flex-col">
@@ -45,41 +95,44 @@ export default function FocusTrendsChart({
         <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">
           Focus_Trends_7D
         </div>
-        <span className="text-[10px] font-label text-primary">
-          +{percentageChange}%
-        </span>
+        <span className="text-[10px] font-label text-primary">+{percentageChange}%</span>
       </div>
 
-      <div className="flex-1 flex items-end gap-1 px-2">
-        {data.map((day) => (
-          <div
-            key={day.label}
-            className={`flex-1 group relative hover:brightness-125 transition-all cursor-help ${getBarClass(
-              day.hours,
-              day.isToday
-            )}`}
-            style={{ height: `${(day.hours / peak) * 95}%` }}
-          >
-            <div
-              className={`absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-label text-primary whitespace-nowrap transition-opacity ${
-                day.isToday
-                  ? "opacity-100"
-                  : "opacity-0 group-hover:opacity-100"
-              }`}
-            >
-              {day.label}
-            </div>
-          </div>
-        ))}
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 8, right: 0, left: 0, bottom: 0 }} barCategoryGap="18%">
+            <defs>
+              <filter id="barGlow">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#777575", fontSize: 9, fontFamily: "Space Grotesk" }}
+            />
+            <YAxis hide />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ fill: "rgba(156,255,147,0.05)" }}
+            />
+            <Bar dataKey="hours" shape={<BarShape />}>
+              {chartData.map((entry, i) => (
+                <Cell key={i} fill={entry.fill} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-outline-variant/5 flex justify-between">
-        <div className="text-[10px] font-label text-outline uppercase">
-          Min: {minHours}h
-        </div>
-        <div className="text-[10px] font-label text-outline uppercase">
-          Max: {maxHours}h
-        </div>
+      <div className="mt-1 pt-3 border-t border-outline-variant/5 flex justify-between">
+        <div className="text-[10px] font-label text-outline uppercase">Min: {minHours}h</div>
+        <div className="text-[10px] font-label text-outline uppercase">Max: {maxHours}h</div>
       </div>
     </div>
   );

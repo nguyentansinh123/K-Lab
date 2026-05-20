@@ -115,9 +115,9 @@ export default function AISessionNotes({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 min-h-[500px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:min-h-[500px]">
         {/* ── List panel ── */}
-        <div className="lg:col-span-4 bg-surface-container-low border border-outline-variant/10 flex flex-col overflow-hidden">
+        <div className="lg:col-span-5 xl:col-span-4 bg-surface-container-low border border-outline-variant/10 flex flex-col overflow-hidden lg:max-h-[500px]">
           <div className="p-4 border-b border-outline-variant/10 bg-surface-container">
             <div className="text-[10px] font-label text-outline uppercase tracking-widest">
               Recent_Entries
@@ -158,7 +158,7 @@ export default function AISessionNotes({
 
         {/* ── Detail panel ── */}
         {selected && (
-          <div className="lg:col-span-8 bg-surface-container border border-outline-variant/10 p-8 flex flex-col">
+          <div className="lg:col-span-7 xl:col-span-8 bg-surface-container border border-outline-variant/10 p-6 sm:p-8 flex flex-col lg:max-h-[500px]">
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h4 className="text-2xl font-headline font-black mb-1">

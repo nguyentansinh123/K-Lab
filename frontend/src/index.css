@@ -252,6 +252,23 @@ body {
 
 /* ── Dashboard utilities ─────────────────────────────────────── */
 
+/* Dashboard page grid background */
+.dashboard-grid-bg {
+  background-image:
+    linear-gradient(rgba(156, 255, 147, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 255, 147, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-color: #0e0e0e;
+}
+
+/* Sync pulse for Neural Sync Diagnostic */
+@keyframes syncPulse {
+  0%   { opacity: 0.5; transform: scale(1); }
+  50%  { opacity: 1;   transform: scale(1.15); box-shadow: 0 0 15px rgba(156, 255, 147, 0.6); }
+  100% { opacity: 0.5; transform: scale(1); }
+}
+.sync-pulse { animation: syncPulse 2s infinite; }
+
 /* Hide scrollbar entirely (used on main scroll areas) */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -18,11 +18,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Signup />} />
         </Route>
-        
+
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Route>
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
