@@ -298,3 +298,17 @@ body {
   color: #9cff93;
   font-weight: bold;
 }
+
+/* Counting/Session page — ambient breathe */
+@keyframes breathe {
+  0%, 100% { opacity: 0.8; text-shadow: 0 0 20px rgba(156, 255, 147, 0.1); }
+  50% { opacity: 1; text-shadow: 0 0 40px rgba(156, 255, 147, 0.25); }
+}
+
+.animate-breathe {
+  animation: breathe 8s ease-in-out infinite;
+}
+
+.neon-glow-subtle {
+  text-shadow: 0 0 40px rgba(156, 255, 147, 0.15);
+}
