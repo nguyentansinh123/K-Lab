@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 const NAV_LINKS = [
   { label: "DASHBOARD", href: "/dashboard" },
   { label: "SESSION", href: "/session" },
-  { label: "ARCHIVE", href: "#" },
+  { label: "ARCHIVE", href: "/history" },
   { label: "TELEMETRY", href: "#" },
 ];
 

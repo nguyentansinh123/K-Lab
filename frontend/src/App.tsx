@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import CountingPage from "./pages/CountingPage";
+import HistoryPage from "./pages/HistoryPage";
 import ProtectedRoute from "./protected/ProtectedRoute";
 import GuestRoute from "./guest/GuestRoute";
 
@@ -23,6 +24,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/session" element={<CountingPage />} />
+          <Route path="/history" element={<HistoryPage />} />
         </Route>
       </Route>
 

@@ -312,3 +312,11 @@ body {
 .neon-glow-subtle {
   text-shadow: 0 0 40px rgba(156, 255, 147, 0.15);
 }
+
+.ambient-glow {
+  box-shadow: 0 0 30px rgba(156, 255, 147, 0.15);
+}
+
+.ambient-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(156, 255, 147, 0.25);
+}
