@@ -7,16 +7,42 @@ import SessionDetailsPanel, {
   type SessionDetails,
 } from "../components/counting/SessionDetailsPanel";
 import EndSessionModal from "../components/counting/EndSessionModal";
+import {
+  startActivities,
+  stopActivitiies,
+} from "../features/activities/ActivitySlice";
+import { useAppDispatch } from "../hooks/dispatch";
 
 export default function CountingPage() {
   const { time, isRunning, toggle, pause, reset } = useTimer();
   const [showModal, setShowModal] = useState(false);
   const [wasRunning, setWasRunning] = useState(false);
-  const [sessionDetails, setSessionDetails] = useState<SessionDetails>({
+  const [hasStartedActivity, setHasStartedActivity] = useState(false);
+  const [isStartingActivity, setIsStartingActivity] = useState(false);
+  const [activityDetails, setActivityDetails] = useState<SessionDetails>({
     title: "",
     appName: "",
     topic: "",
   });
+
+  const dispatch = useAppDispatch();
+
+  async function handleToggle() {
+    if (isRunning) {
+      pause();
+      return;
+    }
+    if (!hasStartedActivity) {
+      setIsStartingActivity(true);
+      try {
+        await dispatch(startActivities(activityDetails)).unwrap();
+        setHasStartedActivity(true);
+      } finally {
+        setIsStartingActivity(false);
+      }
+    }
+    toggle();
+  }
 
   function handleStopClick() {
     setWasRunning(isRunning);
@@ -29,10 +55,17 @@ export default function CountingPage() {
     if (wasRunning) toggle();
   }
 
-  function handleEndSession() {
+  async function handleEndSession() {
     setShowModal(false);
     reset();
-    setSessionDetails({ title: "", appName: "", topic: "" });
+    setHasStartedActivity(false);
+    setActivityDetails({ title: "", appName: "", topic: "" });
+
+    try {
+      await dispatch(stopActivitiies()).unwrap();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -50,13 +83,16 @@ export default function CountingPage() {
           <TimerDisplay time={time} />
           <TimerControls
             isRunning={isRunning}
-            onToggle={toggle}
+            onToggle={handleToggle}
             onStop={handleStopClick}
           />
         </div>
       </main>
 
-      <SessionDetailsPanel details={sessionDetails} onChange={setSessionDetails} />
+      <SessionDetailsPanel
+        details={activityDetails}
+        onChange={setActivityDetails}
+      />
     </div>
   );
 }

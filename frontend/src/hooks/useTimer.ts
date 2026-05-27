@@ -15,7 +15,11 @@ interface UseTimerReturn {
 }
 
 export function useTimer(): UseTimerReturn {
-  const [time, setTime] = useState<TimerTime>({ hours: 0, minutes: 0, seconds: 0 });
+  const [time, setTime] = useState<TimerTime>({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -33,8 +37,14 @@ export function useTimer(): UseTimerReturn {
       setTime((prev) => {
         let { hours, minutes, seconds } = prev;
         seconds++;
-        if (seconds >= 60) { seconds = 0; minutes++; }
-        if (minutes >= 60) { minutes = 0; hours++; }
+        if (seconds >= 60) {
+          seconds = 0;
+          minutes++;
+        }
+        if (minutes >= 60) {
+          minutes = 0;
+          hours++;
+        }
         return { hours, minutes, seconds };
       });
     }, 1000);
@@ -52,8 +62,13 @@ export function useTimer(): UseTimerReturn {
   }, [clearTimer]);
 
   const toggle = useCallback(() => {
-    if (intervalRef.current) pause();
-    else start();
+    if (intervalRef.current) {
+      pause();
+      console.log("Stop")
+    } else {
+      start();
+      console.log("Start")
+    }
   }, [start, pause]);
 
   useEffect(() => () => clearTimer(), [clearTimer]);

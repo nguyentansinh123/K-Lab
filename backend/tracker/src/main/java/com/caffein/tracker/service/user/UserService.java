@@ -1,25 +1,21 @@
 package com.caffein.tracker.service.user;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.caffein.tracker.exception.AppException;
 import com.caffein.tracker.exception.ErrorCode;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.repository.UserRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-
-import lombok.RequiredArgsConstructor;
-
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +25,13 @@ public class UserService implements IUserService {
     private final Cloudinary cloudinary;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    public UserDetails loadUserByUsername(String email)
+        throws UsernameNotFoundException {
+        return userRepository
+            .findByEmailIgnoreCase(email)
+            .orElseThrow(() ->
+                new UsernameNotFoundException("User not found: " + email)
+            );
     }
 
     @Override
@@ -51,27 +51,32 @@ public class UserService implements IUserService {
 
     @Override
     public User addImageUrl(MultipartFile imageUrl) {
-
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = (User) SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getPrincipal();
         String oldUrl = user.getImgUrl();
 
         try {
-            File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + imageUrl.getOriginalFilename());
+            File convFile = new File(
+                System.getProperty("java.io.tmpdir") +
+                    "/" +
+                    imageUrl.getOriginalFilename()
+            );
             FileOutputStream fos = new FileOutputStream(convFile);
             fos.write(imageUrl.getBytes());
             fos.close();
 
-            var pic = cloudinary.uploader().upload(convFile, ObjectUtils.asMap("folder", "/userAva/"));
+            var pic = cloudinary
+                .uploader()
+                .upload(convFile, ObjectUtils.asMap("folder", "/userAva/"));
 
             user.setImgUrl(pic.get("url").toString());
 
             User saved = userRepository.save(user);
 
             if (oldUrl != null && oldUrl.contains("res.cloudinary.com")) {
-
                 String publicId = extractPublicId(oldUrl);
                 cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-
             }
             return saved;
         } catch (Exception e) {
@@ -88,5 +93,4 @@ public class UserService implements IUserService {
         int dot = afterUpload.lastIndexOf('.');
         return dot > 0 ? afterUpload.substring(0, dot) : afterUpload;
     }
-
 }

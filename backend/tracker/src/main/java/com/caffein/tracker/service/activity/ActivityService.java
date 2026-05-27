@@ -43,13 +43,9 @@ public class ActivityService implements IActivityService {
     @Override
     public Activity stopCurrentActivity(User user) {
         LocalDateTime endTime = LocalDateTime.now();
-        List<StudySession> sessions = studySessionRepository.findByUserId(user.getId());
-
-        Activity activity = sessions.stream().flatMap(sess -> {
-            return sess.getActivities().stream();
-        }).filter(act -> {
-            return act.getActivityEndAt() == null;
-        }).findFirst().orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+        Activity activity = activityRepository
+                .findFirstByStudySessionUserIdAndActivityEndAtIsNull(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
 
         activity.setActivityEndAt(String.valueOf(endTime));
         Duration durations = Duration.between(LocalDateTime.parse(activity.getActivityStartAt()), endTime);
@@ -62,11 +58,9 @@ public class ActivityService implements IActivityService {
     public Activity getCurrentActivity(User user) {
         List<StudySession> sessions = studySessionRepository.findByUserId(user.getId());
 
-        Activity activity = sessions.stream().flatMap(sess -> {
-            return sess.getActivities().stream();
-        }).filter(act -> {
-            return act.getActivityEndAt() == null;
-        }).findFirst().orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
+        Activity activity = activityRepository
+                .findFirstByStudySessionUserIdAndActivityEndAtIsNull(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
 
         return activity;
     }
