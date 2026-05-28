@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import type { UserType } from "../fetchLib/authapi";
+import { Link } from "react-router-dom";
 
 type UserSessionMenuProps = {
   user: UserType | null;
 };
 
 const sessionActions = [
-  ["person", "PROFILE_SETTINGS"],
-  ["tune", "SYSTEM_CALIBRATION"],
-  ["security", "ENCRYPTION_KEYS"],
-  ["history", "HISTORY_LOGS"],
-  ["schedule", "SESSIONS"],
+  ["person", "PROFILE_SETTINGS", "/person"],
+  ["tune", "SYSTEM_CALIBRATION", "/tune"],
+  ["security", "ENCRYPTION_KEYS", "/security"],
+  ["history", "HISTORY_LOGS", "/history"],
+  ["schedule", "SESSIONS", "/session"],
 ];
 
 export default function UserSessionMenu({ user }: UserSessionMenuProps) {
@@ -79,8 +80,9 @@ export default function UserSessionMenu({ user }: UserSessionMenuProps) {
               </p>
             </div>
 
-            {sessionActions.map(([icon, label]) => (
-              <button
+            {sessionActions.map(([icon, label, link]) => (
+              <Link
+                to={link}
                 key={label}
                 type="button"
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-primary-container hover:text-on-primary"
@@ -91,7 +93,7 @@ export default function UserSessionMenu({ user }: UserSessionMenuProps) {
                 <span className="font-headline text-xs font-bold uppercase tracking-widest">
                   {label}
                 </span>
-              </button>
+              </Link>
             ))}
 
             <button
