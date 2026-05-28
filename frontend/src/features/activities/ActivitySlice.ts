@@ -5,6 +5,7 @@ import {
   type ActivityReturnData,
   startActivity,
   stopActivity,
+  getCurrentActivity,
 } from "../../fetchLib/activitiesapi";
 
 type ActivityStatus =
@@ -51,6 +52,13 @@ export const stopActivitiies = createAsyncThunk(
   },
 );
 
+export const getCurrentUserActivity = createAsyncThunk(
+  "activity/getCurrentActivity",
+  async (): Promise<ActivityReturnData> => {
+    return getCurrentActivity();
+  },
+);
+
 const activitySlice = createSlice({
   name: "activity",
   initialState,
@@ -94,6 +102,27 @@ const activitySlice = createSlice({
       .addCase(stopActivitiies.rejected, (state, action) => {
         state.status = "error";
         state.error = action.error.message ?? "Stopping Activities failed";
+      })
+      .addCase(getCurrentUserActivity.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(getCurrentUserActivity.fulfilled, (state, action) => {
+        state.title = action.payload.title;
+        state.appName = action.payload.appName;
+        state.activityStartAt = action.payload.activityStartAt;
+        state.activityEndAt = action.payload.activityEndAt;
+        state.topic = action.payload.topic;
+        state.duration = action.payload.duration;
+        state.status = "currently_running";
+        state.error = null;
+      })
+
+      .addCase(getCurrentUserActivity.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          action.error.message ?? "Fetching current activity failed";
       });
   },
 });

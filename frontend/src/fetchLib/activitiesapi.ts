@@ -31,6 +31,20 @@ export const startActivity = async (
   });
 };
 
+export const getCurrentActivity = async (): Promise<ActivityReturnData> => {
+  
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken){
+    throw new Error("No access token found")
+  }
+  
+  return apiFetch("/activity/getCurrentActivity", {
+    method: "GET",
+    token: accessToken
+  })
+
+}
+
 export const stopActivity = async (): Promise<ActivityReturnData> => {
   const accessToken = localStorage.getItem("accessToken");
 
