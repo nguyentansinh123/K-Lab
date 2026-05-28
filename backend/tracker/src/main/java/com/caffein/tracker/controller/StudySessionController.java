@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,10 +18,10 @@ import com.caffein.tracker.dto.StudySessionDTO;
 import com.caffein.tracker.mapper.StudySessionMapper;
 import com.caffein.tracker.model.StudySession;
 import com.caffein.tracker.model.User;
+import com.caffein.tracker.re.request.ssession.StudySessionByDateRequest;
 import com.caffein.tracker.re.request.ssession.StudySessionDateRangeRequest;
 import com.caffein.tracker.service.studySession.IStudySessionService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,10 +42,10 @@ public class StudySessionController {
     }
 
     @GetMapping("/session/byDate")
-    public ResponseEntity<StudySessionDTO> getSessionByDate(@RequestBody LocalDate date) {
+    public ResponseEntity<StudySessionDTO> getSessionByDate(@RequestBody StudySessionByDateRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        StudySession session = studySessionService.getSession(user, date);
+        StudySession session = studySessionService.getSession(user, request);
         return ResponseEntity.ok(studySessionMapper.toDTO(session));
     }
 
