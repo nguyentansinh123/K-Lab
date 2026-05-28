@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UserType } from "../fetchLib/authapi";
 
 type UserSessionMenuProps = {
@@ -9,31 +9,33 @@ const sessionActions = [
   ["person", "PROFILE_SETTINGS"],
   ["tune", "SYSTEM_CALIBRATION"],
   ["security", "ENCRYPTION_KEYS"],
+  ["history", "HISTORY_LOGS"],
+  ["schedule", "SESSIONS"],
 ];
 
 export default function UserSessionMenu({ user }: UserSessionMenuProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const userInitials =
     `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="hidden md:flex items-center gap-4">
-      <div className="hidden lg:flex items-center gap-3">
-        {["notifications", "terminal", "settings"].map((icon) => (
-          <button
-            key={icon}
-            className="cursor-pointer p-2 text-on-surface-variant transition-all duration-150 hover:bg-surface-container-highest hover:text-primary-fixed"
-            type="button"
-            aria-label={icon}
-          >
-            <span className="material-symbols-outlined text-[22px]">
-              {icon}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <div className="relative">
+      <div ref={menuRef} className="relative">
         <button
           type="button"
           onClick={() => setProfileOpen((open) => !open)}
