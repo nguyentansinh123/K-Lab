@@ -8,6 +8,7 @@ import SessionDetailsPanel, {
 } from "../components/counting/SessionDetailsPanel";
 import EndSessionModal from "../components/counting/EndSessionModal";
 import {
+  getCurrentUserActivity,
   startActivities,
   stopActivitiies,
 } from "../features/activities/ActivitySlice";
@@ -26,6 +27,17 @@ export default function CountingPage() {
   });
 
   const dispatch = useAppDispatch();
+  
+  const getRecentCurrentActivity = async () => {
+    try {
+      const myData = await dispatch(getCurrentUserActivity()).unwrap()
+      console.log(myData)
+    } catch (error) {
+      console.log("There is an error")
+    }
+  }
+  
+  getRecentCurrentActivity()
 
   async function handleToggle() {
     if (isRunning) {
