@@ -1,8 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import type { DayLog } from "../types/history";
 import PageHeader from "../components/history/PageHeader";
 import ToolAnalytics from "../components/history/ToolAnalytics";
 import SessionGroup from "../components/history/SessionGroup";
+import { useAppDispatch } from "../hooks/dispatch";
+import { getStudySessionByDate } from "../features/studysessions/SessionSlice";
+import type { StudySessionDTO } from "../fetchLib/studysessionapi";
 
 const DAY_LOGS: DayLog[] = [
   {
@@ -22,7 +25,13 @@ const DAY_LOGS: DayLog[] = [
         pathIcon: "folder",
         notes:
           "Optimized rendering cycles for the main list component. Reduced unnecessary re-renders by implementing React.memo and refining dependency arrays in useEffect hooks. Achieved consistent 60fps scrolling.",
-        cognitive: { avg: 78.4, base: 45, peak: 92, label: "SUSTAINED", alignment: 92.4 },
+        cognitive: {
+          avg: 78.4,
+          base: 45,
+          peak: 92,
+          label: "SUSTAINED",
+          alignment: 92.4,
+        },
         accentColor: "primary",
       },
       {
@@ -113,20 +122,25 @@ const DAY_LOGS: DayLog[] = [
 
 export default function HistoryPage() {
   const [search, setSearch] = useState("");
+  const [historyData, setHistoryData] = useState<StudySessionDTO | null>();
+  const dispatch = useAppDispatch();
 
-  const filtered = useMemo(() => {
-    if (!search.trim()) return DAY_LOGS;
-    const q = search.toLowerCase();
-    return DAY_LOGS.map((day) => ({
-      ...day,
-      sessions: day.sessions.filter(
-        (s) =>
-          s.title.toLowerCase().includes(q) ||
-          s.app.toLowerCase().includes(q) ||
-          s.topic.toLowerCase().includes(q)
-      ),
-    })).filter((day) => day.sessions.length > 0);
-  }, [search]);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const today = new Date().toISOString().split("T")[0];
+
+      try {
+        const session = await dispatch(
+          getStudySessionByDate({ date: today }),
+        ).unwrap();
+        setHistoryData(session);
+        console.log(session);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchHistory();
+  }, [dispatch]);
 
   return (
     <div className="h-screen pt-16 overflow-hidden dashboard-grid-bg">
@@ -135,10 +149,14 @@ export default function HistoryPage() {
           <PageHeader search={search} onSearch={setSearch} />
           <ToolAnalytics />
           <div className="space-y-20">
-            {filtered.map((group) => (
-              <SessionGroup key={group.date} group={group} />
-            ))}
-            {filtered.length === 0 && (
+            {historyData ? (
+              <SessionGroup historyData={historyData} search={search} />
+            ) : (
+              DAY_LOGS.map((group) => (
+                <SessionGroup key={group.date} group={group} search={search} />
+              ))
+            )}
+            {historyData?.activities.length === 0 && (
               <p className="font-mono text-sm text-on-surface-variant text-center py-20 uppercase tracking-widest">
                 &gt; No logs match "{search}"
               </p>

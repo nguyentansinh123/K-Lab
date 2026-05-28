@@ -1,14 +1,67 @@
-import type { DayLog } from "../../types/history";
+import type { DayLog, Session } from "../../types/history";
+import type { ActivityDTO, StudySessionDTO } from "../../fetchLib/studysessionapi";
 import SessionRow from "./SessionRow";
 
 interface SessionGroupProps {
-  group: DayLog;
+  group?: DayLog;
+  historyData?: StudySessionDTO | null;
+  search?: string;
 }
 
-export default function SessionGroup({ group }: SessionGroupProps) {
-  const lineColor = group.isPast ? "bg-outline-variant/30" : "bg-primary/30";
-  const dateColor = group.isPast ? "text-on-surface-variant" : "text-on-surface";
-  const focusColor = group.isPast ? "text-on-surface-variant" : "text-primary";
+const formatSeconds = (seconds: string | number | null) => {
+  const totalSeconds = Number(seconds ?? 0);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+};
+
+const activityToSession = (activity: ActivityDTO, index: number): Session => ({
+  id: `${activity.activityStartAt}-${activity.title}-${index}`,
+  app: activity.appName,
+  appIcon: "terminal",
+  title: activity.title,
+  duration: formatSeconds(activity.duration),
+  focus: 80,
+  topic: activity.topic,
+  path: "studytracker/session",
+  pathIcon: "folder",
+  notes: "No session notes captured yet.",
+  cognitive: {
+    avg: 72,
+    base: 40,
+    peak: 88,
+    label: "SUSTAINED",
+  },
+  accentColor: index % 2 === 0 ? "primary" : "tertiary",
+});
+
+const studySessionToDayLog = (historyData: StudySessionDTO): DayLog => ({
+  date: historyData.date,
+  totalFocus: formatSeconds(historyData.totalDurationSeconds),
+  isPast: false,
+  sessions: historyData.activities.map(activityToSession),
+});
+
+export default function SessionGroup({ group, historyData, search = "" }: SessionGroupProps) {
+  const displayGroup = historyData ? studySessionToDayLog(historyData) : group;
+
+  if (!displayGroup) return null;
+
+  const q = search.toLowerCase().trim();
+  const sessions = q
+    ? displayGroup.sessions.filter(
+        (session) =>
+          session.title.toLowerCase().includes(q) ||
+          session.app.toLowerCase().includes(q) ||
+          session.topic.toLowerCase().includes(q),
+      )
+    : displayGroup.sessions;
+
+  const lineColor = displayGroup.isPast ? "bg-outline-variant/30" : "bg-primary/30";
+  const dateColor = displayGroup.isPast ? "text-on-surface-variant" : "text-on-surface";
+  const focusColor = displayGroup.isPast ? "text-on-surface-variant" : "text-primary";
 
   return (
     <section>
@@ -17,14 +70,14 @@ export default function SessionGroup({ group }: SessionGroupProps) {
         <div className={`h-px ${lineColor} flex-1`} />
         <div className="flex items-center gap-8 bg-surface px-4 py-2 border border-outline-variant/15">
           <div className={`font-mono text-sm tracking-wider ${dateColor}`}>
-            <span className={group.isPast ? "opacity-50" : "text-on-surface-variant"}>DATE:</span>{" "}
-            [{group.date}]
+            <span className={displayGroup.isPast ? "opacity-50" : "text-on-surface-variant"}>DATE:</span>{" "}
+            [{displayGroup.date}]
           </div>
           <div className={`font-mono text-sm tracking-wider ${focusColor}`}>
-            <span className={group.isPast ? "opacity-50" : "text-on-surface-variant"}>
+            <span className={displayGroup.isPast ? "opacity-50" : "text-on-surface-variant"}>
               TOTAL_FOCUS:
             </span>{" "}
-            [{group.totalFocus}]
+            [{displayGroup.totalFocus}]
           </div>
         </div>
         <div className={`h-px ${lineColor} flex-1`} />
@@ -39,8 +92,8 @@ export default function SessionGroup({ group }: SessionGroupProps) {
           <div className="col-span-3">Focus_Strength</div>
         </div>
         <div className="divide-y divide-outline-variant/10">
-          {group.sessions.map((session) => (
-            <SessionRow key={session.id} session={session} isPast={group.isPast} />
+          {sessions.map((session) => (
+            <SessionRow key={session.id} session={session} isPast={displayGroup.isPast} />
           ))}
         </div>
       </div>

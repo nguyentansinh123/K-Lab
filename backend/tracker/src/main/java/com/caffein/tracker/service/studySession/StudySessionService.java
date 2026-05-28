@@ -11,7 +11,6 @@ import com.caffein.tracker.exception.ErrorCode;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.StudySession;
 import com.caffein.tracker.model.User;
-import com.caffein.tracker.re.request.ssession.StudySessionByDateRequest;
 import com.caffein.tracker.repository.StudySessionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -47,8 +46,8 @@ public class StudySessionService implements IStudySessionService {
     }
 
     @Override
-    public StudySession getSession(User user, StudySessionByDateRequest date) {
-        return studySessionRepository.findByUserAndDate(user, date.getDate())
+    public StudySession getSession(User user, LocalDate date) {
+        return studySessionRepository.findByUserAndDate(user, date)
                 .orElseThrow(() -> new AppException(ErrorCode.STUDY_SESSION_NOT_FOUND));
     }
 

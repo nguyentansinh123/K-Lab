@@ -31,17 +31,20 @@ export type StudySessionDTO = {
   note: string;
 };
 
-
-export const getSessionByDate = async (data: DateType): Promise<StudySessionDTO> => {
-  const accesstoken = localStorage.getItem("access-token");
+export const getSessionByDate = async (
+  data: DateType,
+): Promise<StudySessionDTO> => {
+  const accesstoken = localStorage.getItem("accessToken");
 
   if (!accesstoken) {
     throw new Error("No access token found");
   }
 
-  return apiFetch("/ssession/session/byDate", {
-    method: "GET",
-    body: JSON.stringify(data),
-    token: accesstoken,
-  });
+  return apiFetch<StudySessionDTO>(
+    `/ssession/session/byDate?date=${encodeURIComponent(data.date)}`,
+    {
+      method: "GET",
+      token: accesstoken,
+    },
+  );
 };

@@ -14,9 +14,7 @@ type SessionState = {
 };
 
 const initialState: SessionState = {
-  session: null,
-  status: "idle",
-  error: null,
+  session: null, status: "idle", error: null,
 };
 
 export const getStudySessionByDate = createAsyncThunk(
