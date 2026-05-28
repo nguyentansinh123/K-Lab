@@ -14,6 +14,10 @@ import {
 } from "../features/activities/ActivitySlice";
 import { useAppDispatch } from "../hooks/dispatch";
 
+// Todo: save current timer
+// use currentActivity to check if any activity is running 
+// block new activity if there is an activity is running
+
 export default function CountingPage() {
   const { time, isRunning, toggle, pause, reset } = useTimer();
   const [showModal, setShowModal] = useState(false);
@@ -33,6 +37,7 @@ export default function CountingPage() {
       const myData = await dispatch(getCurrentUserActivity()).unwrap()
       console.log(myData)
     } catch (error) {
+      console.log(error)
       console.log("There is an error")
     }
   }
