@@ -8,10 +8,12 @@ export interface TimerTime {
 
 interface UseTimerReturn {
   time: TimerTime;
+  setTime: React.Dispatch<React.SetStateAction<TimerTime>>;
   isRunning: boolean;
   toggle: () => void;
   pause: () => void;
   reset: () => void;
+  start: () => void;
 }
 
 export function useTimer(): UseTimerReturn {
@@ -73,5 +75,5 @@ export function useTimer(): UseTimerReturn {
 
   useEffect(() => () => clearTimer(), [clearTimer]);
 
-  return { time, isRunning, toggle, pause, reset };
+  return { time, setTime, isRunning, toggle, pause, reset, start};
 }

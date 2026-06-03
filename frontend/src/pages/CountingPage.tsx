@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTimer } from "../hooks/useTimer";
 import StatusBadge from "../components/counting/StatusBadge";
 import TimerDisplay from "../components/counting/TimerDisplay";
@@ -19,7 +19,7 @@ import { useAppDispatch } from "../hooks/dispatch";
 // block new activity if there is an activity is running
 
 export default function CountingPage() {
-  const { time, isRunning, toggle, pause, reset } = useTimer();
+  const { time, setTime, isRunning, toggle, pause, reset, start} = useTimer();
   const [showModal, setShowModal] = useState(false);
   const [wasRunning, setWasRunning] = useState(false);
   const [hasStartedActivity, setHasStartedActivity] = useState(false);
@@ -32,18 +32,38 @@ export default function CountingPage() {
 
   const dispatch = useAppDispatch();
   
-  const getRecentCurrentActivity = async () => {
+  const getRecentCurrentActivity = useCallback(async () => {
     try {
       const myData = await dispatch(getCurrentUserActivity()).unwrap()
       console.log("The current Activities")
       console.log(myData)
+      if (myData){
+        const startTime = new Date(myData.activityStartAt).getTime()
+        const currentTime = new Date().getTime()
+        const diffMs = currentTime - startTime
+        
+        const diffSeconds = Math.floor(diffMs / 1000)
+        setTime({
+          hours: Math.floor(diffSeconds/3600),
+          minutes: Math.floor((diffSeconds % 3600) / 60),
+          seconds: diffSeconds % 60 
+        })
+        
+        setHasStartedActivity(true)
+        start()
+      }
     } catch (error) {
       console.log(error)
       console.log("There is an error")
     }
-  }
+  }, [dispatch, setTime, start])
   
-  getRecentCurrentActivity()
+  useEffect(()=> {
+    
+    getRecentCurrentActivity()
+
+  }, [getRecentCurrentActivity])
+  
 
   async function handleToggle() {
     if (isRunning) {
