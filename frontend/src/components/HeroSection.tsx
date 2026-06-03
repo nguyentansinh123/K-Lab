@@ -1,5 +1,4 @@
 import { useScrollReveal } from "../hooks/useScrollReveal";
-import HUDPanel from "./HUDPanel";
 
 export default function HeroSection() {
   const { ref, isVisible } = useScrollReveal(0.05);
@@ -7,65 +6,73 @@ export default function HeroSection() {
   return (
     <section
       ref={ref}
-      className="px-8 md:px-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[819px]"
+      className="min-h-[620px] flex flex-col items-center justify-center text-center py-20"
     >
-      <div className="space-y-8">
-        <div
-          className={`inline-block px-4 py-1 border border-primary-container/30 bg-primary-container/5 transition-all duration-500 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          <span className="text-primary-fixed text-xs font-bold tracking-[0.2em] uppercase">
-            Tracking Active — 14 Day Streak
-          </span>
-        </div>
+      <div
+        className={`inline-flex items-center gap-3 border border-outline-variant/40 bg-surface-container-lowest/70 px-4 py-2 transition-all duration-500 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <span className="h-1.5 w-1.5 bg-primary-fixed shadow-[0_0_12px_rgba(0,252,64,0.9)]" />
+        <span className="text-primary-fixed text-[10px] font-bold tracking-[0.24em] uppercase">
+          Tracking Active / 14 Day Streak
+        </span>
+      </div>
 
-        <h1
-          className={`text-6xl md:text-8xl font-bold tracking-tighter leading-none text-on-surface transition-all duration-600 ease-out delay-100 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          Track Your{" "}
-          <span className="bg-gradient-to-r from-primary-container via-primary-fixed to-primary-dim bg-clip-text text-transparent">
-            Grind.
-          </span>
-          <br />
-          Own Your{" "}
-          <span className="bg-gradient-to-r from-primary-container via-primary-fixed to-primary-dim bg-clip-text text-transparent">
-            Growth.
-          </span>
-        </h1>
+      <h1
+        className={`mt-8 max-w-5xl text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[0.95] text-on-surface transition-all duration-600 ease-out delay-100 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        Track Your Grind.
+        <br />
+        Own Your Growth.
+      </h1>
 
-        <p
-          className={`text-on-surface-variant text-lg max-w-lg leading-relaxed transition-all duration-600 ease-out delay-200 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          A lightweight script runs in the background, tracking your study
-          sessions, app usage, and coding time. AI analyzes your patterns and
-          shows you where your hours actually go.
-        </p>
+      <p
+        className={`mt-7 max-w-2xl text-on-surface-variant text-lg leading-8 font-light transition-all duration-600 ease-out delay-200 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        Deep work requires clean signal. KINETIC LAB logs your study sessions,
+        application usage, and focus blocks with quiet precision.
+      </p>
 
-        <div
-          className={`flex gap-4 transition-all duration-600 ease-out delay-300 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          <button className="cursor-pointer bg-primary-container text-on-primary-container px-10 py-4 font-bold uppercase tracking-widest text-sm neon-glow-sm hover:scale-[1.03] hover:brightness-110 active:scale-[0.98] transition-all duration-200">
-            Start Tracking
-          </button>
-          <button className="cursor-pointer border border-outline/30 px-10 py-4 font-bold uppercase tracking-widest text-sm text-primary hover:border-primary-fixed/50 hover:bg-primary/5 active:scale-[0.98] transition-all duration-200">
-            View Demo
-          </button>
-        </div>
+      <div
+        className={`mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-600 ease-out delay-300 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        }`}
+      >
+        <button className="cursor-pointer bg-primary-container text-on-primary-container px-8 py-4 font-bold uppercase tracking-[0.22em] text-xs hover:bg-primary-fixed active:scale-[0.98] transition-all duration-200">
+          Start Tracking
+        </button>
+        <button className="cursor-pointer border border-outline-variant/60 bg-surface-container-lowest/50 px-8 py-4 font-bold uppercase tracking-[0.22em] text-xs text-on-surface-variant hover:text-on-surface hover:border-outline active:scale-[0.98] transition-all duration-200">
+          View Demo
+        </button>
       </div>
 
       <div
-        className={`transition-all duration-700 ease-out delay-200 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        className={`mt-14 grid w-full max-w-3xl grid-cols-1 border border-outline-variant/30 bg-surface-container-lowest/60 sm:grid-cols-3 transition-all duration-700 ease-out delay-500 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        <HUDPanel visible={isVisible} />
+        {[
+          ["Today", "6.4h"],
+          ["Focus", "72%"],
+          ["Sync", "Live"],
+        ].map(([label, value], index) => (
+          <div
+            key={label}
+            className={`px-6 py-5 ${index > 0 ? "border-t border-outline-variant/30 sm:border-l sm:border-t-0" : ""}`}
+          >
+            <div className="text-[10px] uppercase tracking-[0.24em] text-outline">
+              {label}
+            </div>
+            <div className="mt-2 text-2xl font-bold text-on-surface">
+              {value}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

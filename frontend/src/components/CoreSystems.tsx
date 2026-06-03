@@ -33,35 +33,35 @@ export default function CoreSystems() {
   return (
     <section
       ref={ref}
-      className={`px-8 md:px-16 transition-all duration-700 ease-out ${
+      id="how-it-works"
+      className={`transition-all duration-700 ease-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
     >
-      <div className="text-center mb-16">
-        <h2 className="text-5xl font-black tracking-tighter uppercase text-white mb-4">
-          How It Works
+      <div className="mb-12 flex flex-col gap-4 border-b border-outline-variant/30 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
+          System Capabilities
         </h2>
-        <div className="h-1 w-24 bg-primary-container mx-auto" />
+        <p className="max-w-md text-sm leading-6 text-on-surface-variant/65">
+          The tracker watches the workflow without turning the interface into a
+          second job.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
         {features.map((feature, i) => (
           <div
             key={feature.title}
-            className={`cursor-pointer bg-surface-container p-12 border border-outline-variant/15 flex flex-col items-center text-center hover:bg-surface-variant hover:-translate-y-1 hover:border-primary-fixed/20 card-glow transition-all duration-200 ${
-              i > 0 ? "md:border-l-0" : ""
-            }`}
+            className="group cursor-pointer border-l border-outline-variant/30 pl-6 transition-all duration-200 hover:border-primary-fixed/70"
             style={{ transitionDelay: isVisible ? `${i * 100}ms` : "0ms" }}
           >
-            <div className="w-16 h-16 flex items-center justify-center bg-primary-container/10 mb-8 neon-glow-sm">
-              <span className="material-symbols-outlined text-primary-fixed text-4xl">
-                {feature.icon}
-              </span>
-            </div>
-            <h4 className="text-xl font-bold text-white mb-4 uppercase tracking-tight">
+            <span className="material-symbols-outlined mb-6 block text-3xl text-outline transition-colors duration-200 group-hover:text-primary-fixed">
+              {feature.icon}
+            </span>
+            <h4 className="text-xl font-bold text-white mb-3">
               {feature.title}
             </h4>
-            <p className="text-on-surface-variant text-sm leading-relaxed">
+            <p className="text-on-surface-variant/70 text-sm leading-7">
               {feature.description}
             </p>
           </div>

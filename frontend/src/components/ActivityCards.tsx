@@ -53,35 +53,35 @@ export default function ActivityCards() {
   return (
     <section
       ref={ref}
-      className={`px-8 md:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 ease-out ${
+      className={`grid grid-cols-1 gap-8 border-t border-outline-variant/30 pt-10 md:grid-cols-3 transition-all duration-700 ease-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
     >
       {activities.map((activity, i) => (
         <div
           key={activity.title}
-          className="cursor-pointer bg-surface-container-low p-6 border-l-2 border-primary-fixed hover:border-primary-container hover:bg-surface-variant hover:-translate-y-1 card-glow transition-all duration-200 group"
+          className="cursor-pointer border border-outline-variant/25 bg-surface-container-lowest/70 p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary-fixed/40 hover:bg-surface-container-low group"
           style={{ transitionDelay: isVisible ? `${i * 80}ms` : "0ms" }}
         >
           <div className="flex justify-between items-start mb-6">
-            <span className="material-symbols-outlined text-primary-fixed text-3xl group-hover:scale-110 transition-transform duration-200">
+            <span className="material-symbols-outlined text-outline text-3xl group-hover:text-primary-fixed transition-colors duration-200">
               {activity.icon}
             </span>
             <span
-              className={`text-[10px] font-bold ${activity.statusColor} ${activity.statusBg} px-2 py-0.5 uppercase`}
+              className={`text-[10px] font-bold ${activity.statusColor} ${activity.statusBg} px-2 py-0.5 uppercase tracking-[0.18em]`}
             >
               {activity.status}
             </span>
           </div>
 
-          <h3 className="text-xl font-bold text-white mb-2">
+          <h3 className="text-xl font-bold text-white mb-3">
             {activity.title}
           </h3>
-          <p className="text-sm text-on-surface-variant mb-6">
+          <p className="text-sm text-on-surface-variant/75 leading-6 mb-7">
             {activity.description}
           </p>
 
-          <div className="flex justify-between text-[10px] uppercase tracking-widest text-on-surface-variant">
+          <div className="flex justify-between gap-4 border-t border-outline-variant/20 pt-4 text-[10px] uppercase tracking-widest text-outline">
             <span>{activity.metaLeft}</span>
             <span>{activity.metaRight}</span>
           </div>
