@@ -35,6 +35,7 @@ export default function CountingPage() {
   const getRecentCurrentActivity = async () => {
     try {
       const myData = await dispatch(getCurrentUserActivity()).unwrap()
+      console.log("The current Activities")
       console.log(myData)
     } catch (error) {
       console.log(error)

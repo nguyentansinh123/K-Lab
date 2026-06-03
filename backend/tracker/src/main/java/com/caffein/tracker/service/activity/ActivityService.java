@@ -31,6 +31,14 @@ public class ActivityService implements IActivityService {
         LocalDateTime startTime = LocalDateTime.now();
         StudySession studySession = studySessionService.getOrCreateTodaySession(user);
 
+        boolean hasOngoingActivity = activityRepository
+                .findFirstByStudySessionUserIdAndActivityEndAtIsNull(user.getId())
+                .isPresent();
+
+        if (hasOngoingActivity) {
+            throw new IllegalStateException("You already have an ongoing activity");
+        }
+
         return activityRepository.save(Activity.builder()
                 .title(title)
                 .appName(appName)
@@ -56,8 +64,6 @@ public class ActivityService implements IActivityService {
 
     @Override
     public Activity getCurrentActivity(User user) {
-        List<StudySession> sessions = studySessionRepository.findByUserId(user.getId());
-
         Activity activity = activityRepository
                 .findFirstByStudySessionUserIdAndActivityEndAtIsNull(user.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACTIVITY_NOT_FOUND));
