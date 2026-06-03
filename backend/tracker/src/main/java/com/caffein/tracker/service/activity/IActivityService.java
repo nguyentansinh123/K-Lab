@@ -13,7 +13,7 @@ public interface IActivityService {
     Activity stopCurrentActivity(User user);
 
     Activity getCurrentActivity(User user);
-
+    
     List<Activity> getTodayActivities(User user);
 
     List<Activity> getActivitiesByDate(User user, LocalDate date);

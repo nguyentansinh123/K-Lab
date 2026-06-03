@@ -61,7 +61,8 @@ public class ActivityService implements IActivityService {
 
         return activityRepository.save(activity);
     }
-
+    
+    
     @Override
     public Activity getCurrentActivity(User user) {
         Activity activity = activityRepository
@@ -93,5 +94,6 @@ public class ActivityService implements IActivityService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteActivity'");
     }
+
 
 }

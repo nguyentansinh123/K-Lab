@@ -1,5 +1,7 @@
 package com.caffein.tracker.dto;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,4 +19,7 @@ public class ActivityDTO {
     private String topic;
 
     private String duration;
+    
+    private List<ActivityPauseDTO> activityPauses;
+
 }
