@@ -1,5 +1,7 @@
 package com.caffein.tracker.model;
 
+import com.caffein.tracker.model.type.PStatus;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +31,9 @@ public class ActivityPause {
     private String pauseTimeStart;
 
     private String pauseTimeEnd;
-
+    
+    private PStatus currentStatus;
+    
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;

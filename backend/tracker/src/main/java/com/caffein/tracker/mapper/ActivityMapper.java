@@ -26,6 +26,7 @@ public class ActivityMapper {
                                                 .id(pause.getId())
                                                 .pauseTimeStart(pause.getPauseTimeStart())
                                                 .pauseTimeEnd(pause.getPauseTimeEnd())
+                                                .status(pause.getCurrentStatus())
                                                 .build())
                                         .toList())
                 .build();

@@ -1,5 +1,7 @@
 package com.caffein.tracker.dto;
 
+import com.caffein.tracker.model.type.PStatus;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,4 +11,5 @@ public class ActivityPauseDTO {
     private String id;
     private String pauseTimeStart;
     private String pauseTimeEnd;
+    private PStatus status;
 }

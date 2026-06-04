@@ -1,0 +1,12 @@
+package com.caffein.tracker.service.ActivityPause;
+
+import com.caffein.tracker.dto.ActivityPauseDTO;
+import com.caffein.tracker.model.Activity;
+import com.caffein.tracker.model.User;
+
+public interface IActivityPauseService {
+    
+    ActivityPauseDTO startPausing (Activity activity);
+
+    ActivityPauseDTO stopPausing (Activity activity);
+} 
