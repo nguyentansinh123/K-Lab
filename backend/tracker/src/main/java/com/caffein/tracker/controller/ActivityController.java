@@ -10,13 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caffein.tracker.dto.ActivityDTO;
 import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.mapper.ActivityMapper;
+import com.caffein.tracker.mapper.ActivityPausingMapper;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.User;
+import com.caffein.tracker.model.type.PStatus;
 import com.caffein.tracker.re.request.activity.StartActivityRequest;
 import com.caffein.tracker.service.ActivityPause.IActivityPauseService;
 import com.caffein.tracker.service.activity.IActivityService;
@@ -83,6 +86,32 @@ public class ActivityController {
         activityPauseService.startPausing(activity);
         
         return ResponseEntity.ok(Map.of("message", "This activity has been paused"));
+    }
+    
+    
+    @PostMapping("/stopPausing")
+    public ResponseEntity<Map<String, String>> stopPausingActivity() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        Activity activity = activityService.getCurrentActivity(user);
+        
+        activityPauseService.stopPausing(activity);
+        
+        return ResponseEntity.ok(Map.of("message", "This activity has been unpaused"));
+    }
+
+    @GetMapping("/latestPausingType")
+    public ResponseEntity<ActivityDTO> LatestPausingActivity(@RequestParam PStatus status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        Activity activity = activityService.getCurrentActivity(user);
+        
+        ActivityPauseDTO pausingAc = activityPauseService.getCurrentLatestPausing(activity, status);
+        
+        ActivityDTO res = activityMapper.toDTO(activity);
+        res.setActivityPauses(List.of(pausingAc));
+        return ResponseEntity.ok(res);
+        
     }
 
 }
