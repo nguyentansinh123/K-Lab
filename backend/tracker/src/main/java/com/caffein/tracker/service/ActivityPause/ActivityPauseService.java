@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.ActivityPause;
-import com.caffein.tracker.model.User;
 import com.caffein.tracker.model.type.PStatus;
 import com.caffein.tracker.repository.ActivityPauseRepository;
 import com.caffein.tracker.repository.ActivityRepository;
@@ -41,10 +40,11 @@ public class ActivityPauseService implements IActivityPauseService {
                 .pauseTimeStart(currentTime)
                 .pauseTimeEnd(null)
                 .currentStatus(PStatus.PAUSE)
+                .activity(activity)
                 .build();
 
         pauses.add(activityPause);
-        activityRepository.save(activity); 
+        activityRepository.save(activity);
 
         return ActivityPauseDTO.builder()
                 .id(activityPause.getId())
@@ -55,10 +55,39 @@ public class ActivityPauseService implements IActivityPauseService {
 
     }
 
+    @Transactional
     @Override
     public ActivityPauseDTO stopPausing(Activity activity) {
+        ActivityPause activityPause = activity.getActivityPauses()
+                .stream()
+                .filter((pause) -> {
+                    return pause.getPauseTimeEnd() == null;
+                })
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Activity is not currently paused"));
+        String currentTime = LocalDateTime.now().toString();
+        activityPause.setPauseTimeEnd(currentTime);
+        activityPause.setCurrentStatus(PStatus.UNPAUSE);
+        activityRepository.save(activity);
+        return ActivityPauseDTO.builder()
+                .id(activityPause.getId())
+                .pauseTimeStart(activityPause.getPauseTimeStart())
+                .pauseTimeEnd(activityPause.getPauseTimeEnd())
+                .status(activityPause.getCurrentStatus())
+                .build();
+
+    }
+
+    @Override
+    public ActivityPauseDTO getCurrentStartPausing() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'stopPausing'");
+        throw new UnsupportedOperationException("Unimplemented method 'getCurrentStartPausing'");
+    }
+
+    @Override
+    public ActivityPauseDTO getCurrentStopPausing() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getCurrentStopPausing'");
     }
 
 }

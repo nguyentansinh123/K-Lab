@@ -1,6 +1,7 @@
 package com.caffein.tracker.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caffein.tracker.dto.ActivityDTO;
+import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.mapper.ActivityMapper;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.re.request.activity.StartActivityRequest;
+import com.caffein.tracker.service.ActivityPause.IActivityPauseService;
 import com.caffein.tracker.service.activity.IActivityService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ActivityController {
     private final IActivityService activityService;
     private final ActivityMapper activityMapper;
+    private final IActivityPauseService activityPauseService;
 
     @PostMapping("/startActivity")
     public ResponseEntity<ActivityDTO> startActivity(
@@ -63,12 +67,22 @@ public class ActivityController {
         List<Activity> activities = activityService.getTodayActivities(user);
 
         return ResponseEntity.ok(
-
                 activities.stream().map(act -> {
                     return activityMapper.toDTO(act);
                 }).toList()
 
         );
+    }
+    
+    @PostMapping("/startPausing")
+    public ResponseEntity<Map<String, String>> startPausingActivity() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+        Activity activity = activityService.getCurrentActivity(user);
+        
+        activityPauseService.startPausing(activity);
+        
+        return ResponseEntity.ok(Map.of("message", "This activity has been paused"));
     }
 
 }
