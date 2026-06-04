@@ -2,6 +2,7 @@ package com.caffein.tracker.service.ActivityPause;
 
 import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.model.Activity;
+import com.caffein.tracker.model.type.PStatus;
 
 public interface IActivityPauseService {
     
@@ -9,7 +10,6 @@ public interface IActivityPauseService {
 
     ActivityPauseDTO stopPausing (Activity activity);
     
-    ActivityPauseDTO getCurrentStartPausing();
-    
-    ActivityPauseDTO getCurrentStopPausing();
+    ActivityPauseDTO getCurrentLatestPausing(Activity activity, PStatus status);
+
 } 

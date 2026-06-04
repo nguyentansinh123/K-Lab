@@ -2,6 +2,7 @@ package com.caffein.tracker.service.ActivityPause;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.ActivityPause;
 import com.caffein.tracker.model.type.PStatus;
-import com.caffein.tracker.repository.ActivityPauseRepository;
 import com.caffein.tracker.repository.ActivityRepository;
 
 import jakarta.transaction.Transactional;
@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ActivityPauseService implements IActivityPauseService {
 
-    private final ActivityPauseRepository activityPauseRepository;
     private final ActivityRepository activityRepository;
 
     @Transactional
@@ -31,6 +30,13 @@ public class ActivityPauseService implements IActivityPauseService {
         if (pauses == null) {
             pauses = new ArrayList<>();
             activity.setActivityPauses(pauses);
+        }
+
+        boolean alreadyStarted = pauses.stream().anyMatch((obj) -> {
+            return obj.getPauseTimeEnd() == null;
+        });
+        if (alreadyStarted) {
+            throw new IllegalStateException("Activity is already paused");
         }
 
         String currentTime = LocalDateTime.now().toString();
@@ -63,7 +69,9 @@ public class ActivityPauseService implements IActivityPauseService {
                 .filter((pause) -> {
                     return pause.getPauseTimeEnd() == null;
                 })
-                .findFirst()
+                .max(
+                        Comparator.comparing(
+                                obj -> LocalDateTime.parse(obj.getPauseTimeStart())))
                 .orElseThrow(() -> new IllegalStateException("Activity is not currently paused"));
         String currentTime = LocalDateTime.now().toString();
         activityPause.setPauseTimeEnd(currentTime);
@@ -79,15 +87,22 @@ public class ActivityPauseService implements IActivityPauseService {
     }
 
     @Override
-    public ActivityPauseDTO getCurrentStartPausing() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCurrentStartPausing'");
-    }
-
-    @Override
-    public ActivityPauseDTO getCurrentStopPausing() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCurrentStopPausing'");
+    public ActivityPauseDTO getCurrentLatestPausing(Activity activity, PStatus status) {
+        List<ActivityPause> pauses = activity.getActivityPauses();
+        if (pauses == null || pauses.isEmpty()) {
+            throw new IllegalStateException("Activity is not currently paused");
+        }
+        ActivityPause pause = pauses.stream().filter((obj) -> obj.getCurrentStatus() == status)
+                .max(
+                        Comparator.comparing(
+                                obj -> LocalDateTime.parse(obj.getPauseTimeStart())))
+                .orElseThrow(() -> new IllegalStateException("No pause found"));
+        return ActivityPauseDTO.builder()
+                .id(pause.getId())
+                .pauseTimeStart(pause.getPauseTimeStart())
+                .pauseTimeEnd(pause.getPauseTimeEnd())
+                .status(pause.getCurrentStatus())
+                .build();
     }
 
 }
