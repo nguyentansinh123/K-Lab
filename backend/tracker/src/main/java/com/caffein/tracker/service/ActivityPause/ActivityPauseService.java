@@ -110,13 +110,4 @@ public class ActivityPauseService implements IActivityPauseService {
                 .build();
     }
 
-    @Override
-    public ActivityPauseDTO findPauseByStatus(String activityId, PStatus status) {
-
-        ActivityPause act = activityPauseRepository.findTopByActivityIdAndStatusOrderByPauseTimeStartDesc(activityId, status)
-                .orElseThrow(() -> new IllegalStateException("No pause found"));
-        
-        return activityPausingMapper.toDTO(act);
-    }
-
 }

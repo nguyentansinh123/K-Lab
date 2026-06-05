@@ -12,6 +12,4 @@ public interface IActivityPauseService {
     
     ActivityPauseDTO getCurrentLatestPausing(Activity activity, PStatus status);
     
-    ActivityPauseDTO findPauseByStatus(String activityId, PStatus status);
-    
 } 

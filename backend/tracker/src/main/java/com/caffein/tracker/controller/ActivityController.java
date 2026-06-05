@@ -3,6 +3,7 @@ package com.caffein.tracker.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.caffein.tracker.dto.ActivityDTO;
 import com.caffein.tracker.dto.ActivityPauseDTO;
@@ -76,27 +78,26 @@ public class ActivityController {
 
         );
     }
-    
+
     @PostMapping("/startPausing")
     public ResponseEntity<Map<String, String>> startPausingActivity() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         Activity activity = activityService.getCurrentActivity(user);
-        
+
         activityPauseService.startPausing(activity);
-        
+
         return ResponseEntity.ok(Map.of("message", "This activity has been paused"));
     }
-    
-    
+
     @PostMapping("/stopPausing")
     public ResponseEntity<Map<String, String>> stopPausingActivity() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         Activity activity = activityService.getCurrentActivity(user);
-        
+
         activityPauseService.stopPausing(activity);
-        
+
         return ResponseEntity.ok(Map.of("message", "This activity has been unpaused"));
     }
 
@@ -105,13 +106,16 @@ public class ActivityController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         Activity activity = activityService.getCurrentActivity(user);
-        
+
         ActivityPauseDTO pausingAc = activityPauseService.getCurrentLatestPausing(activity, status);
-        
+        if (pausingAc == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pause found for status: " + status);
+        }
+
         ActivityDTO res = activityMapper.toDTO(activity);
         res.setActivityPauses(List.of(pausingAc));
         return ResponseEntity.ok(res);
-        
+
     }
 
 }
