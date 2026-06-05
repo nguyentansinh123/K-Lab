@@ -7,6 +7,8 @@ import {
   startActivity,
   stopActivity,
   getCurrentActivity,
+  startPausingforAct,
+  stopPausingforAct,
 } from "../../fetchLib/activitiesapi";
 
 type ActivityStatus =
@@ -14,6 +16,7 @@ type ActivityStatus =
   | "finished"
   | "have_not_started"
   | "currently_running"
+  | "paused"
   | "error"
   | "loading";
 
@@ -59,6 +62,20 @@ export const getCurrentUserActivity = createAsyncThunk(
   "activity/getCurrentActivity",
   async (): Promise<ActivityReturnData> => {
     return getCurrentActivity();
+  },
+);
+
+export const startPausingActivity = createAsyncThunk(
+  "activity/startPausing",
+  async (): Promise<Record<string, string>> => {
+    return startPausingforAct();
+  },
+);
+
+export const stopPausingActivity = createAsyncThunk(
+  "activity/stopPausing",
+  async (): Promise<Record<string, string>> => {
+    return stopPausingforAct();
   },
 );
 
@@ -129,6 +146,34 @@ const activitySlice = createSlice({
         state.status = "error";
         state.error =
           action.error.message ?? "Fetching current activity failed";
+      })
+      .addCase(startPausingActivity.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(startPausingActivity.fulfilled, (state) => {
+        state.status = "paused";
+        state.error = null;
+      })
+
+      .addCase(startPausingActivity.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Starting pause failed";
+      })
+      .addCase(stopPausingActivity.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(stopPausingActivity.fulfilled, (state) => {
+        state.status = "currently_running";
+        state.error = null;
+      })
+
+      .addCase(stopPausingActivity.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Stopping pause failed";
       });
   },
 });

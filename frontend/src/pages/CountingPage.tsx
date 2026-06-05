@@ -10,6 +10,7 @@ import EndSessionModal from "../components/counting/EndSessionModal";
 import {
   getCurrentUserActivity,
   startActivities,
+  startPausingActivity,
   stopActivitiies,
 } from "../features/activities/ActivitySlice";
 import { useAppDispatch } from "../hooks/dispatch";
@@ -68,6 +69,8 @@ export default function CountingPage() {
   async function handleToggle() {
     if (isRunning) {
       pause();
+      await dispatch(startPausingActivity()).unwrap();
+      console.log("Successfully start pausing Activity");
       return;
     }
     if (!hasStartedActivity) {
