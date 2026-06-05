@@ -4,13 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.caffein.tracker.dto.ActivityPauseDTO;
+import com.caffein.tracker.mapper.ActivityPausingMapper;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.ActivityPause;
 import com.caffein.tracker.model.type.PStatus;
+import com.caffein.tracker.repository.ActivityPauseRepository;
 import com.caffein.tracker.repository.ActivityRepository;
 
 import jakarta.transaction.Transactional;
@@ -21,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class ActivityPauseService implements IActivityPauseService {
 
     private final ActivityRepository activityRepository;
+    private final ActivityPauseRepository activityPauseRepository;
+    private final ActivityPausingMapper activityPausingMapper;
 
     @Transactional
     @Override
@@ -103,6 +108,15 @@ public class ActivityPauseService implements IActivityPauseService {
                 .pauseTimeEnd(pause.getPauseTimeEnd())
                 .status(pause.getCurrentStatus())
                 .build();
+    }
+
+    @Override
+    public ActivityPauseDTO findPauseByStatus(String activityId, PStatus status) {
+
+        ActivityPause act = activityPauseRepository.findTopByActivityIdAndStatusOrderByPauseTimeStartDesc(activityId, status)
+                .orElseThrow(() -> new IllegalStateException("No pause found"));
+        
+        return activityPausingMapper.toDTO(act);
     }
 
 }
