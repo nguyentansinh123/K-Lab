@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import com.caffein.tracker.exception.AppException;
 import com.caffein.tracker.exception.ErrorCode;
 import com.caffein.tracker.model.Activity;
+import com.caffein.tracker.model.ActivityPause;
 import com.caffein.tracker.model.StudySession;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.repository.ActivityRepository;
-import com.caffein.tracker.repository.StudySessionRepository;
 import com.caffein.tracker.service.studySession.StudySessionService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ public class ActivityService implements IActivityService {
 
     private final ActivityRepository activityRepository;
     private final StudySessionService studySessionService;
-    private final StudySessionRepository studySessionRepository;
 
     @Override
     public Activity startActivity(User user, String title, String appName, String topic) {
@@ -57,12 +56,31 @@ public class ActivityService implements IActivityService {
 
         activity.setActivityEndAt(String.valueOf(endTime));
         Duration durations = Duration.between(LocalDateTime.parse(activity.getActivityStartAt()), endTime);
-        activity.setDuration(String.valueOf(durations.getSeconds()));
+        
+        long pauseSeconds = calculateTotalPauseTime(activity);
+        long activeSession = durations.getSeconds() - pauseSeconds;
+
+        activity.setDuration(String.valueOf(activeSession));
 
         return activityRepository.save(activity);
     }
-    
-    
+
+    private Long calculateTotalPauseTime(Activity activity) {
+        List<ActivityPause> pauses = activity.getActivityPauses();
+        if (pauses == null) {
+            return 0L;
+        }
+
+        return pauses.stream()
+                .filter(pause -> pause.getPauseTimeStart() != null && pause.getPauseTimeEnd() != null)
+                .mapToLong(pause -> {
+                    LocalDateTime start = LocalDateTime.parse(pause.getPauseTimeStart());
+                    LocalDateTime end = LocalDateTime.parse(pause.getPauseTimeEnd());
+
+                    return Duration.between(start, end).getSeconds();
+                }).sum();
+    }
+
     @Override
     public Activity getCurrentActivity(User user) {
         Activity activity = activityRepository
@@ -94,6 +112,5 @@ public class ActivityService implements IActivityService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteActivity'");
     }
-
 
 }
