@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   type startActivityData,
   type ActivityReturnData,
+  type ActivityPause,
   startActivity,
   stopActivity,
   getCurrentActivity,
@@ -23,6 +24,7 @@ type ActivityState = {
   activityEndAt: string | null;
   topic: string | null;
   duration: string | null;
+  activityPauses: ActivityPause[];
   status: ActivityStatus;
   error: string | null;
 };
@@ -34,6 +36,7 @@ const initialState: ActivityState = {
   activityEndAt: "null",
   topic: "null",
   duration: "null",
+  activityPauses: [],
   status: "have_not_started",
   error: null,
 };
@@ -76,6 +79,7 @@ const activitySlice = createSlice({
         state.activityEndAt = action.payload.activityEndAt;
         state.topic = action.payload.topic;
         state.duration = action.payload.duration;
+        state.activityPauses = action.payload.activityPauses;
         state.status = "currently_running";
       })
 
@@ -95,6 +99,7 @@ const activitySlice = createSlice({
         state.activityEndAt = action.payload.activityEndAt;
         state.topic = action.payload.topic;
         state.duration = action.payload.duration;
+        state.activityPauses = action.payload.activityPauses;
         state.status = "finished";
         state.error = null;
       })
@@ -115,6 +120,7 @@ const activitySlice = createSlice({
         state.activityEndAt = action.payload.activityEndAt;
         state.topic = action.payload.topic;
         state.duration = action.payload.duration;
+        state.activityPauses = action.payload.activityPauses;
         state.status = "currently_running";
         state.error = null;
       })

@@ -121,6 +121,7 @@ export default function CountingPage() {
           <TimerDisplay time={time} />
           <TimerControls
             isRunning={isRunning}
+            isStartingActivity={isStartingActivity}
             onToggle={handleToggle}
             onStop={handleStopClick}
           />
