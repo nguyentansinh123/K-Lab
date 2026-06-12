@@ -102,20 +102,22 @@ public class ActivityController {
     }
 
     @GetMapping("/latestPausingType")
-    public ResponseEntity<ActivityDTO> LatestPausingActivity(@RequestParam PStatus status) {
+    public ResponseEntity<?> LatestPausingActivity(@RequestParam PStatus status) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         Activity activity = activityService.getCurrentActivity(user);
 
-        ActivityPauseDTO pausingAc = activityPauseService.getCurrentLatestPausing(activity, status);
-        if (pausingAc == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pause found for status: " + status);
-        }
-
         ActivityDTO res = activityMapper.toDTO(activity);
-        res.setActivityPauses(List.of(pausingAc));
-        return ResponseEntity.ok(res);
 
+        try {
+            ActivityPauseDTO pausingAc = activityPauseService.getCurrentLatestPausing(activity, status);
+            res.setActivityPauses(List.of(pausingAc));
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .ok(Map.of("activityPause", List.of(), "message", "there is no current pausing activity"));
+        }
+        
+        return ResponseEntity.ok(res);
     }
 
 }
