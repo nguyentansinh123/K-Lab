@@ -30,6 +30,15 @@ export type ActivityReturnData = {
   activityPauses: ActivityPause[];
 };
 
+export type LatestPausingActEmptyResponse = {
+  activityPause: ActivityPause[];
+  message: string;
+};
+
+export type LatestPausingActResponse =
+  | ActivityReturnData
+  | LatestPausingActEmptyResponse;
+
 export const startActivity = async (
   data: startActivityData,
 ): Promise<ActivityReturnData> => {
@@ -98,3 +107,21 @@ export const stopPausingforAct = async(): Promise<Record<string, string>> => {
     token: accessToken,
   });
 }
+
+export const getLatestPausingAct = async(
+  status: PStatus,
+): Promise<LatestPausingActResponse> => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    throw new Error("No access token found");
+  }
+  
+  return apiFetch<LatestPausingActResponse>(
+    `/activity/latestPausingType?status=${status}`,
+    {
+      method: "GET",
+      token: accessToken,
+    },
+  );
+};

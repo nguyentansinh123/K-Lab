@@ -4,9 +4,12 @@ import {
   type startActivityData,
   type ActivityReturnData,
   type ActivityPause,
+  type LatestPausingActResponse,
+  type PStatus,
   startActivity,
   stopActivity,
   getCurrentActivity,
+  getLatestPausingAct as fetchLatestPausingAct,
   startPausingforAct,
   stopPausingforAct,
 } from "../../fetchLib/activitiesapi";
@@ -62,6 +65,13 @@ export const getCurrentUserActivity = createAsyncThunk(
   "activity/getCurrentActivity",
   async (): Promise<ActivityReturnData> => {
     return getCurrentActivity();
+  },
+);
+
+export const getLatestPausingAct = createAsyncThunk(
+  "activity/latestPausingType",
+  async (status: PStatus): Promise<LatestPausingActResponse> => {
+    return fetchLatestPausingAct(status);
   },
 );
 
@@ -146,6 +156,31 @@ const activitySlice = createSlice({
         state.status = "error";
         state.error =
           action.error.message ?? "Fetching current activity failed";
+      })
+      .addCase(getLatestPausingAct.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(getLatestPausingAct.fulfilled, (state, action) => {
+        if ("activityPauses" in action.payload) {
+          state.title = action.payload.title;
+          state.appName = action.payload.appName;
+          state.activityStartAt = action.payload.activityStartAt;
+          state.activityEndAt = action.payload.activityEndAt;
+          state.topic = action.payload.topic;
+          state.duration = action.payload.duration;
+          state.activityPauses = action.payload.activityPauses;
+        } else {
+          state.activityPauses = action.payload.activityPause;
+        }
+        state.status = action.meta.arg === "PAUSE" ? "paused" : "currently_running";
+        state.error = null;
+      })
+
+      .addCase(getLatestPausingAct.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Fetching latest pause failed";
       })
       .addCase(startPausingActivity.pending, (state) => {
         state.status = "loading";
