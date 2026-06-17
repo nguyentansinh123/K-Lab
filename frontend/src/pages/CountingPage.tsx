@@ -38,6 +38,7 @@ export default function CountingPage() {
   const getRecentCurrentActivity = useCallback(async () => {
     try {
       const myData = await dispatch(getCurrentUserActivity()).unwrap();
+      const checkIfIsCurrentLyPause = await dispatch(getLatestPausingAct("PAUSE")).unwrap();
       console.log(myData);
       
       if (myData) {
@@ -51,9 +52,14 @@ export default function CountingPage() {
           minutes: Math.floor((diffSeconds % 3600) / 60),
           seconds: diffSeconds % 60,
         });
+        
+        if(checkIfIsCurrentLyPause.activityPauses.length > 0){
+          return
+        }else{
+          setHasStartedActivity(true);
+          start();
+        }
 
-        setHasStartedActivity(true);
-        start();
       }
     } catch (error) {
       console.log(error);
