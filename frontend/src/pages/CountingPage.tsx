@@ -21,6 +21,8 @@ import { useAppDispatch } from "../hooks/dispatch";
 // use currentActivity to check if any activity is running
 // block new activity if there is an activity is running
 
+//TODO: Activy started already so if it start set the state so it cant start again
+
 export default function CountingPage() {
   const { time, setTime, isRunning, toggle, pause, reset, start } = useTimer();
   const [showModal, setShowModal] = useState(false);
@@ -41,6 +43,10 @@ export default function CountingPage() {
       const checkIfIsCurrentLyPause = await dispatch(
         getLatestPausingAct("PAUSE"),
       ).unwrap();
+      if(checkIfIsCurrentLyPause.activityPauses.length > 0){
+        setHasStartedActivity(true);
+      }
+
       console.log(
         JSON.stringify(myData.activityPauses),
       );
