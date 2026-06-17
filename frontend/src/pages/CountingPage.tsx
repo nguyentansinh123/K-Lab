@@ -13,6 +13,7 @@ import {
   startActivities,
   startPausingActivity,
   stopActivitiies,
+  stopPausingActivity,
 } from "../features/activities/ActivitySlice";
 import { useAppDispatch } from "../hooks/dispatch";
 
@@ -37,6 +38,8 @@ export default function CountingPage() {
   const getRecentCurrentActivity = useCallback(async () => {
     try {
       const myData = await dispatch(getCurrentUserActivity()).unwrap();
+      console.log(myData);
+      
       if (myData) {
         const startTime = new Date(myData.activityStartAt).getTime();
         const currentTime = new Date().getTime();
@@ -68,13 +71,13 @@ export default function CountingPage() {
 
       const checkIfIsCurrentLyPause = await dispatch(getLatestPausingAct("PAUSE")).unwrap();
       if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
-        //TODO: stop the running clock when pause is already here
-        //Unreturn here
-        console.log("the current pausing");
+        await dispatch(stopPausingActivity()).unwrap()
         console.log(checkIfIsCurrentLyPause)
         console.log(
           JSON.stringify(checkIfIsCurrentLyPause.activityPauses, null, 2),
         );
+        console.log("Pausing Successfully");
+        
         return;
       }else{
         await dispatch(startPausingActivity()).unwrap();
