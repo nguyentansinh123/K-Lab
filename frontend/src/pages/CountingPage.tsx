@@ -43,25 +43,26 @@ export default function CountingPage() {
       const checkIfIsCurrentLyPause = await dispatch(
         getLatestPausingAct("PAUSE"),
       ).unwrap();
-      if(checkIfIsCurrentLyPause.activityPauses.length > 0){
+      if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
         setHasStartedActivity(true);
       }
 
-      console.log(
-        JSON.stringify(myData.activityPauses),
-      );
-      console.log(myData)
+      console.log(JSON.stringify(myData.activityPauses));
+      console.log(myData);
 
       if (myData) {
-        const totalPauseTime = myData.activityPauses.reduce((total,obj)=> {
+        const totalPauseTime = myData.activityPauses.reduce((total, obj) => {
           let time = 0;
-          if(obj.pauseTimeEnd == null){
-            time = new Date().getTime() - new Date(obj.pauseTimeStart).getTime()
-          }else{
-            time = new Date(obj.pauseTimeEnd).getTime() -  new Date(obj.pauseTimeStart).getTime()
+          if (obj.pauseTimeEnd == null) {
+            time =
+              new Date().getTime() - new Date(obj.pauseTimeStart).getTime();
+          } else {
+            time =
+              new Date(obj.pauseTimeEnd).getTime() -
+              new Date(obj.pauseTimeStart).getTime();
           }
           return total + time;
-        }, 0)
+        }, 0);
 
         const startTime = new Date(myData.activityStartAt).getTime();
         const currentTime = new Date().getTime();
@@ -94,38 +95,25 @@ export default function CountingPage() {
   async function handleToggle() {
     if (isRunning) {
       pause();
+      await dispatch(startPausingActivity()).unwrap();
+      return;
+    }
 
-      const checkIfIsCurrentLyPause = await dispatch(
-        getLatestPausingAct("PAUSE"),
-      ).unwrap();
-      if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
-        await dispatch(stopPausingActivity()).unwrap();
-        console.log(checkIfIsCurrentLyPause);
-        console.log(
-          JSON.stringify(checkIfIsCurrentLyPause.activityPauses, null, 2),
-        );
-        console.log("Pausing Successfully");
+    if (hasStartedActivity) {
+      await dispatch(stopPausingActivity()).unwrap();
+      start();
+      return;
+    }
 
-        return;
-      } else {
-        await dispatch(startPausingActivity()).unwrap();
-        console.log("Successfully start pausing Activity");
-        return;
-      }
+    setIsStartingActivity(true);
+
+    try {
+      await dispatch(startActivities(activityDetails)).unwrap();
+      setHasStartedActivity(true);
+      start();
+    } finally {
+      setIsStartingActivity(false);
     }
-    if (!isRunning) {
-      console.log("this is currently pausing");
-    }
-    if (!hasStartedActivity) {
-      setIsStartingActivity(true);
-      try {
-        await dispatch(startActivities(activityDetails)).unwrap();
-        setHasStartedActivity(true);
-      } finally {
-        setIsStartingActivity(false);
-      }
-    }
-    toggle();
   }
 
   function handleStopClick() {
