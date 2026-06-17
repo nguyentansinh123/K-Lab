@@ -3,7 +3,6 @@ package com.caffein.tracker.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,16 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.caffein.tracker.dto.ActivityDTO;
 import com.caffein.tracker.dto.ActivityPauseDTO;
 import com.caffein.tracker.mapper.ActivityMapper;
 import com.caffein.tracker.model.Activity;
-import com.caffein.tracker.model.ActivityPause;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.model.type.PStatus;
 import com.caffein.tracker.re.request.activity.StartActivityRequest;
+import com.caffein.tracker.repository.ActivityRepository;
 import com.caffein.tracker.service.ActivityPause.IActivityPauseService;
 import com.caffein.tracker.service.activity.IActivityService;
 
@@ -35,6 +33,7 @@ public class ActivityController {
     private final IActivityService activityService;
     private final ActivityMapper activityMapper;
     private final IActivityPauseService activityPauseService;
+    private final ActivityRepository activityRepository;
 
     @PostMapping("/startActivity")
     public ResponseEntity<ActivityDTO> startActivity(

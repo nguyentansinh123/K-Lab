@@ -17,7 +17,7 @@ public interface IActivityService {
     List<Activity> getTodayActivities(User user);
 
     List<Activity> getActivitiesByDate(User user, LocalDate date);
-
+    
     Activity updateActivity(User user, String activityId, String title, String appName, String topic);
 
     void deleteActivity(User user, String activityId);

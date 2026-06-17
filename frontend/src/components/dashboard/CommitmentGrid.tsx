@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityCalendar } from "react-activity-calendar";
-import { useAppSelector } from "../../hooks/dispatch";
+import { useAppDispatch, useAppSelector } from "../../hooks/dispatch";
+import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
 
 interface ActivityData {
   date: string;
@@ -11,6 +12,7 @@ interface ActivityData {
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
 
+// grid heat data generator
 function generateYearData(year: number): ActivityData[] {
   const data: ActivityData[] = [];
   const today = new Date();
@@ -39,10 +41,27 @@ function generateYearData(year: number): ActivityData[] {
   return data;
 }
 
+
+// right chart data
 const performanceMetrics = [
-  { label: "Deep Work Capacity", value: "94% OPTIMAL", pct: 94, color: "bg-primary" },
-  { label: "Cognitive Sync Rate", value: "0.98 INDEX", pct: 98, color: "bg-on-surface" },
-  { label: "Weekly Milestone", value: "45/60 HRS", pct: 75, color: "bg-tertiary" },
+  {
+    label: "Deep Work Capacity",
+    value: "94% OPTIMAL",
+    pct: 94,
+    color: "bg-primary",
+  },
+  {
+    label: "Cognitive Sync Rate",
+    value: "0.98 INDEX",
+    pct: 98,
+    color: "bg-on-surface",
+  },
+  {
+    label: "Weekly Milestone",
+    value: "45/60 HRS",
+    pct: 75,
+    color: "bg-tertiary",
+  },
 ];
 
 export default function CommitmentGrid() {
@@ -50,6 +69,25 @@ export default function CommitmentGrid() {
   const calendarData = useMemo(() => generateYearData(year), [year]);
   const user = useAppSelector((state) => state.auth.user);
 
+  const dispatch = useAppDispatch()
+  
+  // Need fix because POST cant have body
+  const testFunc = async () => {
+    const t = await dispatch(getSessionBetweenAPI({
+      dateStart: "2026-06-01",
+      dateEnd: "2026-06-18",
+    })).unwrap()
+    return t
+  }
+  
+  useEffect(()=>{
+    
+    const data = testFunc()
+    console.log(data);
+
+  }, [])
+
+  // user info
   const initials =
     `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
   const displayName = user
@@ -69,6 +107,7 @@ export default function CommitmentGrid() {
             onChange={(e) => setYear(Number(e.target.value))}
             className="bg-surface-container border border-outline-variant/20 text-on-surface text-[10px] font-label py-1 px-2 focus:outline-none focus:border-primary"
           >
+            {/* years drop down*/}
             {YEARS.map((y) => (
               <option key={y} value={y}>
                 {y === CURRENT_YEAR ? "This Year" : y}
@@ -76,12 +115,13 @@ export default function CommitmentGrid() {
             ))}
           </select>
         </div>
-        <div className="text-[10px] font-body text-outline">Each square = 30 mins of deep work</div>
+        <div className="text-[10px] font-body text-outline">
+          Each square = 30 mins of deep work
+        </div>
       </div>
 
       {/* Calendar + Profile card row */}
       <div className="flex flex-col xl:flex-row gap-6 items-start">
-
         {/* Activity calendar */}
         <div className="inline-block bg-surface-container p-6 lg:p-8 overflow-x-auto hide-scrollbar border border-outline-variant/10">
           <ActivityCalendar
@@ -124,7 +164,8 @@ export default function CommitmentGrid() {
                   className="w-[12px] h-[12px]"
                   style={{
                     backgroundColor: color,
-                    boxShadow: i === 5 ? "0 0 6px rgba(156,255,147,0.4)" : undefined,
+                    boxShadow:
+                      i === 5 ? "0 0 6px rgba(156,255,147,0.4)" : undefined,
                   }}
                 />
               ))}
@@ -173,11 +214,15 @@ export default function CommitmentGrid() {
                   <span className="text-[10px] font-label text-outline uppercase tracking-widest">
                     {m.label}
                   </span>
-                  <span className={`text-[10px] font-body uppercase font-bold ${
-                    m.color === "bg-primary" ? "text-primary"
-                    : m.color === "bg-tertiary" ? "text-tertiary"
-                    : "text-on-surface"
-                  }`}>
+                  <span
+                    className={`text-[10px] font-body uppercase font-bold ${
+                      m.color === "bg-primary"
+                        ? "text-primary"
+                        : m.color === "bg-tertiary"
+                          ? "text-tertiary"
+                          : "text-on-surface"
+                    }`}
+                  >
                     {m.value}
                   </span>
                 </div>
@@ -191,7 +236,6 @@ export default function CommitmentGrid() {
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

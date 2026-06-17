@@ -1,0 +1,128 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">KINETIC LAB cyberpunk study timer icon</title>
+  <desc id="desc">A transparent SVG icon combining a neon green cyberpunk clock, motion streaks, orbital swoosh, and open book for a study hour tracking app.</desc>
+  <defs>
+    <linearGradient id="neonStroke" x1="154" y1="238" x2="881" y2="818" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D8FF00"/>
+      <stop offset="0.36" stop-color="#39FF14"/>
+      <stop offset="0.72" stop-color="#00FF8A"/>
+      <stop offset="1" stop-color="#B7FF00"/>
+    </linearGradient>
+    <linearGradient id="darkPanel" x1="243" y1="247" x2="781" y2="856" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#073B1F"/>
+      <stop offset="0.48" stop-color="#02170D"/>
+      <stop offset="1" stop-color="#001005"/>
+    </linearGradient>
+    <linearGradient id="bookGlow" x1="251" y1="618" x2="790" y2="789" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B3B1A"/>
+      <stop offset="0.5" stop-color="#02140A"/>
+      <stop offset="1" stop-color="#0B2F16"/>
+    </linearGradient>
+    <filter id="softGlow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur1"/>
+      <feGaussianBlur stdDeviation="20" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="tightGlow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#001507" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <!-- Main emblem -->
+  <g filter="url(#softGlow)" stroke-linejoin="round">
+    <!-- Speed streaks -->
+    <g stroke="url(#neonStroke)" stroke-width="30" stroke-linecap="round">
+      <path d="M165 366H357L389 311"/>
+      <path d="M131 433H343"/>
+      <path d="M184 493H337"/>
+    </g>
+    <g stroke="#CFFF00" stroke-width="7" stroke-linecap="round" opacity="0.95">
+      <path d="M165 366H356"/>
+      <path d="M131 433H343"/>
+      <path d="M184 493H337"/>
+    </g>
+
+    <!-- Cyberpunk segmented clock ring -->
+    <path d="M358 306 C423 184 581 139 712 205 C830 264 888 397 850 522" stroke="url(#neonStroke)" stroke-width="70" stroke-linecap="butt"/>
+    <path d="M383 319 C448 218 585 183 697 239 C794 288 843 398 814 506" stroke="#062918" stroke-width="48" stroke-linecap="butt"/>
+    <path d="M366 306 C431 189 582 150 707 212 C811 264 866 384 837 505" stroke="#D8FF00" stroke-width="8" stroke-linecap="round" opacity="0.95"/>
+    <path d="M397 321 C458 230 584 201 688 251 C778 294 825 396 801 496" stroke="#39FF14" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Clock tick marks -->
+    <g stroke="#BFFF00" stroke-width="10" stroke-linecap="round" filter="url(#tightGlow)">
+      <path d="M524 251V269"/>
+      <path d="M524 640V664"/>
+      <path d="M331 457H352"/>
+      <path d="M786 457H806"/>
+    </g>
+
+    <!-- Clock hands -->
+    <g stroke="url(#neonStroke)" stroke-width="26" stroke-linecap="round" filter="url(#tightGlow)">
+      <path d="M524 459V318"/>
+      <path d="M524 459L652 385"/>
+    </g>
+    <circle cx="524" cy="459" r="33" fill="url(#darkPanel)" stroke="#39FF14" stroke-width="8" filter="url(#tightGlow)"/>
+
+    <!-- Orbit swoosh lower arc -->
+    <path d="M224 675 C365 785 644 723 819 505 C867 445 895 388 890 334" stroke="url(#neonStroke)" stroke-width="54" stroke-linecap="round"/>
+    <path d="M231 673 C372 757 624 698 798 492 C844 437 872 384 869 342" stroke="#052717" stroke-width="33" stroke-linecap="round"/>
+    <path d="M215 674 C361 801 660 735 841 509 C887 451 916 389 908 331" stroke="#D8FF00" stroke-width="8" stroke-linecap="round" opacity="0.95"/>
+    <path d="M242 656 C379 742 619 688 783 499 C824 452 851 404 854 361" stroke="#00FF8A" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Orb node -->
+    <circle cx="861" cy="287" r="31" fill="url(#darkPanel)" stroke="url(#neonStroke)" stroke-width="13" filter="url(#tightGlow)"/>
+    <path d="M820 292L786 302L817 278" fill="#39FF14" opacity="0.9"/>
+    <path d="M849 247C867 241 889 247 902 264" stroke="#39FF14" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- Open book base -->
+    <g filter="url(#shadow)">
+      <path d="M258 594 C334 591 411 624 485 684 C421 672 336 671 261 710 Z" fill="url(#bookGlow)" stroke="url(#neonStroke)" stroke-width="14"/>
+      <path d="M766 594 C690 591 613 624 539 684 C603 672 688 671 763 710 Z" fill="url(#bookGlow)" stroke="url(#neonStroke)" stroke-width="14"/>
+      <path d="M327 725 C421 704 480 724 512 781 C546 724 605 704 697 725 L512 843 Z" fill="url(#darkPanel)" stroke="url(#neonStroke)" stroke-width="16"/>
+      <path d="M267 723 C364 713 437 726 497 764" stroke="#BFFF00" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+      <path d="M757 723 C660 713 587 726 527 764" stroke="#BFFF00" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+      <path d="M307 763 C383 752 439 759 486 793" stroke="#39FF14" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+      <path d="M717 763 C641 752 585 759 538 793" stroke="#39FF14" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+    </g>
+
+    <!-- Cyberpunk cuts and circuit details -->
+    <g stroke="#CFFF00" stroke-width="4" stroke-linecap="round" opacity="0.85" filter="url(#tightGlow)">
+      <path d="M459 234L492 238"/>
+      <path d="M655 209L686 225"/>
+      <path d="M730 287L765 292"/>
+      <path d="M318 418L345 418"/>
+      <path d="M309 468L339 478"/>
+      <path d="M407 607L448 622"/>
+      <path d="M618 608L579 622"/>
+      <path d="M713 645L746 642"/>
+      <path d="M304 645L338 642"/>
+    </g>
+    <g fill="#BFFF00" opacity="0.9" filter="url(#tightGlow)">
+      <circle cx="450" cy="252" r="4"/>
+      <circle cx="711" cy="254" r="4"/>
+      <circle cx="732" cy="608" r="4"/>
+      <circle cx="747" cy="608" r="4"/>
+      <circle cx="762" cy="608" r="4"/>
+      <circle cx="290" cy="608" r="4"/>
+      <circle cx="305" cy="608" r="4"/>
+      <circle cx="320" cy="608" r="4"/>
+    </g>
+
+    <!-- Additional angular plates for sharper cyberpunk look -->
+    <path d="M384 302L418 247L456 248L425 302Z" fill="#041B10" stroke="#39FF14" stroke-width="5" opacity="0.9"/>
+    <path d="M746 238L796 293L787 338L724 281Z" fill="#041B10" stroke="#39FF14" stroke-width="5" opacity="0.9"/>
+    <path d="M642 697L721 684L750 713L657 730Z" fill="#03170D" stroke="#39FF14" stroke-width="5" opacity="0.9"/>
+    <path d="M382 697L303 684L274 713L367 730Z" fill="#03170D" stroke="#39FF14" stroke-width="5" opacity="0.9"/>
+  </g>
+</svg>

@@ -31,6 +31,11 @@ export type StudySessionDTO = {
   note: string;
 };
 
+export type DateRange = {
+  dateStart: string;
+  dateEnd: string;
+};
+
 export const getSessionByDate = async (
   data: DateType,
 ): Promise<StudySessionDTO> => {
@@ -45,6 +50,25 @@ export const getSessionByDate = async (
     {
       method: "GET",
       token: accesstoken,
+    },
+  );
+};
+
+export const getSessionBetween = async (
+  data: DateRange,
+): Promise<Array<StudySessionDTO>> => {
+  const accesstoken = localStorage.getItem("accessToken");
+
+  if (!accesstoken) {
+    throw new Error("No access token found");
+  }
+
+  return apiFetch<Array<StudySessionDTO>>(
+    "/ssession/session/from-to",
+    {
+      method: "GET",
+      token: accesstoken,
+      body: JSON.stringify(data),
     },
   );
 };
