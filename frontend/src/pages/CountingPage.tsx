@@ -9,6 +9,7 @@ import SessionDetailsPanel, {
 import EndSessionModal from "../components/counting/EndSessionModal";
 import {
   getCurrentUserActivity,
+  getLatestPausingAct,
   startActivities,
   startPausingActivity,
   stopActivitiies,
@@ -16,11 +17,11 @@ import {
 import { useAppDispatch } from "../hooks/dispatch";
 
 // Todo: save current timer
-// use currentActivity to check if any activity is running 
+// use currentActivity to check if any activity is running
 // block new activity if there is an activity is running
 
 export default function CountingPage() {
-  const { time, setTime, isRunning, toggle, pause, reset, start} = useTimer();
+  const { time, setTime, isRunning, toggle, pause, reset, start } = useTimer();
   const [showModal, setShowModal] = useState(false);
   const [wasRunning, setWasRunning] = useState(false);
   const [hasStartedActivity, setHasStartedActivity] = useState(false);
@@ -32,46 +33,57 @@ export default function CountingPage() {
   });
 
   const dispatch = useAppDispatch();
-  
+
   const getRecentCurrentActivity = useCallback(async () => {
     try {
-      const myData = await dispatch(getCurrentUserActivity()).unwrap()
-      console.log("The current Activities")
-      console.log(myData)
-      if (myData){
-        const startTime = new Date(myData.activityStartAt).getTime()
-        const currentTime = new Date().getTime()
-        const diffMs = currentTime - startTime
-        
-        const diffSeconds = Math.floor(diffMs / 1000)
+      const myData = await dispatch(getCurrentUserActivity()).unwrap();
+      if (myData) {
+        const startTime = new Date(myData.activityStartAt).getTime();
+        const currentTime = new Date().getTime();
+        const diffMs = currentTime - startTime;
+
+        const diffSeconds = Math.floor(diffMs / 1000);
         setTime({
-          hours: Math.floor(diffSeconds/3600),
+          hours: Math.floor(diffSeconds / 3600),
           minutes: Math.floor((diffSeconds % 3600) / 60),
-          seconds: diffSeconds % 60 
-        })
-        
-        setHasStartedActivity(true)
-        start()
+          seconds: diffSeconds % 60,
+        });
+
+        setHasStartedActivity(true);
+        start();
       }
     } catch (error) {
-      console.log(error)
-      console.log("There is an error")
+      console.log(error);
+      console.log("There is an error");
     }
-  }, [dispatch, setTime, start])
-  
-  useEffect(()=> {
-    
-    getRecentCurrentActivity()
+  }, [dispatch, setTime, start]);
 
-  }, [getRecentCurrentActivity])
-  
+  useEffect(() => {
+    getRecentCurrentActivity();
+  }, [getRecentCurrentActivity]);
 
   async function handleToggle() {
     if (isRunning) {
       pause();
-      await dispatch(startPausingActivity()).unwrap();
-      console.log("Successfully start pausing Activity");
-      return;
+
+      const checkIfIsCurrentLyPause = await dispatch(getLatestPausingAct("PAUSE")).unwrap();
+      if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
+        //TODO: stop the running clock when pause is already here
+        //Unreturn here
+        console.log("the current pausing");
+        console.log(checkIfIsCurrentLyPause)
+        console.log(
+          JSON.stringify(checkIfIsCurrentLyPause.activityPauses, null, 2),
+        );
+        return;
+      }else{
+        await dispatch(startPausingActivity()).unwrap();
+        console.log("Successfully start pausing Activity");
+        return;
+      }
+    }
+    if(!isRunning){
+      console.log("this is currently pausing")
     }
     if (!hasStartedActivity) {
       setIsStartingActivity(true);

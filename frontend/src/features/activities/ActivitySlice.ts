@@ -163,7 +163,7 @@ const activitySlice = createSlice({
       })
 
       .addCase(getLatestPausingAct.fulfilled, (state, action) => {
-        if ("activityPauses" in action.payload) {
+        if ("title" in action.payload) {
           state.title = action.payload.title;
           state.appName = action.payload.appName;
           state.activityStartAt = action.payload.activityStartAt;
@@ -172,7 +172,7 @@ const activitySlice = createSlice({
           state.duration = action.payload.duration;
           state.activityPauses = action.payload.activityPauses;
         } else {
-          state.activityPauses = action.payload.activityPause;
+          state.activityPauses = action.payload.activityPauses;
         }
         state.status = action.meta.arg === "PAUSE" ? "paused" : "currently_running";
         state.error = null;

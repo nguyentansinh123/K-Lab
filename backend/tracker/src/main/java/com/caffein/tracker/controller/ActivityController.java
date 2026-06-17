@@ -114,7 +114,7 @@ public class ActivityController {
             res.setActivityPauses(List.of(pausingAc));
         } catch (IllegalStateException e) {
             return ResponseEntity
-                    .ok(Map.of("activityPause", List.of(), "message", "there is no current pausing activity"));
+                    .ok(Map.of("activityPauses", List.of(), "message", "there is no current pausing activity"));
         }
         
         return ResponseEntity.ok(res);

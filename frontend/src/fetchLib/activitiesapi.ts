@@ -31,7 +31,7 @@ export type ActivityReturnData = {
 };
 
 export type LatestPausingActEmptyResponse = {
-  activityPause: ActivityPause[];
+  activityPauses: ActivityPause[];
   message: string;
 };
 
