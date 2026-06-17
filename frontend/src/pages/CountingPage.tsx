@@ -38,13 +38,28 @@ export default function CountingPage() {
   const getRecentCurrentActivity = useCallback(async () => {
     try {
       const myData = await dispatch(getCurrentUserActivity()).unwrap();
-      const checkIfIsCurrentLyPause = await dispatch(getLatestPausingAct("PAUSE")).unwrap();
-      console.log(myData);
-      
+      const checkIfIsCurrentLyPause = await dispatch(
+        getLatestPausingAct("PAUSE"),
+      ).unwrap();
+      console.log(
+        JSON.stringify(myData.activityPauses),
+      );
+      console.log(myData)
+
       if (myData) {
+        const totalPauseTime = myData.activityPauses.reduce((total,obj)=> {
+          let time = 0;
+          if(obj.pauseTimeEnd == null){
+            time = new Date().getTime() - new Date(obj.pauseTimeStart).getTime()
+          }else{
+            time = new Date(obj.pauseTimeEnd).getTime() -  new Date(obj.pauseTimeStart).getTime()
+          }
+          return total + time;
+        }, 0)
+
         const startTime = new Date(myData.activityStartAt).getTime();
         const currentTime = new Date().getTime();
-        const diffMs = currentTime - startTime;
+        const diffMs = currentTime - startTime - totalPauseTime;
 
         const diffSeconds = Math.floor(diffMs / 1000);
         setTime({
@@ -52,14 +67,13 @@ export default function CountingPage() {
           minutes: Math.floor((diffSeconds % 3600) / 60),
           seconds: diffSeconds % 60,
         });
-        
-        if(checkIfIsCurrentLyPause.activityPauses.length > 0){
-          return
-        }else{
+
+        if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
+          return;
+        } else {
           setHasStartedActivity(true);
           start();
         }
-
       }
     } catch (error) {
       console.log(error);
@@ -75,24 +89,26 @@ export default function CountingPage() {
     if (isRunning) {
       pause();
 
-      const checkIfIsCurrentLyPause = await dispatch(getLatestPausingAct("PAUSE")).unwrap();
+      const checkIfIsCurrentLyPause = await dispatch(
+        getLatestPausingAct("PAUSE"),
+      ).unwrap();
       if (checkIfIsCurrentLyPause.activityPauses.length > 0) {
-        await dispatch(stopPausingActivity()).unwrap()
-        console.log(checkIfIsCurrentLyPause)
+        await dispatch(stopPausingActivity()).unwrap();
+        console.log(checkIfIsCurrentLyPause);
         console.log(
           JSON.stringify(checkIfIsCurrentLyPause.activityPauses, null, 2),
         );
         console.log("Pausing Successfully");
-        
+
         return;
-      }else{
+      } else {
         await dispatch(startPausingActivity()).unwrap();
         console.log("Successfully start pausing Activity");
         return;
       }
     }
-    if(!isRunning){
-      console.log("this is currently pausing")
+    if (!isRunning) {
+      console.log("this is currently pausing");
     }
     if (!hasStartedActivity) {
       setIsStartingActivity(true);
