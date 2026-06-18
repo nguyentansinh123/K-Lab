@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ActivityCalendar } from "react-activity-calendar";
 import { useAppDispatch, useAppSelector } from "../../hooks/dispatch";
 import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
+import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
 
 interface ActivityData {
   date: string;
@@ -16,7 +17,7 @@ const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
   return [`${years[years.length - 1]}-01-01`, `${years[0]}-12-31`];
 };
 
-// grid heat data generator
+// grid heat data generator mock
 function generateYearData(year: number): ActivityData[] {
   const data: ActivityData[] = [];
   const today = new Date();
@@ -44,6 +45,46 @@ function generateYearData(year: number): ActivityData[] {
   }
   return data;
 }
+
+//TODO: need adjustment
+const decidingLevel = (mins: number): number => {
+  if (mins <= 0){
+    return 0
+  }
+  if (mins < 30){
+    return 1
+  }
+  if(mins < 180){
+    return 2
+  }
+  if(mins < 240){
+    return 3
+  }
+  
+  return 4
+}
+
+const heatDateGenerator = (
+  year: number,
+  sessions: StudySessionDTO[],
+): ActivityData[] => {
+  const sessionByDate = new Map(sessions.map((ss) => [ss.date, ss]));
+
+  const data: ActivityData[] = [];
+  const start = new Date(year, 0, 1);
+  const end = new Date(year, 11, 31);
+
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+    const session = sessionByDate.get(date);
+    const mins = session ? Math.floor(session.totalDurationSeconds / 60) : 0;
+
+    data.push({ date, count: mins, level: decidingLevel(mins) });
+  }
+
+  return data;
+};
 
 // right chart data
 const performanceMetrics = [
@@ -107,6 +148,9 @@ export default function CommitmentGrid() {
     run();
   }, [dispatch]);
 
+  //console.log("testing");
+  //const mylog = heatDateGenerator(year);
+
   // user info
   const initials =
     `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
@@ -148,11 +192,11 @@ export default function CommitmentGrid() {
             data={calendarData}
             theme={{
               dark: [
-                "#1a1919",
-                "rgba(156,255,147,0.2)",
-                "rgba(156,255,147,0.45)",
-                "rgba(156,255,147,0.7)",
-                "#9cff93",
+                "#1a1919", //level 0
+                "rgba(156,255,147,0.2)", //level 1
+                "rgba(156,255,147,0.45)", //level 2
+                "rgba(156,255,147,0.7)", //level 3
+                "#9cff93", //level 4
               ],
             }}
             colorScheme="dark"
