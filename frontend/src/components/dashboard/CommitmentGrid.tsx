@@ -48,21 +48,21 @@ function generateYearData(year: number): ActivityData[] {
 
 //TODO: need adjustment
 const decidingLevel = (mins: number): number => {
-  if (mins <= 0){
-    return 0
+  if (mins <= 0) {
+    return 0;
   }
-  if (mins < 30){
-    return 1
+  if (mins < 30) {
+    return 1;
   }
-  if(mins < 180){
-    return 2
+  if (mins < 180) {
+    return 2;
   }
-  if(mins < 240){
-    return 3
+  if (mins < 240) {
+    return 3;
   }
-  
-  return 4
-}
+
+  return 4;
+};
 
 const heatDateGenerator = (
   year: number,
@@ -78,7 +78,7 @@ const heatDateGenerator = (
     const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     const session = sessionByDate.get(date);
-    const mins = session ? Math.floor(session.totalDurationSeconds / 60) : 0;
+    const mins = session ? Math.round(session.totalDurationSeconds / 60) : 0;
 
     data.push({ date, count: mins, level: decidingLevel(mins) });
   }
@@ -110,7 +110,11 @@ const performanceMetrics = [
 
 export default function CommitmentGrid() {
   const [year, setYear] = useState(CURRENT_YEAR);
-  const calendarData = useMemo(() => generateYearData(year), [year]);
+  const [sessions, setSessions] = useState<StudySessionDTO[]>([]);
+  const calendarData = useMemo(
+    () => heatDateGenerator(year, sessions),
+    [year, sessions],
+  );
   const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useAppDispatch();
@@ -140,6 +144,9 @@ export default function CommitmentGrid() {
 
     const run = async () => {
       const data = await getDateForHeatMap();
+      if (data) {
+        setSessions(data);
+      }
 
       console.log("This is session data");
       console.log(data);
