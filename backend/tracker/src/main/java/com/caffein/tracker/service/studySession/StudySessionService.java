@@ -24,6 +24,7 @@ public class StudySessionService implements IStudySessionService {
 
     private final StudySessionRepository studySessionRepository;
     private final StudySessionMapper studySessionMapper;
+    private final StudySessionMapper sessionMapper;
 
     @Override
     public StudySession getOrCreateTodaySession(User user) {
@@ -76,11 +77,13 @@ public class StudySessionService implements IStudySessionService {
         }).sum();
     }
 
+    @Transactional
     @Override
-    public void refreshTotalDuration(StudySession studySession) {
+    public StudySessionDTO refreshTotalDuration(StudySession studySession) {
         Long updateDuration = calculateTotalDurationSeconds(studySession);
         studySession.setTotalDurationSeconds(updateDuration);
-        studySessionRepository.save(studySession);
+        StudySession mySession = studySessionRepository.save(studySession);
+        return sessionMapper.toDTO(mySession);
     }
 
 }

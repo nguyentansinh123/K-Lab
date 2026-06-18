@@ -71,3 +71,18 @@ export const getSessionBetween = async (
     },
   );
 };
+
+export const recalculateTotalDurationOfStudySession = async (): Promise<StudySessionDTO> => {
+  const accesstoken = localStorage.getItem("accessToken");
+
+  if (!accesstoken) {
+    throw new Error("No access token found");
+  }
+
+  return apiFetch<StudySessionDTO>(
+    `/ssession/refreshTodayTotalDuration`, {
+      method: "PUT",
+      token: accesstoken,
+    },
+  );
+};

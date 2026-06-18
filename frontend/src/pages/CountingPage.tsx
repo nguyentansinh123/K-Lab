@@ -16,6 +16,7 @@ import {
   stopPausingActivity,
 } from "../features/activities/ActivitySlice";
 import { useAppDispatch } from "../hooks/dispatch";
+import { updateTodaySession } from "../features/studysessions/SessionSlice";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -138,6 +139,13 @@ export default function CountingPage() {
     } catch (err) {
       console.log(err);
     }
+
+    try {
+      await dispatch(updateTodaySession())
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   return (

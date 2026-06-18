@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   getSessionBetween,
   getSessionByDate,
+  recalculateTotalDurationOfStudySession,
   type DateRange,
   type DateType,
   type StudySessionDTO,
@@ -34,6 +35,13 @@ export const getSessionBetweenAPI = createAsyncThunk(
   "session/getSessionBetween",
   async (data: DateRange): Promise<Array<StudySessionDTO>> => {
     return getSessionBetween(data);
+  },
+);
+
+export const updateTodaySession = createAsyncThunk(
+  "session/recalculateTotalDurationOfStudySession",
+  async (): Promise<StudySessionDTO> => {
+    return recalculateTotalDurationOfStudySession();
   },
 );
 
@@ -74,6 +82,26 @@ const sessionSlice = createSlice({
         state.status = "error";
         state.error =
           action.error.message ?? "Fetching study sessions between dates failed";
+      })
+
+      .addCase(updateTodaySession.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(updateTodaySession.fulfilled, (state, action) => {
+        state.session = action.payload;
+        state.sessions = state.sessions.map((session) =>
+          session.date === action.payload.date ? action.payload : session,
+        );
+        state.status = "succeeded";
+        state.error = null;
+      })
+
+      .addCase(updateTodaySession.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          action.error.message ?? "Recalculating study session failed";
       });
   },
 });

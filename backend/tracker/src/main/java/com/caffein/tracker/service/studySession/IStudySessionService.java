@@ -13,6 +13,6 @@ public interface IStudySessionService {
     StudySession getSession(User user, LocalDate date);
     List<StudySessionDTO> getSessionBetweenDTO(String userId, LocalDate dateStart, LocalDate dateEnd);
     Long calculateTotalDurationSeconds(StudySession studySession);
-    void refreshTotalDuration(StudySession studySession);
+    StudySessionDTO refreshTotalDuration(StudySession studySession);
     
 }

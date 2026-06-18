@@ -71,8 +71,8 @@ public class StudySessionController {
 
         StudySession session = studySessionService.getOrCreateTodaySession(user);
 
-        studySessionService.refreshTotalDuration(session);
+        StudySessionDTO res = studySessionService.refreshTotalDuration(session);
 
-        return ResponseEntity.ok(studySessionMapper.toDTO(session));
+        return ResponseEntity.ok(res);
     }
 }
