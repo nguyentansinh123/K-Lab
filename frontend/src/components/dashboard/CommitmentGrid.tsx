@@ -12,6 +12,10 @@ interface ActivityData {
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
 
+const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
+  return [`${years[years.length - 1]}-01-01`, `${years[0]}-12-31`];
+};
+
 // grid heat data generator
 function generateYearData(year: number): ActivityData[] {
   const data: ActivityData[] = [];
@@ -71,25 +75,37 @@ export default function CommitmentGrid() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Need fix because POST cant have body
-    const testFunc = async () => {
-      const t = await dispatch(
+    //const testFunc = async () => {
+    //const t = await dispatch(
+    //getSessionBetweenAPI({
+    //dateStart: "2026-06-01",
+    //dateEnd: "2026-06-19",
+    //}),
+    //).unwrap();
+    //return t;
+    //};
+
+    const getDateForHeatMap = async () => {
+      const fromTo = dateStartAndDateEnd(YEARS);
+      const sessionsWithActivities = await dispatch(
         getSessionBetweenAPI({
-          dateStart: "2026-06-01",
-          dateEnd: "2026-06-19",
+          dateStart: fromTo[0],
+          dateEnd: fromTo[1],
         }),
       ).unwrap();
-      return t;
+      console.log("fromto" + fromTo);
+      return sessionsWithActivities;
     };
+
     const run = async () => {
-      const data = await testFunc();
+      const data = await getDateForHeatMap();
 
       console.log("This is session data");
       console.log(data);
     };
 
     run();
-  }, []);
+  }, [dispatch]);
 
   // user info
   const initials =
