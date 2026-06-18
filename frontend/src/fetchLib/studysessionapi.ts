@@ -1,5 +1,6 @@
 import { apiFetch } from "./fetch";
 
+
 export type DateType = {
   date: string;
 };
@@ -64,11 +65,9 @@ export const getSessionBetween = async (
   }
 
   return apiFetch<Array<StudySessionDTO>>(
-    "/ssession/session/from-to",
-    {
+    `/ssession/session/from-to?dateStart=${data.dateStart}&dateEnd=${data.dateEnd}`, {
       method: "GET",
       token: accesstoken,
-      body: JSON.stringify(data),
     },
   );
 };

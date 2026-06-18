@@ -75,7 +75,7 @@ export default function CommitmentGrid() {
   const testFunc = async () => {
     const t = await dispatch(getSessionBetweenAPI({
       dateStart: "2026-06-01",
-      dateEnd: "2026-06-18",
+      dateEnd: "2026-06-19",
     })).unwrap()
     return t
   }
@@ -83,6 +83,7 @@ export default function CommitmentGrid() {
   useEffect(()=>{
     
     const data = testFunc()
+    console.log("This is session data")
     console.log(data);
 
   }, [])
