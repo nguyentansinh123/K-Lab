@@ -41,7 +41,6 @@ function generateYearData(year: number): ActivityData[] {
   return data;
 }
 
-
 // right chart data
 const performanceMetrics = [
   {
@@ -69,24 +68,28 @@ export default function CommitmentGrid() {
   const calendarData = useMemo(() => generateYearData(year), [year]);
   const user = useAppSelector((state) => state.auth.user);
 
-  const dispatch = useAppDispatch()
-  
-  // Need fix because POST cant have body
-  const testFunc = async () => {
-    const t = await dispatch(getSessionBetweenAPI({
-      dateStart: "2026-06-01",
-      dateEnd: "2026-06-19",
-    })).unwrap()
-    return t
-  }
-  
-  useEffect(()=>{
-    
-    const data = testFunc()
-    console.log("This is session data")
-    console.log(data);
+  const dispatch = useAppDispatch();
 
-  }, [])
+  useEffect(() => {
+    // Need fix because POST cant have body
+    const testFunc = async () => {
+      const t = await dispatch(
+        getSessionBetweenAPI({
+          dateStart: "2026-06-01",
+          dateEnd: "2026-06-19",
+        }),
+      ).unwrap();
+      return t;
+    };
+    const run = async () => {
+      const data = await testFunc();
+
+      console.log("This is session data");
+      console.log(data);
+    };
+
+    run();
+  }, []);
 
   // user info
   const initials =

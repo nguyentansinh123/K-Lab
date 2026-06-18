@@ -12,14 +12,19 @@ import com.caffein.tracker.model.StudySession;
 import com.caffein.tracker.model.User;
 
 @Repository
-public interface StudySessionRepository extends JpaRepository<StudySession, String>{
+public interface StudySessionRepository extends JpaRepository<StudySession, String> {
 
-    @EntityGraph(attributePaths = {"activities", "user"})
+    @EntityGraph(attributePaths = { "activities", "user" })
     Optional<StudySession> findByUserAndDate(User user, LocalDate date);
 
-    @EntityGraph(attributePaths = {"activities", "activities.activityPauses", "user"})
+    @EntityGraph(attributePaths = { "activities", "activities.activityPauses", "user" })
     List<StudySession> findAllByUser(User user);
 
     List<StudySession> findByUserId(String userid);
-    
+
+    List<StudySession> findByUserIdAndDateBetween(
+            String userId,
+            LocalDate dateStart,
+            LocalDate dateEnd);
+
 }

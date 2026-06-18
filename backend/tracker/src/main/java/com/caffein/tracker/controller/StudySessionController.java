@@ -3,6 +3,7 @@ package com.caffein.tracker.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -51,17 +52,16 @@ public class StudySessionController {
     }
 
     @GetMapping("/session/from-to")
-    public ResponseEntity<List<StudySessionDTO>> getSessionByDate(@ModelAttribute StudySessionDateRangeRequest request) {
+    public ResponseEntity<List<StudySessionDTO>> getSessionByDate(
+            @RequestParam LocalDate dateStart,
+            @RequestParam LocalDate dateEnd) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         String userId = user.getId();
 
-        List<StudySession> sessions = studySessionService.getSessionBetween(userId, request.getDateStart(), request.getDateEnd());
+        List<StudySessionDTO> sessions = studySessionService.getSessionBetweenDTO(userId, dateStart, dateEnd);
 
-        return ResponseEntity.ok(
-                sessions.stream().map(session -> {
-                    return studySessionMapper.toDTO(session);
-                }).toList());
+        return ResponseEntity.ok(sessions);
     }
 
     @PutMapping("/refreshTodayTotalDuration")

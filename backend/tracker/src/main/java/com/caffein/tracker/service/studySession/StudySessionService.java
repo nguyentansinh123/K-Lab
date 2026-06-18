@@ -6,20 +6,24 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.caffein.tracker.dto.StudySessionDTO;
 import com.caffein.tracker.exception.AppException;
 import com.caffein.tracker.exception.ErrorCode;
+import com.caffein.tracker.mapper.StudySessionMapper;
 import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.StudySession;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.repository.StudySessionRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class StudySessionService implements IStudySessionService {
 
     private final StudySessionRepository studySessionRepository;
+    private final StudySessionMapper studySessionMapper;
 
     @Override
     public StudySession getOrCreateTodaySession(User user) {
@@ -51,15 +55,16 @@ public class StudySessionService implements IStudySessionService {
                 .orElseThrow(() -> new AppException(ErrorCode.STUDY_SESSION_NOT_FOUND));
     }
 
-    @Override
-    public List<StudySession> getSessionBetween(String userId, LocalDate dateStart, LocalDate dateEnd) {
-        List<StudySession> sessions = studySessionRepository.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public List<StudySessionDTO> getSessionBetweenDTO(
+            String userId,
+            LocalDate dateStart,
+            LocalDate dateEnd) {
+        List<StudySession> sessions = studySessionRepository.findByUserIdAndDateBetween(userId, dateStart, dateEnd);
 
         return sessions.stream()
-                .filter(sess -> {
-                    LocalDate date = sess.getDate();
-                    return !date.isBefore(dateEnd) && !date.isAfter(dateStart);
-                }).toList();
+                .map(studySessionMapper::toDTO)
+                .toList();
     }
 
     @Override
