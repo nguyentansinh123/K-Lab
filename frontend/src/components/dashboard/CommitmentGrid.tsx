@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ActivityCalendar } from "react-activity-calendar";
-import { useAppDispatch, useAppSelector } from "../../hooks/dispatch";
+import { useAppDispatch } from "../../hooks/dispatch";
 import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
 import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
 
@@ -11,7 +11,7 @@ interface ActivityData {
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2];
+const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2, CURRENT_YEAR - 3, CURRENT_YEAR - 4];
 
 const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
   return [`${years[years.length - 1]}-01-01`, `${years[0]}-12-31`];
@@ -86,28 +86,6 @@ const heatDateGenerator = (
   return data;
 };
 
-// right chart data
-const performanceMetrics = [
-  {
-    label: "Deep Work Capacity",
-    value: "94% OPTIMAL",
-    pct: 94,
-    color: "bg-primary",
-  },
-  {
-    label: "Cognitive Sync Rate",
-    value: "0.98 INDEX",
-    pct: 98,
-    color: "bg-on-surface",
-  },
-  {
-    label: "Weekly Milestone",
-    value: "45/60 HRS",
-    pct: 75,
-    color: "bg-tertiary",
-  },
-];
-
 export default function CommitmentGrid() {
   const [year, setYear] = useState(CURRENT_YEAR);
   const [sessions, setSessions] = useState<StudySessionDTO[]>([]);
@@ -115,7 +93,6 @@ export default function CommitmentGrid() {
     () => heatDateGenerator(year, sessions),
     [year, sessions],
   );
-  const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useAppDispatch();
 
@@ -173,18 +150,6 @@ export default function CommitmentGrid() {
           <h3 className="text-xs font-label font-bold uppercase tracking-[0.4em] text-on-surface-variant">
             Consistency_Grid
           </h3>
-          <select
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="bg-surface-container border border-outline-variant/20 text-on-surface text-[10px] font-label py-1 px-2 focus:outline-none focus:border-primary"
-          >
-            {/* years drop down*/}
-            {YEARS.map((y) => (
-              <option key={y} value={y}>
-                {y === CURRENT_YEAR ? "This Year" : y}
-              </option>
-            ))}
-          </select>
         </div>
         <div className="text-[10px] font-body text-outline">
           Each square = 30 mins of deep work
@@ -192,7 +157,34 @@ export default function CommitmentGrid() {
       </div>
 
       {/* Calendar */}
-      <div className="flex flex-col xl:flex-row gap-6 items-center justify-center">
+      <div className="flex flex-col xl:flex-row gap-6 items-center xl:items-stretch justify-center">
+        <aside className="flex w-full shrink-0 bg-surface-container border border-outline-variant/10 p-3 xl:w-36">
+          <div className="flex w-full gap-2 overflow-x-auto hide-scrollbar xl:flex-col">
+            {YEARS.map((y) => {
+              const isActive = y === year;
+
+              return (
+                <button
+                  key={y}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setYear(y)}
+                  className={`relative flex h-11 min-w-24 w-full items-center border px-3 text-left font-label text-sm font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 xl:min-w-0 ${
+                    isActive
+                      ? "border-primary/25 bg-primary/10 text-primary"
+                      : "border-transparent text-outline hover:bg-surface-container-high hover:text-on-surface"
+                  }`}
+                >
+                  <span>{y}</span>
+                  {isActive && (
+                    <span className="absolute inset-y-2 right-2 w-px bg-primary/70" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
         {/* Activity calendar */}
         <div className="inline-block bg-surface-container p-6 lg:p-8 overflow-x-auto hide-scrollbar border border-outline-variant/10">
           <ActivityCalendar
