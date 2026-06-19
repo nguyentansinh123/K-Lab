@@ -18,35 +18,35 @@ const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
 };
 
 // grid heat data generator mock
-function generateYearData(year: number): ActivityData[] {
-  const data: ActivityData[] = [];
-  const today = new Date();
-  today.setHours(23, 59, 59, 999);
+// function generateYearData(year: number): ActivityData[] {
+//   const data: ActivityData[] = [];
+//   const today = new Date();
+//   today.setHours(23, 59, 59, 999);
 
-  const start = new Date(year, 0, 1);
-  const end = new Date(year, 11, 31);
+//   const start = new Date(year, 0, 1);
+//   const end = new Date(year, 11, 31);
 
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    const isFuture = d > today;
-    const rand = Math.random();
-    const level = isFuture
-      ? 0
-      : rand > 0.88
-        ? 4
-        : rand > 0.72
-          ? 3
-          : rand > 0.52
-            ? 2
-            : rand > 0.28
-              ? 1
-              : 0;
-    data.push({ date: dateStr, count: level * 2, level });
-  }
-  return data;
-}
+//   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+//     const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+//     const isFuture = d > today;
+//     const rand = Math.random();
+//     const level = isFuture
+//       ? 0
+//       : rand > 0.88
+//         ? 4
+//         : rand > 0.72
+//           ? 3
+//           : rand > 0.52
+//             ? 2
+//             : rand > 0.28
+//               ? 1
+//               : 0;
+//     data.push({ date: dateStr, count: level * 2, level });
+//   }
+//   return data;
+// }
 
-//TODO: need adjustment
+//TODO: need adjustment less than 1 mins should still be shown as long as u show up
 const decidingLevel = (mins: number): number => {
   if (mins <= 0) {
     return 0;
@@ -159,11 +159,11 @@ export default function CommitmentGrid() {
   //const mylog = heatDateGenerator(year);
 
   // user info
-  const initials =
-    `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
-  const displayName = user
-    ? `${user.firstName} ${user.lastName}`.toUpperCase()
-    : "OPERATOR_01";
+  // const initials =
+  //   `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
+  // const displayName = user
+  //   ? `${user.firstName} ${user.lastName}`.toUpperCase()
+  //   : "OPERATOR_01";
 
   return (
     <section className="space-y-6">
@@ -191,8 +191,8 @@ export default function CommitmentGrid() {
         </div>
       </div>
 
-      {/* Calendar + Profile card row */}
-      <div className="flex flex-col xl:flex-row gap-6 items-start">
+      {/* Calendar */}
+      <div className="flex flex-col xl:flex-row gap-6 items-center justify-center">
         {/* Activity calendar */}
         <div className="inline-block bg-surface-container p-6 lg:p-8 overflow-x-auto hide-scrollbar border border-outline-variant/10">
           <ActivityCalendar
@@ -210,9 +210,9 @@ export default function CommitmentGrid() {
             showWeekdayLabels
             showColorLegend={false}
             showTotalCount={false}
-            blockSize={12}
-            blockMargin={3}
-            fontSize={11}
+            blockSize={15}
+            blockMargin={5}
+            fontSize={13}
             style={{ color: "#777575" }}
           />
 
@@ -242,69 +242,6 @@ export default function CommitmentGrid() {
               ))}
             </div>
             More focus
-          </div>
-        </div>
-
-        {/* Operator profile card */}
-        <div className="bg-surface-container border border-outline-variant/10 flex flex-col overflow-hidden w-full xl:w-80 shrink-0 xl:self-stretch">
-          {/* Profile top */}
-          <div className="p-4 flex items-center gap-3 relative bg-surface-container-high/50 border-b border-outline-variant/10">
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
-            <div className="relative shrink-0">
-              {user?.imgUrl ? (
-                <img
-                  src={user.imgUrl}
-                  alt="Operator"
-                  className="w-14 h-14 border-2 border-primary/50 object-cover grayscale contrast-150"
-                />
-              ) : (
-                <div className="w-14 h-14 border-2 border-primary/50 bg-surface-container-highest flex items-center justify-center font-headline text-base font-black text-primary">
-                  {initials}
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-surface-container sync-pulse" />
-            </div>
-            <div className="flex-1 space-y-0.5 min-w-0">
-              <div className="text-[9px] font-label text-outline uppercase tracking-widest">
-                Active_Operator
-              </div>
-              <div className="text-sm font-headline font-black text-on-surface tracking-tighter truncate">
-                {displayName}
-              </div>
-              <div className="inline-flex px-1.5 py-0.5 bg-primary/10 border border-primary/20 text-[9px] font-label text-primary font-bold tracking-widest uppercase">
-                RANK: KINETIC_LEAD
-              </div>
-            </div>
-          </div>
-
-          {/* Performance metrics */}
-          <div className="p-4 flex-1 flex flex-col justify-between gap-3">
-            {performanceMetrics.map((m) => (
-              <div key={m.label} className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-label text-outline uppercase tracking-widest">
-                    {m.label}
-                  </span>
-                  <span
-                    className={`text-[10px] font-body uppercase font-bold ${
-                      m.color === "bg-primary"
-                        ? "text-primary"
-                        : m.color === "bg-tertiary"
-                          ? "text-tertiary"
-                          : "text-on-surface"
-                    }`}
-                  >
-                    {m.value}
-                  </span>
-                </div>
-                <div className="h-1 w-full bg-surface-container-highest overflow-hidden">
-                  <div
-                    className={`h-full ${m.color} transition-all duration-700`}
-                    style={{ width: `${m.pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
