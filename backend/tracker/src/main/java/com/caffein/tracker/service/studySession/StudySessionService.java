@@ -110,13 +110,11 @@ public class StudySessionService implements IStudySessionService {
         List<StudySession> ss = studySessionRepository.findByUserId(userId);
         Long thisMonth = ss.stream()
                 .filter(obj -> YearMonth.from(obj.getDate()).equals(currMonth))
-                .limit(30)
                 .map(obj -> obj.getTotalDurationSeconds())
                 .reduce(0L, (a, b) -> a + b);
 
         Long prevMonth = ss.stream()
                 .filter(obj -> YearMonth.from(obj.getDate()).equals(monthBefore))
-                .limit(60)
                 .map(obj -> obj.getTotalDurationSeconds())
                 .reduce(0L, (a, b) -> a + b);
 

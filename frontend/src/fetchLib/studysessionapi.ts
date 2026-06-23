@@ -127,28 +127,28 @@ export const getThisMonthVsLastMonth = async (): Promise<MonthlyTimeComparison> 
 };
 
 
-export const getCurrStreak = async (): Promise<MonthlyTimeComparison> => {
+export const getCurrStreak = async (): Promise<number> => {
   const accesstoken = localStorage.getItem("accessToken");
 
   if (!accesstoken) {
     throw new Error("No access token found");
   }
 
-  return apiFetch<MonthlyTimeComparison>(`/ssession/currentStreak`, {
+  return apiFetch<number>(`/ssession/currentStreak`, {
     method: "GET",
     token: accesstoken,
   });
 };
 
 
-export const getLongestStreak = async (): Promise<MonthlyTimeComparison> => {
+export const getLongestStreak = async (): Promise<number> => {
   const accesstoken = localStorage.getItem("accessToken");
 
   if (!accesstoken) {
     throw new Error("No access token found");
   }
 
-  return apiFetch<MonthlyTimeComparison>(`/ssession/longestStreak`, {
+  return apiFetch<number>(`/ssession/longestStreak`, {
     method: "GET",
     token: accesstoken,
   });

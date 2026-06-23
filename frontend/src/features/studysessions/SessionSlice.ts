@@ -20,6 +20,8 @@ type SessionState = {
   sessions: StudySessionDTO[];
   totalTimeInPeriodSeconds: number;
   monthlyTimeComparison: MonthlyTimeComparison;
+  currentStreak: number;
+  longestStreak: number;
   status: SessionStatus;
   error: string | null;
 };
@@ -29,6 +31,8 @@ const initialState: SessionState = {
   sessions: [],
   totalTimeInPeriodSeconds: 0,
   monthlyTimeComparison: [0, 0],
+  currentStreak: 0,
+  longestStreak: 0,
   status: "idle",
   error: null,
 };
@@ -181,6 +185,38 @@ const sessionSlice = createSlice({
         state.status = "error";
         state.error =
           action.error.message ?? "Fetching monthly time comparison failed";
+      })
+
+      .addCase(getCurrentStreakOfUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(getCurrentStreakOfUser.fulfilled, (state, action) => {
+        state.currentStreak = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+
+      .addCase(getCurrentStreakOfUser.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Fetching current streak failed";
+      })
+
+      .addCase(getLongestStreakOfUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(getLongestStreakOfUser.fulfilled, (state, action) => {
+        state.longestStreak = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+
+      .addCase(getLongestStreakOfUser.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Fetching longest streak failed";
       });
   },
 });

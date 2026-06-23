@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { calculateTotalTimeOfSessionWithTimeFrame, getMonthlyTimeComparison } from "../../features/studysessions/SessionSlice";
+import {
+  calculateTotalTimeOfSessionWithTimeFrame,
+  getCurrentStreakOfUser,
+  getLongestStreakOfUser,
+  getMonthlyTimeComparison,
+} from "../../features/studysessions/SessionSlice";
 import { useAppDispatch } from "../../hooks/dispatch";
 import type { MonthlyTimeComparison } from "../../fetchLib/studysessionapi";
 
@@ -61,36 +66,109 @@ const defaultCards: MetricCardData[] = [
   },
 ];
 
-export default function MetricsCards({
-  cards = defaultCards,
-}: MetricsCardsProps) {
+export default function MetricsCards() {
   const dispatch = useAppDispatch();
   const [totalWorkTime30Days, setTotalWorkTime30Days] = useState<number>(0);
-  const [comparison2months, setComparison2months] = useState<MonthlyTimeComparison>([0, 0])
-  
+  const [comparison2months, setComparison2months] =
+    useState<MonthlyTimeComparison>([0, 0]);
+  const [currStreak, setCurrStreak] = useState<number>(0);
+  const [longestStreak, setLongestStreak] = useState<number>(0);
+
   const compareM = (a: number, b: number): number => {
-    a = a / 3600
-    b = b / 3600
-    
-    if(Math.floor(a) == Math.floor(b)){
-      return 0
-    }else{
-      if (b == 0) b = 1
-      return Math.floor(((a-b) / b) * 100)
+    a = a / 3600;
+    b = b / 3600;
+
+    if (Math.floor(a) == Math.floor(b)) {
+      return 0;
+    } else {
+      if (b == 0) b = 1;
+      return Math.floor(((a - b) / b) * 100);
     }
-  }
+  };
+
+  const compareAveBetween2Months = (a: number, b: number) => {
+    const now = new Date();
+
+    const currentMonthDaysElapsed = now.getDate();
+    const lastMonthTotalDays = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0,
+    ).getDate();
+
+    const currentAverage = a / currentMonthDaysElapsed;
+    const lastMonthAverage = b / lastMonthTotalDays;
+
+    return (currentAverage - lastMonthAverage) / 3600;
+  };
+
+  const cardData = [
+    {
+      icon: "schedule",
+      iconColorClass: "text-primary",
+      iconBgClass: "bg-primary/10",
+      iconBorderClass: "border-primary/20",
+      label: "Total 30 Days Hours",
+      value: `${(totalWorkTime30Days / 3600).toFixed(1)}h`,
+      subtext: `${compareM(comparison2months[0], comparison2months[1]) > 0 ? "+" : "-"}${compareM(comparison2months[0], comparison2months[1])}% vs last month`,
+      subtextColorClass: `${compareM(comparison2months[0], comparison2months[1]) > 0 ? "text-primary" : "text-red-500"}`,
+    },
+    {
+      icon: "local_fire_department",
+      iconColorClass: "text-error",
+      iconBgClass: "bg-error/10",
+      iconBorderClass: "border-error/20",
+      label: "Current Streak",
+      value: `${currStreak} days`,
+      subtext: `Best: ${longestStreak} days`,
+      subtextColorClass: `${currStreak < longestStreak ? "text-red-500" : "text-primary"}`,
+    },
+    {
+      //Todo: Need to figure out a way to calculate this
+      icon: "my_location",
+      iconColorClass: "text-tertiary",
+      iconBgClass: "bg-tertiary/10",
+      iconBorderClass: "border-tertiary/20",
+      label: "Focus Score",
+      value: "86%",
+      subtext: "+7% vs last month",
+      subtextColorClass: "text-primary",
+    },
+    {
+      icon: "trending_up",
+      iconColorClass: "text-secondary",
+      iconBgClass: "bg-secondary/10",
+      iconBorderClass: "border-secondary/20",
+      label: "Daily Average",
+      value: `${(comparison2months[0] / new Date().getDate() / 3600).toFixed(2)}h`,
+      subtext: `${compareAveBetween2Months(comparison2months[0], comparison2months[1]).toFixed(1)}h vs last month`,
+      subtextColorClass:
+        compareAveBetween2Months(comparison2months[0], comparison2months[1]) > 0
+          ? "text-red-500"
+          : "text-primary",
+    },
+  ];
 
   useEffect(() => {
     const getGeneralInfo = async () => {
       try {
-        const ttdays = await dispatch(calculateTotalTimeOfSessionWithTimeFrame(30)).unwrap();
-        const crs = await dispatch(getMonthlyTimeComparison()).unwrap()
-        setTotalWorkTime30Days(ttdays.msg)
-        console.log("aaaa" + crs)
-        setComparison2months(crs)
-        console.log(totalWorkTime30Days)
-        console.log(comparison2months)
-
+        const ttdays = await dispatch(
+          calculateTotalTimeOfSessionWithTimeFrame(30),
+        ).unwrap();
+        const crs = await dispatch(getMonthlyTimeComparison()).unwrap();
+        const userCurrStreak = await dispatch(
+          getCurrentStreakOfUser(),
+        ).unwrap();
+        const userLongestStreak = await dispatch(
+          getLongestStreakOfUser(),
+        ).unwrap();
+        setCurrStreak(userCurrStreak);
+        setLongestStreak(userLongestStreak);
+        setTotalWorkTime30Days(ttdays.msg);
+        //console.log("aaaa" + crs);
+        setComparison2months(crs);
+        //console.log(totalWorkTime30Days);
+        //console.log(comparison2months);
       } catch (error) {
         console.log(error);
       }
@@ -101,13 +179,13 @@ export default function MetricsCards({
     };
 
     run();
-  }, []);
-  
-  console.log(compareM(comparison2months[0], comparison2months[1]))
+  }, [dispatch]);
+
+  console.log(compareM(comparison2months[0], comparison2months[1]));
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-      {cards.map((card) => (
+      {cardData.map((card) => (
         <div
           key={card.label}
           className="bg-surface-container p-6 border border-outline-variant/10 flex flex-col gap-4"
