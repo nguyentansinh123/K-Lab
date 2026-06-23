@@ -1,9 +1,13 @@
 package com.caffein.tracker.service.studySession;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.caffein.tracker.dto.StudySessionDTO;
@@ -84,6 +88,103 @@ public class StudySessionService implements IStudySessionService {
         studySession.setTotalDurationSeconds(updateDuration);
         StudySession mySession = studySessionRepository.save(studySession);
         return sessionMapper.toDTO(mySession);
+    }
+
+    @Override
+    public Long calculateTotalDurationInPeriod(int days, String userId) {
+        List<StudySession> ss = studySessionRepository.findByUserId(userId);
+        ss.sort((b, a) -> a.getDate().compareTo(b.getDate()));
+        Long t = ss.stream()
+                .limit(days)
+                .map(obj -> obj.getTotalDurationSeconds())
+                .reduce(0L, (a, b) -> a + b);
+
+        return t;
+    }
+
+    @Override
+    public List<Long> compareThisMonthTTHrAndLast(String userId) {
+        YearMonth currMonth = YearMonth.now();
+        YearMonth monthBefore = currMonth.minusMonths(1);
+
+        List<StudySession> ss = studySessionRepository.findByUserId(userId);
+        Long thisMonth = ss.stream()
+                .filter(obj -> YearMonth.from(obj.getDate()).equals(currMonth))
+                .limit(30)
+                .map(obj -> obj.getTotalDurationSeconds())
+                .reduce(0L, (a, b) -> a + b);
+
+        Long prevMonth = ss.stream()
+                .filter(obj -> YearMonth.from(obj.getDate()).equals(monthBefore))
+                .limit(60)
+                .map(obj -> obj.getTotalDurationSeconds())
+                .reduce(0L, (a, b) -> a + b);
+
+        return List.of(thisMonth, prevMonth);
+
+    }
+
+    // I want 2 days to be count as 1 streak thats what s right if u dont agree then fk u bitch
+    @Override
+    public Long calculateCurrentStreak(User user) {
+        List<StudySession> sessions = studySessionRepository.findAllByUser(user);
+
+        List<LocalDate> dates = sessions.stream()
+                .filter(s -> s.getTotalDurationSeconds() > 600)
+                .sorted(Comparator.comparing(StudySession::getDate).reversed())
+                .map(s -> s.getDate()).toList();
+        
+        if(dates.isEmpty()){
+            return 0L;
+        }
+
+        if (!dates.get(0).equals(LocalDate.now())) {
+            return 0L;
+        }
+        LocalDate now = LocalDate.now();
+        int streak = 0;
+        for (int i = 1; i < dates.size(); i++) {
+            if (now.minusDays(1).equals(dates.get(i))) {
+                streak++;
+                now = dates.get(i);
+            } else {
+                break;
+            }
+        }
+        return (long) streak;
+
+    }
+
+    @Override
+    public Long calculateLongestStreak(User user) {
+        List<StudySession> sessions = studySessionRepository.findAllByUser(user);
+
+        List<LocalDate> dates = sessions.stream()
+                .filter(s -> s.getTotalDurationSeconds() > 600)
+                .sorted(Comparator.comparing(StudySession::getDate))
+                .map(s -> s.getDate()).toList();
+        
+        if(dates.isEmpty()){
+            return 0L;
+        }
+        Long maxStreak = 0L;
+        Long currC = 0L;
+        
+        LocalDate fDate = dates.get(0);
+
+        for (int i = 1; i < dates.size(); i ++){
+            if (fDate.plusDays(1).equals(dates.get(i))){
+                currC ++;
+                fDate = dates.get(i);
+            }else{
+                currC = 0L;
+                fDate = dates.get(i);
+            }
+            maxStreak = Math.max(maxStreak, currC);
+
+        }
+
+        return maxStreak;
     }
 
 }

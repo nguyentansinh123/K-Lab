@@ -1,9 +1,17 @@
 import { apiFetch } from "./fetch";
 
-
 export type DateType = {
   date: string;
 };
+
+export type getTotalTimeBySessionWithGap = {
+  msg: number;
+};
+
+export type MonthlyTimeComparison = [
+  thisMonthSeconds: number,
+  lastMonthSeconds: number,
+];
 
 export type UserDTO = {
   id: string;
@@ -65,24 +73,83 @@ export const getSessionBetween = async (
   }
 
   return apiFetch<Array<StudySessionDTO>>(
-    `/ssession/session/from-to?dateStart=${data.dateStart}&dateEnd=${data.dateEnd}`, {
+    `/ssession/session/from-to?dateStart=${data.dateStart}&dateEnd=${data.dateEnd}`,
+    {
       method: "GET",
       token: accesstoken,
     },
   );
 };
 
-export const recalculateTotalDurationOfStudySession = async (): Promise<StudySessionDTO> => {
+export const recalculateTotalDurationOfStudySession =
+  async (): Promise<StudySessionDTO> => {
+    const accesstoken = localStorage.getItem("accessToken");
+
+    if (!accesstoken) {
+      throw new Error("No access token found");
+    }
+
+    return apiFetch<StudySessionDTO>(`/ssession/refreshTodayTotalDuration`, {
+      method: "PUT",
+      token: accesstoken,
+    });
+  };
+
+export const getTotalOfTimeBySecondsWithSelectionOfTime = async (
+  days: number,
+) => {
   const accesstoken = localStorage.getItem("accessToken");
 
   if (!accesstoken) {
     throw new Error("No access token found");
   }
 
-  return apiFetch<StudySessionDTO>(
-    `/ssession/refreshTodayTotalDuration`, {
-      method: "PUT",
+  return apiFetch<getTotalTimeBySessionWithGap>(
+    `/ssession/totalTimeInPeriod?days=${days}`,
+    {
+      method: "GET",
       token: accesstoken,
     },
   );
+};
+
+export const getThisMonthVsLastMonth = async (): Promise<MonthlyTimeComparison> => {
+  const accesstoken = localStorage.getItem("accessToken");
+
+  if (!accesstoken) {
+    throw new Error("No access token found");
+  }
+
+  return apiFetch<MonthlyTimeComparison>(`/ssession/tmonthVslmonth`, {
+    method: "GET",
+    token: accesstoken,
+  });
+};
+
+
+export const getCurrStreak = async (): Promise<MonthlyTimeComparison> => {
+  const accesstoken = localStorage.getItem("accessToken");
+
+  if (!accesstoken) {
+    throw new Error("No access token found");
+  }
+
+  return apiFetch<MonthlyTimeComparison>(`/ssession/currentStreak`, {
+    method: "GET",
+    token: accesstoken,
+  });
+};
+
+
+export const getLongestStreak = async (): Promise<MonthlyTimeComparison> => {
+  const accesstoken = localStorage.getItem("accessToken");
+
+  if (!accesstoken) {
+    throw new Error("No access token found");
+  }
+
+  return apiFetch<MonthlyTimeComparison>(`/ssession/longestStreak`, {
+    method: "GET",
+    token: accesstoken,
+  });
 };

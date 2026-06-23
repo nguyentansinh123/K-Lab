@@ -17,7 +17,6 @@ public interface StudySessionRepository extends JpaRepository<StudySession, Stri
     @EntityGraph(attributePaths = { "activities", "user" })
     Optional<StudySession> findByUserAndDate(User user, LocalDate date);
 
-    @EntityGraph(attributePaths = { "activities", "activities.activityPauses", "user" })
     List<StudySession> findAllByUser(User user);
 
     List<StudySession> findByUserId(String userid);

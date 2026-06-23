@@ -11,8 +11,8 @@ export default function Dashboard() {
       <main className="flex-1 w-full overflow-y-auto hide-scrollbar p-4 sm:p-6 lg:p-8 pb-4">
         <div className="max-w-[1400px] max-w-7xl mx-auto space-y-8 lg:space-y-12">
         <MetricsCards />
-        <CognitiveSynthesis />
         <CommitmentGrid />
+        <CognitiveSynthesis />
         <AISessionNotes />
         <OperationalStatus />
         </div>

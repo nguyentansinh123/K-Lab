@@ -1,10 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+  getCurrStreak,
+  getLongestStreak,
   getSessionBetween,
   getSessionByDate,
+  getThisMonthVsLastMonth,
+  getTotalOfTimeBySecondsWithSelectionOfTime,
   recalculateTotalDurationOfStudySession,
   type DateRange,
   type DateType,
+  type MonthlyTimeComparison,
   type StudySessionDTO,
 } from "../../fetchLib/studysessionapi";
 
@@ -13,6 +18,8 @@ type SessionStatus = "idle" | "loading" | "succeeded" | "error";
 type SessionState = {
   session: StudySessionDTO | null;
   sessions: StudySessionDTO[];
+  totalTimeInPeriodSeconds: number;
+  monthlyTimeComparison: MonthlyTimeComparison;
   status: SessionStatus;
   error: string | null;
 };
@@ -20,6 +27,8 @@ type SessionState = {
 const initialState: SessionState = {
   session: null,
   sessions: [],
+  totalTimeInPeriodSeconds: 0,
+  monthlyTimeComparison: [0, 0],
   status: "idle",
   error: null,
 };
@@ -44,6 +53,35 @@ export const updateTodaySession = createAsyncThunk(
     return recalculateTotalDurationOfStudySession();
   },
 );
+
+export const calculateTotalTimeOfSessionWithTimeFrame = createAsyncThunk(
+  "session/calculateTotalTimeWithTimeFrame",
+  async (days: number) => {
+    return getTotalOfTimeBySecondsWithSelectionOfTime(days);
+  },
+);
+
+export const getMonthlyTimeComparison = createAsyncThunk(
+  "session/getMonthlyTimeComparison",
+  async (): Promise<MonthlyTimeComparison> => {
+    return getThisMonthVsLastMonth();
+  },
+);
+
+export const getCurrentStreakOfUser = createAsyncThunk(
+  "session/getCurrentStreak",
+  async () => {
+    return getCurrStreak();
+  }
+)
+
+
+export const getLongestStreakOfUser = createAsyncThunk(
+  "session/getLongestStreak",
+  async () => {
+    return getLongestStreak();
+  }
+)
 
 const sessionSlice = createSlice({
   name: "session",
@@ -81,7 +119,8 @@ const sessionSlice = createSlice({
       .addCase(getSessionBetweenAPI.rejected, (state, action) => {
         state.status = "error";
         state.error =
-          action.error.message ?? "Fetching study sessions between dates failed";
+          action.error.message ??
+          "Fetching study sessions between dates failed";
       })
 
       .addCase(updateTodaySession.pending, (state) => {
@@ -102,6 +141,46 @@ const sessionSlice = createSlice({
         state.status = "error";
         state.error =
           action.error.message ?? "Recalculating study session failed";
+      })
+
+      .addCase(calculateTotalTimeOfSessionWithTimeFrame.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(
+        calculateTotalTimeOfSessionWithTimeFrame.fulfilled,
+        (state, action) => {
+          state.totalTimeInPeriodSeconds = action.payload.msg;
+          state.status = "succeeded";
+          state.error = null;
+        },
+      )
+
+      .addCase(
+        calculateTotalTimeOfSessionWithTimeFrame.rejected,
+        (state, action) => {
+          state.status = "error";
+          state.error =
+            action.error.message ?? "Calculating total time in period failed";
+        },
+      )
+
+      .addCase(getMonthlyTimeComparison.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(getMonthlyTimeComparison.fulfilled, (state, action) => {
+        state.monthlyTimeComparison = action.payload;
+        state.status = "succeeded";
+        state.error = null;
+      })
+
+      .addCase(getMonthlyTimeComparison.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          action.error.message ?? "Fetching monthly time comparison failed";
       });
   },
 });

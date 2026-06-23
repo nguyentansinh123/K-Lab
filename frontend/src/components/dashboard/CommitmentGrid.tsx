@@ -11,7 +11,13 @@ interface ActivityData {
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
-const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2, CURRENT_YEAR - 3, CURRENT_YEAR - 4];
+const YEARS = [
+  CURRENT_YEAR,
+  CURRENT_YEAR - 1,
+  CURRENT_YEAR - 2,
+  CURRENT_YEAR - 3,
+  CURRENT_YEAR - 4,
+];
 
 const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
   return [`${years[years.length - 1]}-01-01`, `${years[0]}-12-31`];
@@ -78,7 +84,7 @@ const heatDateGenerator = (
     const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
     const session = sessionByDate.get(date);
-    const mins = session ? Math.round(session.totalDurationSeconds / 60) : 0;
+    const mins = session ? Math.floor(session.totalDurationSeconds / 60) : 0;
 
     data.push({ date, count: mins, level: decidingLevel(mins) });
   }
@@ -169,7 +175,7 @@ export default function CommitmentGrid() {
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setYear(y)}
-                  className={`relative flex h-11 min-w-24 w-full items-center border px-3 text-left font-label text-sm font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 xl:min-w-0 ${
+                  className={`cursor-pointer relative flex h-11 min-w-24 w-full items-center border px-3 text-left font-label text-sm font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 xl:min-w-0 ${
                     isActive
                       ? "border-primary/25 bg-primary/10 text-primary"
                       : "border-transparent text-outline hover:bg-surface-container-high hover:text-on-surface"
@@ -191,11 +197,11 @@ export default function CommitmentGrid() {
             data={calendarData}
             theme={{
               dark: [
-                "#1a1919", //level 0
-                "rgba(156,255,147,0.2)", //level 1
-                "rgba(156,255,147,0.45)", //level 2
-                "rgba(156,255,147,0.7)", //level 3
-                "#9cff93", //level 4
+                "#1a1919",
+                "rgba(156,255,147,0.2)",
+                "rgba(156,255,147,0.4)",
+                "rgba(156,255,147,0.6)",
+                "rgba(156,255,147,0.8)",
               ],
             }}
             colorScheme="dark"

@@ -14,5 +14,9 @@ public interface IStudySessionService {
     List<StudySessionDTO> getSessionBetweenDTO(String userId, LocalDate dateStart, LocalDate dateEnd);
     Long calculateTotalDurationSeconds(StudySession studySession);
     StudySessionDTO refreshTotalDuration(StudySession studySession);
+    Long calculateTotalDurationInPeriod(int days, String userId);
+    List<Long> compareThisMonthTTHrAndLast(String userId);
+    Long calculateCurrentStreak(User user);
+    Long calculateLongestStreak(User user);
     
 }

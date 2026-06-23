@@ -12,6 +12,8 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.open-in-view=false
+spring.jpa.defer-datasource-initialization=true
+spring.sql.init.mode=always
 
 # --- JWT ---
 JWT_SECRET=your_jwt_secret_here
