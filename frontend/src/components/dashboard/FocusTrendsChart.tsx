@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -7,6 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
+import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
+import { useAppDispatch } from "../../hooks/dispatch";
 
 export interface FocusDay {
   label: string;
@@ -21,15 +25,34 @@ interface FocusTrendsChartProps {
   maxHours?: number;
 }
 
-const defaultData: FocusDay[] = [
-  { label: "MON", hours: 3 },
-  { label: "TUE", hours: 4.5 },
-  { label: "WED", hours: 3.5 },
-  { label: "THU", hours: 6 },
-  { label: "FRI", hours: 8.5 },
-  { label: "SAT", hours: 7.5 },
-  { label: "TODAY", hours: 9.5, isToday: true },
-];
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const createLastSevenDays = (sessions: StudySessionDTO[]): FocusDay[] => {
+  const sessionByDate = new Map(sessions.map((session) => [session.date, session]));
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (6 - index));
+
+    const session = sessionByDate.get(formatLocalDate(date));
+
+    return {
+      label:
+        index === 6
+          ? "TODAY"
+          : date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase(),
+      hours: Number(((session?.totalDurationSeconds ?? 0) / 3600).toFixed(2)),
+      isToday: index === 6,
+    };
+  });
+};
 
 const getBarColor = (hours: number, isToday: boolean | undefined, peak: number) => {
   if (isToday) return "#9cff93";
@@ -78,13 +101,52 @@ const BarShape = (props: {
 };
 
 export default function FocusTrendsChart({
-  data = defaultData,
+  data,
   percentageChange = 12.4,
   minHours = 4,
   maxHours = 8.2,
 }: FocusTrendsChartProps) {
-  const peak = Math.max(...data.map((d) => d.hours));
-  const chartData = data.map((d) => ({
+  const dispatch = useAppDispatch();
+  const [lastSevenDays, setLastSevenDays] = useState<FocusDay[]>(() =>
+    createLastSevenDays([]),
+  );
+
+  useEffect(() => {
+    if (data) return;
+
+    let ignore = false;
+
+    const fetchLastSevenDays = async () => {
+      const today = new Date();
+      const sixDaysAgo = new Date(today);
+      sixDaysAgo.setDate(today.getDate() - 6);
+
+      try {
+        const sessions = await dispatch(
+          getSessionBetweenAPI({
+            dateStart: formatLocalDate(sixDaysAgo),
+            dateEnd: formatLocalDate(today),
+          }),
+        ).unwrap();
+
+        if (!ignore) {
+          setLastSevenDays(createLastSevenDays(sessions));
+        }
+      } catch (error) {
+        console.error("Fetching seven-day focus trend failed", error);
+      }
+    };
+
+    fetchLastSevenDays();
+
+    return () => {
+      ignore = true;
+    };
+  }, [data, dispatch]);
+
+  const focusData = data ?? lastSevenDays;
+  const peak = Math.max(...focusData.map((day) => day.hours));
+  const chartData = focusData.map((d) => ({
     ...d,
     fill: getBarColor(d.hours, d.isToday, peak),
   }));

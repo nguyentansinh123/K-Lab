@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
+import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
+import { useAppDispatch } from "../../hooks/dispatch";
 
 export interface ResourceSlice {
   label: string;
@@ -12,20 +16,134 @@ interface ResourceAllocationProps {
   efficiency?: number;
 }
 
-const defaultSlices: ResourceSlice[] = [
-  { label: "Logic_Synt", percentage: 45, colorClass: "bg-primary", color: "#9cff93" },
-  { label: "System_Arch", percentage: 35, colorClass: "bg-tertiary", color: "#deffab" },
-  { label: "Idle/Misc", percentage: 20, colorClass: "bg-outline", color: "#777575" },
-];
+type AllocationData = {
+  slices: ResourceSlice[];
+  activePercentage: number;
+};
+
+const emptyAllocation: AllocationData = {
+  slices: [
+    {
+      label: "Active_Time",
+      percentage: 0,
+      colorClass: "bg-primary",
+      color: "#9cff93",
+    },
+    {
+      label: "Pause_Time",
+      percentage: 0,
+      colorClass: "bg-error",
+      color: "#ffb4ab",
+    },
+  ],
+  activePercentage: 0,
+};
+
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const calculateAllocation = (sessions: StudySessionDTO[]): AllocationData => {
+  let activeSeconds = 0;
+  let pauseSeconds = 0;
+
+  sessions.forEach((session) => {
+    session.activities.forEach((activity) => {
+      const duration = Number(activity.duration);
+      if (Number.isFinite(duration) && duration > 0) {
+        activeSeconds += duration;
+      }
+
+      activity.activityPauses?.forEach((pause) => {
+        if (!pause.pauseTimeStart || !pause.pauseTimeEnd) return;
+
+        const start = new Date(pause.pauseTimeStart).getTime();
+        const end = new Date(pause.pauseTimeEnd).getTime();
+        const durationSeconds = (end - start) / 1000;
+
+        if (Number.isFinite(durationSeconds) && durationSeconds > 0) {
+          pauseSeconds += durationSeconds;
+        }
+      });
+    });
+  });
+
+  const totalTrackedSeconds = activeSeconds + pauseSeconds;
+  const activePercentage =
+    totalTrackedSeconds === 0
+      ? 0
+      : Math.round((activeSeconds / totalTrackedSeconds) * 100);
+  const pausePercentage = totalTrackedSeconds === 0 ? 0 : 100 - activePercentage;
+
+  return {
+    slices: [
+      {
+        label: "Active_Time",
+        percentage: activePercentage,
+        colorClass: "bg-primary",
+        color: "#9cff93",
+      },
+      {
+        label: "Pause_Time",
+        percentage: pausePercentage,
+        colorClass: "bg-error",
+        color: "#ffb4ab",
+      },
+    ],
+    activePercentage,
+  };
+};
 
 export default function ResourceAllocation({
-  slices = defaultSlices,
-  efficiency = 88,
+  slices,
+  efficiency,
 }: ResourceAllocationProps) {
+  const dispatch = useAppDispatch();
+  const [allocation, setAllocation] = useState<AllocationData>(emptyAllocation);
+
+  useEffect(() => {
+    if (slices && efficiency !== undefined) return;
+
+    let ignore = false;
+
+    const fetchLastSevenDays = async () => {
+      const today = new Date();
+      const sixDaysAgo = new Date(today);
+      sixDaysAgo.setDate(today.getDate() - 6);
+
+      try {
+        const sessions = await dispatch(
+          getSessionBetweenAPI({
+            dateStart: formatLocalDate(sixDaysAgo),
+            dateEnd: formatLocalDate(today),
+          }),
+        ).unwrap();
+
+        if (!ignore) {
+          setAllocation(calculateAllocation(sessions));
+        }
+      } catch (error) {
+        console.error("Fetching seven-day resource allocation failed", error);
+      }
+    };
+
+    fetchLastSevenDays();
+
+    return () => {
+      ignore = true;
+    };
+  }, [dispatch, efficiency, slices]);
+
+  const displayedSlices = slices ?? allocation.slices;
+  const displayedEfficiency = efficiency ?? allocation.activePercentage;
+
   return (
     <div className="bg-surface-container p-6 border border-outline-variant/10 flex flex-col h-64">
       <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-6">
-        Resource_Allocation
+        Active_Vs_Pause_7D
       </div>
 
       <div className="flex-1 flex items-center justify-around">
@@ -34,7 +152,7 @@ export default function ResourceAllocation({
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={slices}
+                data={displayedSlices}
                 cx="50%"
                 cy="50%"
                 innerRadius={40}
@@ -45,7 +163,7 @@ export default function ResourceAllocation({
                 endAngle={-270}
                 isAnimationActive={false}
               >
-                {slices.map((slice, i) => (
+                {displayedSlices.map((slice, i) => (
                   <Cell key={i} fill={slice.color ?? "#9cff93"} />
                 ))}
               </Pie>
@@ -53,14 +171,18 @@ export default function ResourceAllocation({
           </ResponsiveContainer>
           {/* Center label overlaid with absolute positioning */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <div className="text-xl font-headline font-black">{efficiency}%</div>
-            <div className="text-[8px] font-label text-outline uppercase">Efficiency</div>
+            <div className="text-xl font-headline font-black">
+              {displayedEfficiency}%
+            </div>
+            <div className="text-[8px] font-label text-outline uppercase">
+              Active Time
+            </div>
           </div>
         </div>
 
         {/* Legend */}
         <div className="space-y-3">
-          {slices.map((slice) => (
+          {displayedSlices.map((slice) => (
             <div key={slice.label} className="flex items-center gap-2">
               <div className={`w-2 h-2 shrink-0 rounded-full ${slice.colorClass}`} />
               <div className="text-[10px] font-label text-on-surface uppercase">

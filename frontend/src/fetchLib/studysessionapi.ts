@@ -23,6 +23,13 @@ export type UserDTO = {
   imgUrl: string;
 };
 
+export type ActivityPauseDTO = {
+  id: string;
+  pauseTimeStart: string;
+  pauseTimeEnd: string | null;
+  status: "PAUSE" | "UNPAUSE";
+};
+
 export type ActivityDTO = {
   title: string;
   appName: string;
@@ -30,6 +37,7 @@ export type ActivityDTO = {
   activityEndAt: string;
   topic: string;
   duration: string;
+  activityPauses: ActivityPauseDTO[];
 };
 
 export type StudySessionDTO = {

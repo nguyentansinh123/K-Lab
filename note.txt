@@ -6,15 +6,19 @@ Metric Card:
   #1.1 
     + Current streak ✅
       + Controller for it ✅
-      + Api for front end
-      + call API
-    + Find best streak
-      + Controller for it
-      + Api for front end
-      + call API
+      + Api for front end ✅
+      + call API ✅
+    + Find best streak ✅
+      + Controller for it ✅
+      + Api for front end ✅
+      + call API ✅
   #1.2
     + Create a system for focus score
     + Compare it to last month
   #1.3
-    + Daily average this month
-    + Compare to last month
+    + Daily average this month ✅
+    + Compare to last month ✅
+  #2.0
+    + create mock data ✅
+  #3.0
+    + do the pie chart
