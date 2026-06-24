@@ -21,4 +21,16 @@ Metric Card:
   #2.0
     + create mock data ✅
   #3.0
-    + do the pie chart
+    + do the pie chart ✅
+  #3.1
+    + fill something with the chart next to pie
+  #4.0
+    + Design UI for camera
+  #4.1
+    + Enable Camera
+  #4.2
+    + Face Presence (result.face.length)
+    + Gaze & Iris Deviation (face.annotations.leftEyeIris)
+    + Eye Openness & Blink Rates (face.annotations.leftEyeUpper / Lower)
+    + Time-Based Smoothing (The Rolling Average)
+

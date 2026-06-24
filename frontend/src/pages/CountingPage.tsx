@@ -17,6 +17,8 @@ import {
 } from "../features/activities/ActivitySlice";
 import { useAppDispatch } from "../hooks/dispatch";
 import { updateTodaySession } from "../features/studysessions/SessionSlice";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import FocusAmbientBackground from "../components/counting/FocusAmbientBackground";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -25,11 +27,13 @@ import { updateTodaySession } from "../features/studysessions/SessionSlice";
 //TODO: Activy started already so if it start set the state so it cant start again
 
 export default function CountingPage() {
+  const reduceMotion = useReducedMotion();
   const { time, setTime, isRunning, toggle, pause, reset, start } = useTimer();
   const [showModal, setShowModal] = useState(false);
   const [wasRunning, setWasRunning] = useState(false);
   const [hasStartedActivity, setHasStartedActivity] = useState(false);
   const [isStartingActivity, setIsStartingActivity] = useState(false);
+  const [isSplit, setIsSplit] = useState(false);
   const [activityDetails, setActivityDetails] = useState<SessionDetails>({
     title: "",
     appName: "",
@@ -149,31 +153,66 @@ export default function CountingPage() {
   }
 
   return (
-    <div className="h-screen pt-16 flex flex-col overflow-hidden dashboard-grid-bg">
+    <div className="relative h-screen overflow-hidden bg-[#080a08] pt-16">
       {showModal && (
         <EndSessionModal onResume={handleResume} onEnd={handleEndSession} />
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-center relative">
-        <div className="absolute top-8 left-1/2 -translate-x-1/2">
-          <StatusBadge isRunning={isRunning} />
-        </div>
+      <motion.div
+        className="grid h-full"
+        animate={{ gridTemplateColumns: isSplit ? "1fr 1fr" : "1fr 0fr" }}
+        transition={{ duration: reduceMotion ? 0 : 0.65, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <section className="relative flex min-w-0 flex-col overflow-hidden border-r border-transparent bg-[#0b0d0b] data-[split=true]:border-white/[0.07]" data-split={isSplit}>
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(234,255,222,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(234,255,222,0.018)_1px,transparent_1px)] bg-[size:56px_56px]" />
+          <FocusAmbientBackground active={isRunning} />
 
-        <div className="flex flex-col items-center justify-center -mt-8 px-4">
-          <TimerDisplay time={time} />
-          <TimerControls
-            isRunning={isRunning}
-            isStartingActivity={isStartingActivity}
-            onToggle={handleToggle}
-            onStop={handleStopClick}
+          <main className="relative z-10 flex flex-1 flex-col items-center justify-center">
+            <div className="absolute left-1/2 top-7 -translate-x-1/2">
+              <StatusBadge isRunning={isRunning} />
+            </div>
+
+            <motion.div
+              layout
+              className="flex flex-col items-center justify-center px-3"
+              transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <TimerDisplay time={time} compact={isSplit} />
+              <TimerControls
+                isRunning={isRunning}
+                isStartingActivity={isStartingActivity}
+                isSplit={isSplit}
+                compact={isSplit}
+                onToggle={handleToggle}
+                onStop={handleStopClick}
+                onSplit={() => setIsSplit((split) => !split)}
+              />
+            </motion.div>
+          </main>
+
+          <SessionDetailsPanel
+            details={activityDetails}
+            onChange={setActivityDetails}
+            contained={isSplit}
           />
-        </div>
-      </main>
+        </section>
 
-      <SessionDetailsPanel
-        details={activityDetails}
-        onChange={setActivityDetails}
-      />
+        <AnimatePresence initial={false}>
+          {isSplit ? (
+            <motion.aside
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.15 }}
+              className="relative flex min-w-0 items-center justify-center overflow-hidden bg-black"
+            >
+              <span className="font-headline text-2xl font-medium tracking-[-0.03em] text-white sm:text-4xl">
+                hello worl
+              </span>
+            </motion.aside>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

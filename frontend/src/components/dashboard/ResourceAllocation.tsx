@@ -141,7 +141,7 @@ export default function ResourceAllocation({
   const displayedEfficiency = efficiency ?? allocation.activePercentage;
 
   return (
-    <div className="bg-surface-container p-6 border border-outline-variant/10 flex flex-col h-64">
+    <div className="flex h-64 flex-col rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
       <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-6">
         Active_Vs_Pause_7D
       </div>
@@ -184,7 +184,7 @@ export default function ResourceAllocation({
         <div className="space-y-3">
           {displayedSlices.map((slice) => (
             <div key={slice.label} className="flex items-center gap-2">
-              <div className={`w-2 h-2 shrink-0 rounded-full ${slice.colorClass}`} />
+              <div className={`h-2 w-2 shrink-0 rounded-full ${slice.colorClass}`} />
               <div className="text-[10px] font-label text-on-surface uppercase">
                 {slice.label} ({slice.percentage}%)
               </div>

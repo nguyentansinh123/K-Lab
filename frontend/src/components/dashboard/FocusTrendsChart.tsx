@@ -72,7 +72,7 @@ const CustomTooltip = ({ active, payload }: TooltipContentProps) => {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-surface-container-highest border border-outline-variant/20 px-3 py-2">
+    <div className="rounded-[0.8rem] border border-white/10 bg-surface-container-highest px-3 py-2 shadow-xl">
       <div className="text-[10px] font-label text-primary uppercase">{d.label}</div>
       <div className="text-sm font-headline font-bold text-on-surface">{d.hours}h</div>
     </div>
@@ -152,7 +152,7 @@ export default function FocusTrendsChart({
   }));
 
   return (
-    <div className="bg-surface-container p-6 border border-outline-variant/10 relative overflow-hidden h-64 flex flex-col">
+    <div className="relative flex h-64 flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-6">
       <div className="flex justify-between items-start mb-4">
         <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">
           Focus_Trends_7D
@@ -192,7 +192,7 @@ export default function FocusTrendsChart({
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-1 pt-3 border-t border-outline-variant/5 flex justify-between">
+      <div className="mt-1 flex justify-between border-t border-white/[0.05] pt-3">
         <div className="text-[10px] font-label text-outline uppercase">Min: {minHours}h</div>
         <div className="text-[10px] font-label text-outline uppercase">Max: {maxHours}h</div>
       </div>

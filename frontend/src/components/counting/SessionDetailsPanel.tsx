@@ -9,6 +9,7 @@ export interface SessionDetails {
 interface SessionDetailsPanelProps {
   details: SessionDetails;
   onChange: (details: SessionDetails) => void;
+  contained?: boolean;
 }
 
 const FIELDS: { key: keyof SessionDetails; label: string; placeholder: string }[] = [
@@ -17,17 +18,17 @@ const FIELDS: { key: keyof SessionDetails; label: string; placeholder: string }[
   { key: "topic", label: "Topic", placeholder: "SYSTEM_ARCH" },
 ];
 
-export default function SessionDetailsPanel({ details, onChange }: SessionDetailsPanelProps) {
+export default function SessionDetailsPanel({ details, onChange, contained = false }: SessionDetailsPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-xl z-50">
+    <div className={`${contained ? "absolute" : "fixed"} bottom-0 left-1/2 z-50 w-full max-w-xl -translate-x-1/2 px-2`}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="mx-auto flex w-fit flex-col items-center"
       >
         <div
-          className={`flex items-center gap-2 border-x border-t px-8 py-2 backdrop-blur-md transition-all hover:bg-surface group ${
+          className={`group flex items-center gap-2 rounded-t-[1rem] border-x border-t px-8 py-2 backdrop-blur-md transition-all hover:bg-surface ${
             isOpen
               ? "border-primary/60 bg-surface"
               : "border-outline/20 bg-surface/50 hover:border-primary/40"
@@ -47,11 +48,11 @@ export default function SessionDetailsPanel({ details, onChange }: SessionDetail
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out border-t backdrop-blur-xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] bg-surface-container-high border-primary/40 ${
+        className={`overflow-hidden rounded-t-[1.25rem] border-x border-t border-primary/30 bg-surface-container-high/95 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all duration-500 ease-in-out ${
           isOpen ? "max-h-[300px]" : "max-h-0"
         }`}
       >
-        <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className={`grid grid-cols-1 gap-4 p-5 ${contained ? "" : "md:grid-cols-3 md:p-8"}`}>
           {FIELDS.map(({ key, label, placeholder }) => (
             <div key={key} className="space-y-2">
               <label className="font-label text-[10px] font-bold tracking-widest text-primary uppercase block ml-1">
@@ -62,7 +63,7 @@ export default function SessionDetailsPanel({ details, onChange }: SessionDetail
                 value={details[key]}
                 placeholder={placeholder}
                 onChange={(e) => onChange({ ...details, [key]: e.target.value })}
-                className="w-full bg-black border border-primary/40 px-3 py-2 text-primary font-mono text-xs focus:border-primary focus:ring-1 focus:ring-primary/30 focus:outline-none transition-colors placeholder:text-primary/40 uppercase"
+                className="w-full rounded-[0.75rem] border border-primary/25 bg-black px-3 py-2 font-mono text-xs uppercase text-primary outline-none transition-colors placeholder:text-primary/40 focus:border-primary focus:ring-1 focus:ring-primary/30"
               />
             </div>
           ))}

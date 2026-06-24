@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import ScrollRevealSection from "../ScrollRevealSection";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 // Replace with API response shape when ready
@@ -97,29 +99,35 @@ export default function AISessionNotes({
   sessions = defaultSessions,
   onViewAll,
 }: AISessionNotesProps) {
+  const reduceMotion = useReducedMotion();
   const [selectedId, setSelectedId] = useState<number>(sessions[0]?.id ?? 1);
   const selected = sessions.find((s) => s.id === selectedId) ?? sessions[0];
 
   return (
-    <section className="space-y-6">
+    <ScrollRevealSection className="space-y-6 rounded-[2rem] border border-white/[0.07] bg-black/40 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:p-7 lg:p-8">
       {/* Header */}
-      <div className="flex justify-between items-end">
-        <h3 className="text-xs font-label font-bold uppercase tracking-[0.4em] text-on-surface-variant">
-          AI_SESSION_NOTES
-        </h3>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <div className="mb-3 w-fit rounded-[999px] bg-primary-fixed/[0.07] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.17em] text-primary-fixed">
+            AI archive
+          </div>
+          <h3 className="text-2xl font-bold tracking-[-0.035em] text-on-surface sm:text-3xl">
+            Session Notes
+          </h3>
+        </div>
         <button
           onClick={onViewAll}
-          className="text-[10px] font-label text-primary uppercase border border-primary/20 px-3 py-1 hover:bg-primary/10 transition-colors"
+          className="rounded-[999px] border border-primary/15 bg-primary/[0.04] px-4 py-2 text-[9px] font-label uppercase tracking-[0.14em] text-primary outline-none transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-primary/60"
         >
           VIEW_ALL_LOGS
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:min-h-[500px]">
+      <div className="grid grid-cols-1 gap-3 lg:min-h-[500px] lg:grid-cols-12">
         {/* ── List panel ── */}
-        <div className="lg:col-span-5 xl:col-span-4 bg-surface-container-low border border-outline-variant/10 flex flex-col overflow-hidden lg:max-h-[500px]">
-          <div className="p-4 border-b border-outline-variant/10 bg-surface-container">
-            <div className="text-[10px] font-label text-outline uppercase tracking-widest">
+        <div className="flex flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] lg:col-span-5 lg:max-h-[500px] xl:col-span-4">
+          <div className="border-b border-white/[0.06] px-4 py-3">
+            <div className="text-[9px] font-label uppercase tracking-[0.15em] text-outline">
               Recent_Entries
             </div>
           </div>
@@ -131,10 +139,10 @@ export default function AISessionNotes({
                 <button
                   key={session.id}
                   onClick={() => setSelectedId(session.id)}
-                  className={`w-full text-left p-4 border-b border-outline-variant/5 transition-colors group ${
+                  className={`group m-1.5 block w-[calc(100%_-_0.75rem)] rounded-[1rem] border px-4 py-3.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/60 ${
                     isActive
-                      ? "bg-primary/5 border-l-2 border-l-primary"
-                      : "hover:bg-surface-container border-l-2 border-l-transparent"
+                      ? "border-primary/12 bg-primary/[0.07]"
+                      : "border-transparent hover:bg-white/[0.035]"
                   }`}
                 >
                   <div
@@ -157,8 +165,16 @@ export default function AISessionNotes({
         </div>
 
         {/* ── Detail panel ── */}
-        {selected && (
-          <div className="lg:col-span-7 xl:col-span-8 bg-surface-container border border-outline-variant/10 p-6 sm:p-8 flex flex-col lg:max-h-[500px]">
+        <AnimatePresence mode="wait">
+          {selected && (
+          <motion.div
+            key={selected.id}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22 }}
+            className="flex flex-col rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-5 sm:p-7 lg:col-span-7 lg:max-h-[500px] xl:col-span-8"
+          >
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h4 className="text-2xl font-headline font-black mb-1">
@@ -175,14 +191,14 @@ export default function AISessionNotes({
                   </span>
                 </div>
               </div>
-              <span className="px-2 py-1 bg-surface-container-highest border border-outline-variant/20 text-[10px] font-label text-on-surface-variant uppercase shrink-0">
+              <span className="shrink-0 rounded-[999px] border border-white/[0.07] bg-white/[0.035] px-3 py-1.5 text-[9px] font-label uppercase tracking-[0.12em] text-on-surface-variant">
                 ARCHIVED_LOG
               </span>
             </div>
 
             <div className="flex-1 space-y-6 overflow-y-auto pr-2 scroll-area">
               {/* AI reflection */}
-              <div className="bg-surface-container-high p-4 border-l-2 border-primary/50">
+              <div className="rounded-[1.15rem] border border-primary/10 bg-primary/[0.035] p-4">
                 <div className="text-[10px] font-label text-primary uppercase tracking-widest mb-2">
                   AI_REFLECTION
                 </div>
@@ -200,7 +216,7 @@ export default function AISessionNotes({
                   {selected.concepts.map((concept) => (
                     <span
                       key={concept}
-                      className="px-3 py-1 bg-surface-container-highest border border-outline-variant/10 text-xs text-on-surface uppercase"
+                      className="rounded-[999px] border border-white/[0.07] bg-white/[0.035] px-3 py-1.5 text-[10px] uppercase text-on-surface"
                     >
                       {concept}
                     </span>
@@ -209,7 +225,7 @@ export default function AISessionNotes({
               </div>
 
               {/* Bullets */}
-              <div className="text-xs font-label text-outline leading-loose border-t border-outline-variant/10 pt-6 space-y-1">
+              <div className="space-y-1 border-t border-white/[0.06] pt-5 text-xs font-label leading-loose text-outline">
                 {selected.bullets.map((bullet, i) => (
                   <div key={i} className="terminal-bullet">
                     {bullet}
@@ -217,9 +233,10 @@ export default function AISessionNotes({
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
-    </section>
+    </ScrollRevealSection>
   );
 }

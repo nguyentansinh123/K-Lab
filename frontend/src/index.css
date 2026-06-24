@@ -299,6 +299,28 @@ body {
   font-weight: bold;
 }
 
+/* Let the dashboard heat map fill its pod without its own scrollbar. */
+@media (min-width: 1024px) {
+  .dashboard-activity-calendar {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .dashboard-activity-calendar .react-activity-calendar__scroll-container {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding-left: 2rem;
+  }
+
+  .dashboard-activity-calendar .react-activity-calendar__calendar {
+    width: 100% !important;
+    height: auto !important;
+    margin-left: 0 !important;
+  }
+}
+
 /* Counting/Session page — ambient breathe */
 @keyframes breathe {
   0%, 100% { opacity: 0.8; text-shadow: 0 0 20px rgba(156, 255, 147, 0.1); }

@@ -1,4 +1,5 @@
-import { useScrollReveal } from "../hooks/useScrollReveal";
+import { motion, useReducedMotion } from "framer-motion";
+import ScrollRevealSection from "./ScrollRevealSection";
 
 interface Activity {
   icon: string;
@@ -48,45 +49,50 @@ const activities: Activity[] = [
 ];
 
 export default function ActivityCards() {
-  const { ref, isVisible } = useScrollReveal();
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section
-      ref={ref}
-      className={`grid grid-cols-1 gap-8 border-t border-outline-variant/30 pt-10 md:grid-cols-3 transition-all duration-700 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+    <ScrollRevealSection
+      className="rounded-[2rem] border border-white/[0.07] bg-black/40 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.22)] backdrop-blur-sm sm:p-4"
     >
-      {activities.map((activity, i) => (
-        <div
-          key={activity.title}
-          className="cursor-pointer border border-outline-variant/25 bg-surface-container-lowest/70 p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary-fixed/40 hover:bg-surface-container-low group"
-          style={{ transitionDelay: isVisible ? `${i * 80}ms` : "0ms" }}
-        >
-          <div className="flex justify-between items-start mb-6">
-            <span className="material-symbols-outlined text-outline text-3xl group-hover:text-primary-fixed transition-colors duration-200">
-              {activity.icon}
-            </span>
-            <span
-              className={`text-[10px] font-bold ${activity.statusColor} ${activity.statusBg} px-2 py-0.5 uppercase tracking-[0.18em]`}
-            >
-              {activity.status}
-            </span>
-          </div>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        {activities.map((activity, i) => (
+          <motion.article
+            key={activity.title}
+            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={reduceMotion ? undefined : { y: -5 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: reduceMotion ? 0 : i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="group cursor-pointer rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-6 transition-[background-color,border-color,box-shadow] duration-300 hover:border-primary-fixed/15 hover:bg-primary-fixed/[0.035] hover:shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
+          >
+            <div className="mb-7 flex items-start justify-between">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[999px] border border-white/[0.07] bg-black/35 text-outline transition-colors duration-200 group-hover:border-primary-fixed/15 group-hover:text-primary-fixed">
+                <span className="material-symbols-outlined block text-xl leading-none">
+                  {activity.icon}
+                </span>
+              </span>
+              <span
+                className={`rounded-[999px] px-3 py-1.5 text-[9px] font-bold ${activity.statusColor} ${activity.statusBg} uppercase tracking-[0.16em]`}
+              >
+                {activity.status}
+              </span>
+            </div>
 
-          <h3 className="text-xl font-bold text-white mb-3">
-            {activity.title}
-          </h3>
-          <p className="text-sm text-on-surface-variant/75 leading-6 mb-7">
-            {activity.description}
-          </p>
+            <h3 className="mb-3 text-lg font-bold tracking-[-0.02em] text-white">
+              {activity.title}
+            </h3>
+            <p className="mb-7 text-sm leading-6 text-on-surface-variant/75">
+              {activity.description}
+            </p>
 
-          <div className="flex justify-between gap-4 border-t border-outline-variant/20 pt-4 text-[10px] uppercase tracking-widest text-outline">
-            <span>{activity.metaLeft}</span>
-            <span>{activity.metaRight}</span>
-          </div>
-        </div>
-      ))}
-    </section>
+            <div className="flex justify-between gap-4 border-t border-white/[0.06] pt-4 text-[9px] uppercase tracking-[0.13em] text-outline">
+              <span>{activity.metaLeft}</span>
+              <span className="text-right">{activity.metaRight}</span>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+    </ScrollRevealSection>
   );
 }

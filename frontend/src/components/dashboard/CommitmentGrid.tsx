@@ -3,6 +3,8 @@ import { ActivityCalendar } from "react-activity-calendar";
 import { useAppDispatch } from "../../hooks/dispatch";
 import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice";
 import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
+import ScrollRevealSection from "../ScrollRevealSection";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 interface ActivityData {
   date: string;
@@ -93,6 +95,7 @@ const heatDateGenerator = (
 };
 
 export default function CommitmentGrid() {
+  const reduceMotion = useReducedMotion();
   const [year, setYear] = useState(CURRENT_YEAR);
   const [sessions, setSessions] = useState<StudySessionDTO[]>([]);
   const calendarData = useMemo(
@@ -149,100 +152,128 @@ export default function CommitmentGrid() {
   //   : "OPERATOR_01";
 
   return (
-    <section className="space-y-6">
+    <ScrollRevealSection className="space-y-8 rounded-[2rem] border border-white/[0.07] bg-black/40 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-sm sm:p-8 lg:p-10">
       {/* Header row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div className="flex items-center gap-4">
-          <h3 className="text-xs font-label font-bold uppercase tracking-[0.4em] text-on-surface-variant">
-            Consistency_Grid
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <div className="mb-3 w-fit rounded-[999px] bg-primary-fixed/[0.07] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.17em] text-primary-fixed">
+            Learning signal
+          </div>
+          <h3 className="text-3xl font-bold tracking-[-0.04em] text-on-surface sm:text-4xl">
+            Consistency Grid
           </h3>
         </div>
-        <div className="text-[10px] font-body text-outline">
+        <div className="rounded-[999px] border border-white/[0.06] bg-white/[0.03] px-4 py-2 text-[9px] font-body uppercase tracking-[0.13em] text-outline">
           Each square = 30 mins of deep work
         </div>
       </div>
 
       {/* Calendar */}
-      <div className="flex flex-col xl:flex-row gap-6 items-center xl:items-stretch justify-center">
-        <aside className="flex w-full shrink-0 bg-surface-container border border-outline-variant/10 p-3 xl:w-36">
-          <div className="flex w-full gap-2 overflow-x-auto hide-scrollbar xl:flex-col">
+      <div className="flex flex-col items-stretch gap-3 lg:flex-row">
+        <aside className="flex w-full shrink-0 rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-2 lg:w-32">
+          <div className="hide-scrollbar flex w-full gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
             {YEARS.map((y) => {
               const isActive = y === year;
 
               return (
-                <button
+                <motion.button
                   key={y}
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setYear(y)}
-                  className={`cursor-pointer relative flex h-11 min-w-24 w-full items-center border px-3 text-left font-label text-sm font-bold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 xl:min-w-0 ${
+                  whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+                  className={`relative flex h-12 min-w-24 flex-1 cursor-pointer items-center justify-center rounded-[999px] border border-transparent px-4 font-label text-sm font-bold outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/60 lg:min-w-0 ${
                     isActive
-                      ? "border-primary/25 bg-primary/10 text-primary"
-                      : "border-transparent text-outline hover:bg-surface-container-high hover:text-on-surface"
+                      ? "text-primary"
+                      : "border-transparent text-outline hover:bg-white/[0.04] hover:text-on-surface"
                   }`}
                 >
-                  <span>{y}</span>
-                  {isActive && (
-                    <span className="absolute inset-y-2 right-2 w-px bg-primary/70" />
-                  )}
-                </button>
+                  {isActive ? (
+                    <motion.span
+                      layoutId={reduceMotion ? undefined : "active-dashboard-year"}
+                      className="absolute inset-0 rounded-[999px] border border-primary/15 bg-primary/10 shadow-[0_8px_24px_rgba(0,252,64,0.06)]"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 32,
+                        mass: 0.7,
+                      }}
+                    />
+                  ) : null}
+                  <span className="relative z-10">{y}</span>
+                </motion.button>
               );
             })}
           </div>
         </aside>
 
         {/* Activity calendar */}
-        <div className="inline-block bg-surface-container p-6 lg:p-8 overflow-x-auto hide-scrollbar border border-outline-variant/10">
-          <ActivityCalendar
-            data={calendarData}
-            theme={{
-              dark: [
-                "#1a1919",
-                "rgba(156,255,147,0.2)",
-                "rgba(156,255,147,0.4)",
-                "rgba(156,255,147,0.6)",
-                "rgba(156,255,147,0.8)",
-              ],
-            }}
-            colorScheme="dark"
-            showWeekdayLabels
-            showColorLegend={false}
-            showTotalCount={false}
-            blockSize={15}
-            blockMargin={5}
-            fontSize={13}
-            style={{ color: "#777575" }}
-          />
+        <div className="hide-scrollbar min-w-0 flex-1 overflow-x-auto rounded-[1.75rem] border border-white/[0.06] bg-surface-container-lowest/55 p-5 sm:p-7 lg:overflow-hidden lg:p-8">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={year}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+              transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+              className="min-w-max lg:min-w-0 lg:w-full"
+            >
+              <ActivityCalendar
+                className="dashboard-activity-calendar"
+                data={calendarData}
+                theme={{
+                  dark: [
+                    "#1a1919",
+                    "rgba(156,255,147,0.2)",
+                    "rgba(156,255,147,0.4)",
+                    "rgba(156,255,147,0.6)",
+                    "rgba(156,255,147,0.8)",
+                  ],
+                }}
+                colorScheme="dark"
+                showWeekdayLabels
+                showColorLegend={false}
+                showTotalCount={false}
+                blockSize={15}
+                blockMargin={3}
+                blockRadius={4}
+                fontSize={12}
+                style={{ color: "#777575" }}
+              />
 
-          {/* Custom legend */}
-          <div className="mt-6 flex items-center gap-2 text-[10px] font-label text-outline">
-            Less focus
-            <div className="flex gap-[3px] ml-2 mr-2">
-              {(
-                [
-                  "#1a1919",
-                  "rgba(156,255,147,0.2)",
-                  "rgba(156,255,147,0.4)",
-                  "rgba(156,255,147,0.6)",
-                  "rgba(156,255,147,0.8)",
-                  "#9cff93",
-                ] as string[]
-              ).map((color, i) => (
-                <div
-                  key={i}
-                  className="w-[12px] h-[12px]"
-                  style={{
-                    backgroundColor: color,
-                    boxShadow:
-                      i === 5 ? "0 0 6px rgba(156,255,147,0.4)" : undefined,
-                  }}
-                />
-              ))}
-            </div>
-            More focus
-          </div>
+              {/* Custom legend */}
+              <div className="mt-6 flex items-center gap-2 text-[10px] font-label text-outline">
+                Less focus
+                <div className="ml-2 mr-2 flex gap-[3px]">
+                  {(
+                    [
+                      "#1a1919",
+                      "rgba(156,255,147,0.2)",
+                      "rgba(156,255,147,0.4)",
+                      "rgba(156,255,147,0.6)",
+                      "rgba(156,255,147,0.8)",
+                      "#9cff93",
+                    ] as string[]
+                  ).map((color, i) => (
+                    <div
+                      key={i}
+                      className="h-[12px] w-[12px] rounded-[3px]"
+                      style={{
+                        backgroundColor: color,
+                        boxShadow:
+                          i === 5
+                            ? "0 0 6px rgba(156,255,147,0.4)"
+                            : undefined,
+                      }}
+                    />
+                  ))}
+                </div>
+                More focus
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-    </section>
+    </ScrollRevealSection>
   );
 }

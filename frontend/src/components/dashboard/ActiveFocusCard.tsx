@@ -23,10 +23,10 @@ export default function ActiveFocusCard({
   session = defaultSession,
 }: ActiveFocusCardProps) {
   return (
-    <div className="md:col-span-5 bg-surface-container p-8 flex flex-col border border-tertiary/30 relative">
+    <div className="relative flex flex-col rounded-[1.5rem] border border-tertiary/15 bg-tertiary/[0.025] p-6 md:col-span-5 sm:p-7">
       {/* Live badge */}
-      <div className="absolute top-0 right-0 p-4">
-        <div className="flex items-center gap-2">
+      <div className="absolute right-4 top-4">
+        <div className="flex items-center gap-2 rounded-[999px] border border-tertiary/10 bg-tertiary/[0.05] px-3 py-1.5">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-tertiary" />
@@ -54,9 +54,9 @@ export default function ActiveFocusCard({
           <div className="text-[10px] font-label text-outline uppercase mb-2">
             Attention_Meter
           </div>
-          <div className="h-2 bg-surface-container-highest w-full border border-outline-variant/10 p-[1px]">
+          <div className="h-2 w-full overflow-hidden rounded-[999px] border border-white/[0.06] bg-surface-container-highest p-[1px]">
             <div
-              className="h-full bg-gradient-to-r from-tertiary/40 to-tertiary transition-all duration-700"
+              className="h-full rounded-[999px] bg-gradient-to-r from-tertiary/40 to-tertiary transition-all duration-700"
               style={{
                 width: `${session.attentionPct}%`,
                 boxShadow: "0 0 10px rgba(222,255,171,0.4)",
@@ -70,7 +70,7 @@ export default function ActiveFocusCard({
 
         {/* Timer tiles */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-surface-container-high p-4 border border-outline-variant/10">
+          <div className="rounded-[1.15rem] border border-white/[0.06] bg-white/[0.025] p-4">
             <div className="text-[10px] font-label text-outline uppercase">
               Elapsed
             </div>
@@ -78,7 +78,7 @@ export default function ActiveFocusCard({
               {session.elapsed}
             </div>
           </div>
-          <div className="bg-surface-container-high p-4 border border-outline-variant/10">
+          <div className="rounded-[1.15rem] border border-white/[0.06] bg-white/[0.025] p-4">
             <div className="text-[10px] font-label text-outline uppercase">
               Target
             </div>
@@ -90,8 +90,8 @@ export default function ActiveFocusCard({
 
         {/* Distraction warning */}
         {session.distraction && (
-          <div className="text-xs font-label text-error-dim bg-error/5 border border-error/20 p-3 flex items-center gap-3">
-            <span className="material-symbols-outlined text-sm">warning</span>
+          <div className="flex items-center gap-3 rounded-[1rem] border border-error/15 bg-error/[0.045] p-3 text-xs font-label text-error-dim">
+            <span className="material-symbols-outlined block text-sm leading-none">warning</span>
             <span>
               Detected distractions:{" "}
               <strong className="text-error">{session.distraction}</strong>

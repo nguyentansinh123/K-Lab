@@ -1,4 +1,5 @@
-import { useScrollReveal } from "../hooks/useScrollReveal";
+import { motion, useReducedMotion } from "framer-motion";
+import ScrollRevealSection from "./ScrollRevealSection";
 
 interface Feature {
   icon: string;
@@ -28,45 +29,52 @@ const features: Feature[] = [
 ];
 
 export default function CoreSystems() {
-  const { ref, isVisible } = useScrollReveal();
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section
-      ref={ref}
+    <ScrollRevealSection
       id="how-it-works"
-      className={`transition-all duration-700 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className="scroll-mt-28 rounded-[2rem] border border-white/[0.07] bg-black/45 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] backdrop-blur-sm sm:p-8 md:p-10"
     >
-      <div className="mb-12 flex flex-col gap-4 border-b border-outline-variant/30 pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
-          System Capabilities
-        </h2>
+      <div className="mb-9 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="mb-3 w-fit rounded-[999px] bg-white/[0.04] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.18em] text-on-surface-variant">
+            How it works
+          </div>
+          <h2 className="text-3xl font-semibold tracking-[-0.04em] text-white md:text-4xl">
+            System Capabilities
+          </h2>
+        </div>
         <p className="max-w-md text-sm leading-6 text-on-surface-variant/65">
-          The tracker watches the workflow without turning the interface into a
-          second job.
+          The tracker watches the workflow without turning the interface into a second job.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {features.map((feature, i) => (
-          <div
+          <motion.article
             key={feature.title}
-            className="group cursor-pointer border-l border-outline-variant/30 pl-6 transition-all duration-200 hover:border-primary-fixed/70"
-            style={{ transitionDelay: isVisible ? `${i * 100}ms` : "0ms" }}
+            initial={reduceMotion ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={reduceMotion ? undefined : { y: -4 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.5, delay: reduceMotion ? 0 : i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+            className="group cursor-pointer rounded-[1.5rem] border border-white/[0.06] bg-white/[0.025] p-6 transition-[background-color,border-color] duration-300 hover:border-primary-fixed/15 hover:bg-primary-fixed/[0.035]"
           >
-            <span className="material-symbols-outlined mb-6 block text-3xl text-outline transition-colors duration-200 group-hover:text-primary-fixed">
-              {feature.icon}
+            <span className="mb-7 flex h-11 w-11 shrink-0 items-center justify-center rounded-[999px] border border-white/[0.07] bg-black/35 text-outline transition-colors duration-200 group-hover:border-primary-fixed/20 group-hover:text-primary-fixed">
+              <span className="material-symbols-outlined block text-xl leading-none">
+                {feature.icon}
+              </span>
             </span>
-            <h4 className="text-xl font-bold text-white mb-3">
+            <h4 className="mb-3 text-lg font-bold tracking-[-0.02em] text-white">
               {feature.title}
             </h4>
-            <p className="text-on-surface-variant/70 text-sm leading-7">
+            <p className="text-sm leading-7 text-on-surface-variant/70">
               {feature.description}
             </p>
-          </div>
+          </motion.article>
         ))}
       </div>
-    </section>
+    </ScrollRevealSection>
   );
 }

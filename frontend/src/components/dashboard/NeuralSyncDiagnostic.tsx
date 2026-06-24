@@ -18,7 +18,7 @@ export default function NeuralSyncDiagnostic({ syncPct = 94.2 }: NeuralSyncDiagn
   const timeStr = time.toLocaleTimeString("en-US", { hour12: false });
 
   return (
-    <div className="bg-surface-container-high border-t-4 xl:border-t-0 xl:border-l-4 border-primary p-6 space-y-0 h-full flex flex-col">
+    <div className="flex h-full flex-col space-y-0 rounded-[1.5rem] border border-primary/10 bg-primary/[0.035] p-5 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant">
@@ -28,8 +28,8 @@ export default function NeuralSyncDiagnostic({ syncPct = 94.2 }: NeuralSyncDiagn
       </div>
 
       {/* Digital clock */}
-      <div className="text-center py-4 border-b border-outline-variant/10">
-        <div className="text-3xl font-headline font-black tracking-widest text-primary glow-text-primary">
+      <div className="rounded-[1.15rem] border border-white/[0.05] bg-black/20 py-4 text-center">
+        <div className="text-3xl font-headline font-black tracking-widest text-primary">
           {timeStr}
         </div>
         <div className="text-[8px] font-label uppercase tracking-[0.2em] text-outline mt-1">
@@ -49,7 +49,7 @@ export default function NeuralSyncDiagnostic({ syncPct = 94.2 }: NeuralSyncDiagn
       </div>
 
       {/* Sparkline */}
-      <div className="bg-surface-container p-4 border border-outline-variant/10">
+      <div className="rounded-[1.15rem] border border-white/[0.05] bg-black/20 p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="text-[8px] font-label text-outline uppercase tracking-widest">
             Consistency
@@ -80,7 +80,7 @@ export default function NeuralSyncDiagnostic({ syncPct = 94.2 }: NeuralSyncDiagn
       </div>
 
       {/* Diagnostic text */}
-      <div className="pt-4 border-t border-outline-variant/10 mt-auto">
+      <div className="mt-auto border-t border-white/[0.06] pt-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="material-symbols-outlined text-xs text-primary">memory</span>
           <span className="text-[9px] font-label text-outline uppercase tracking-widest">
