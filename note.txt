@@ -24,6 +24,8 @@ Metric Card:
     + do the pie chart ✅
   #3.1
     + fill something with the chart next to pie
+  #3.2
+    + usecallback for the data in metric card
   #4.0
     + Design UI for camera
   #4.1

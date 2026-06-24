@@ -19,6 +19,7 @@ import { useAppDispatch } from "../hooks/dispatch";
 import { updateTodaySession } from "../features/studysessions/SessionSlice";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import FocusAmbientBackground from "../components/counting/FocusAmbientBackground";
+import Video from "../components/counting/Video";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -204,11 +205,9 @@ export default function CountingPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.15 }}
-              className="relative flex min-w-0 items-center justify-center overflow-hidden bg-black"
+              className=" min-w-0 overflow-hidden bg-black"
             >
-              <span className="font-headline text-2xl font-medium tracking-[-0.03em] text-white sm:text-4xl">
-                hello worl
-              </span>
+              <Video/>
             </motion.aside>
           ) : null}
         </AnimatePresence>

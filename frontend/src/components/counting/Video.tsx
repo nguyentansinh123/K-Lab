@@ -1,0 +1,45 @@
+import { useRef } from "react";
+import MButton from "../MButton";
+
+const Video = () => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const startVideo = async () => {
+    try {
+      const video = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = video;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const stopCamera = () => {
+    const stream = videoRef.current?.srcObject;
+
+    if (stream instanceof MediaStream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-black">
+      <video
+        ref={videoRef}
+        className="absolute inset-0 h-full w-full object-cover"
+        autoPlay
+        playsInline
+      />
+
+      <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
+        <MButton startVideo={startVideo} />
+      </div>
+    </div>
+  );
+};
+
+export default Video;
