@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import MButton from "../MButton";
+import Loader from "../Loader";
 
 const Video = () => {
+  const [isCameraRunning, setIsCameraRunning] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const startVideo = async () => {
@@ -9,6 +11,7 @@ const Video = () => {
       const video = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = video;
+        setIsCameraRunning(true);
       }
     } catch (error) {
       console.log(error);
@@ -23,6 +26,7 @@ const Video = () => {
     }
     if (videoRef.current) {
       videoRef.current.srcObject = null;
+      setIsCameraRunning(false);
     }
   };
 
@@ -34,9 +38,18 @@ const Video = () => {
         autoPlay
         playsInline
       />
+      {!isCameraRunning && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <Loader />
+        </div>
+      )}
 
       <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
-        <MButton startVideo={startVideo} />
+        <MButton
+          startVideo={startVideo}
+          stopCamera={stopCamera}
+          isCameraRunning={isCameraRunning}
+        />
       </div>
     </div>
   );
