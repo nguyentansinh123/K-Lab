@@ -17,6 +17,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.100.10
         version: 5.100.10(react@19.2.5)
+      '@vladmandic/human':
+        specifier: ^3.3.6
+        version: 3.3.6
       framer-motion:
         specifier: ^12.41.0
         version: 12.41.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -601,6 +604,10 @@ packages:
         optional: true
       babel-plugin-react-compiler:
         optional: true
+
+  '@vladmandic/human@3.3.6':
+    resolution: {integrity: sha512-Nr5mPfq1gQ+uKeXY5uM3Fj8UxvF5CEh2s6txM5wRThqaW0mF9huooOuZSrT8hhGho0hGaXLFdAwfD/2+teCv6A==}
+    engines: {node: '>=14.0.0'}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1900,6 +1907,8 @@ snapshots:
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.7
       vite: 8.0.8(@types/node@24.12.2)(jiti@2.6.1)
+
+  '@vladmandic/human@3.3.6': {}
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
