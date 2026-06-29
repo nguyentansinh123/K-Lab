@@ -20,6 +20,7 @@ import { updateTodaySession } from "../features/studysessions/SessionSlice";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import FocusAmbientBackground from "../components/counting/FocusAmbientBackground";
 import Video from "../components/counting/Video";
+import CountingSettingsTab from "../components/counting/CountingSettingsTab";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -158,7 +159,6 @@ export default function CountingPage() {
       {showModal && (
         <EndSessionModal onResume={handleResume} onEnd={handleEndSession} />
       )}
-
       <motion.div
         className="grid h-full"
         animate={{ gridTemplateColumns: isSplit ? "1fr 1fr" : "1fr 0fr" }}
@@ -169,8 +169,12 @@ export default function CountingPage() {
           <FocusAmbientBackground active={isRunning} />
 
           <main className="relative z-10 flex flex-1 flex-col items-center justify-center">
-            <div className="absolute left-1/2 top-7 -translate-x-1/2">
-              <StatusBadge isRunning={isRunning} />
+            <div className="absolute inset-x-4 top-7 flex items-center justify-end sm:inset-x-7">
+              <div className="absolute left-1/2 -translate-x-1/2">
+                <StatusBadge isRunning={isRunning} />
+              </div>
+
+              <CountingSettingsTab />
             </div>
 
             <motion.div

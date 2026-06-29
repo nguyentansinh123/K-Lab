@@ -54,7 +54,7 @@ export default function TimerControls({
         <span className="material-symbols-outlined block text-[1rem] leading-none">
           {isSplit ? "collapse_content" : "splitscreen"}
         </span>
-        {isSplit ? "CLOSE SPLIT" : "SPLIT"}
+        {isSplit ? "Close Camera" : "Open Camera"}
       </button>
     </div>
   );
