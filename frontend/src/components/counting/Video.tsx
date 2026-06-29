@@ -5,14 +5,6 @@ import Loader from "../Loader";
 const Video = () => {
   const [isCameraRunning, setIsCameraRunning] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const config = {
-    backend: "webgl",
-    modelBasePath: "https://cdn.jsdelivr.net/npm/@vladmandic/human/models/",
-    face: { enabled: true, iris: true, emotion: false, description: false },
-    body: { enabled: false },
-    hand: { enabled: false },
-    object: { enabled: false },
-  };
 
   const startVideo = async () => {
     try {

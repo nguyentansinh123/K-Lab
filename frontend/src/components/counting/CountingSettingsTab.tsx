@@ -1,7 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
-const data = [
+export type LofiTrack = {
+  id: number;
+  name: string;
+  image: string;
+  link: string;
+};
+
+type CountingSettingsTabProps = {
+  selectedLofi: LofiTrack | null;
+  onSelectLofi: (lofi: LofiTrack | null) => void;
+};
+
+const data: LofiTrack[] = [
   {
     id: 1,
     name: "Beats to relax/study to",
@@ -52,10 +64,18 @@ const data = [
   },
 ]
 
-export default function CountingSettingsTab() {
+export default function CountingSettingsTab({
+  selectedLofi,
+  onSelectLofi,
+}: CountingSettingsTabProps) {
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
   const tabRef = useRef<HTMLDivElement | null>(null);
+
+  const handleSelect = (lofi: LofiTrack | null) => {
+    onSelectLofi(lofi);
+    setOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -115,7 +135,7 @@ export default function CountingSettingsTab() {
                 : { opacity: 0, x: 36, scale: 0.98 }
             }
             transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 top-14 flex h-[min(72vh,36rem)] w-[min(86vw,24rem)] origin-top-right flex-col overflow-hidden rounded-[1.35rem] border border-primary/15 bg-[#0b100d]/90 shadow-[0_26px_80px_rgba(0,0,0,0.55),0_0_34px_rgba(0,252,64,0.08)] backdrop-blur-xl"
+            className="absolute right-0 top-14 flex h-[min(72vh,36rem)] w-[min(92vw,42rem)] origin-top-right flex-col overflow-hidden rounded-[1.35rem] border border-primary/15 bg-[#0b100d]/90 shadow-[0_26px_80px_rgba(0,0,0,0.55),0_0_34px_rgba(0,252,64,0.08)] backdrop-blur-xl"
           >
             <div className="shrink-0 border-b border-white/[0.07] px-5 py-4">
               <div className="flex items-center justify-between gap-4">
@@ -142,12 +162,45 @@ export default function CountingSettingsTab() {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <button
+                  type="button"
+                  aria-pressed={selectedLofi === null}
+                  onClick={() => handleSelect(null)}
+                  className={`group min-h-28 cursor-pointer overflow-hidden rounded-[1rem] border bg-white/[0.035] text-left outline-none transition-all hover:border-primary/25 hover:bg-primary/[0.06] focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                    selectedLofi === null
+                      ? "border-primary/45 bg-primary/[0.08]"
+                      : "border-white/[0.07]"
+                  }`}
+                >
+                  <span className="flex h-16 items-center justify-center border-b border-white/[0.06] bg-[linear-gradient(135deg,rgba(0,252,64,0.12),rgba(255,255,255,0.035)_42%,rgba(0,0,0,0.22)),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:auto,18px_18px]">
+                    <span className="material-symbols-outlined text-[1.4rem] text-primary/80">
+                      timer
+                    </span>
+                  </span>
+                  <span className="flex items-center justify-between gap-3 px-3 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate font-mono text-[10px] uppercase tracking-[0.14em] text-on-surface">
+                        Default focus
+                      </span>
+                    </span>
+                    <span className="material-symbols-outlined text-[1rem] text-outline transition-colors group-hover:text-primary">
+                      restart_alt
+                    </span>
+                  </span>
+                </button>
+
                 {data.map((data) => (
                   <button
                     key={data.id}
                     type="button"
-                    className="group min-h-28 cursor-pointer overflow-hidden rounded-[1rem] border border-white/[0.07] bg-white/[0.035] text-left outline-none transition-all hover:border-primary/25 hover:bg-primary/[0.06] focus-visible:ring-2 focus-visible:ring-primary/60"
+                    aria-pressed={selectedLofi?.id === data.id}
+                    onClick={() => handleSelect(data)}
+                    className={`group min-h-28 cursor-pointer overflow-hidden rounded-[1rem] border bg-white/[0.035] text-left outline-none transition-all hover:border-primary/25 hover:bg-primary/[0.06] focus-visible:ring-2 focus-visible:ring-primary/60 ${
+                      selectedLofi?.id === data.id
+                        ? "border-primary/45 bg-primary/[0.08]"
+                        : "border-white/[0.07]"
+                    }`}
                   >
                     <span className="block h-16 overflow-hidden border-b border-white/[0.06] bg-black/20">
                       <img

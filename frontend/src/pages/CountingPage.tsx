@@ -20,7 +20,10 @@ import { updateTodaySession } from "../features/studysessions/SessionSlice";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import FocusAmbientBackground from "../components/counting/FocusAmbientBackground";
 import Video from "../components/counting/Video";
-import CountingSettingsTab from "../components/counting/CountingSettingsTab";
+import CountingSettingsTab, {
+  type LofiTrack,
+} from "../components/counting/CountingSettingsTab";
+import LofiBackgroundPlayer from "../components/counting/LofiBackgroundPlayer";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -36,6 +39,7 @@ export default function CountingPage() {
   const [hasStartedActivity, setHasStartedActivity] = useState(false);
   const [isStartingActivity, setIsStartingActivity] = useState(false);
   const [isSplit, setIsSplit] = useState(false);
+  const [selectedLofi, setSelectedLofi] = useState<LofiTrack | null>(null);
   const [activityDetails, setActivityDetails] = useState<SessionDetails>({
     title: "",
     appName: "",
@@ -154,19 +158,28 @@ export default function CountingPage() {
 
   }
 
+  const isLofiMode = selectedLofi !== null;
+
   return (
     <div className="relative h-screen overflow-hidden bg-[#080a08] pt-16">
+      <LofiBackgroundPlayer src={selectedLofi?.link ?? null} />
+
       {showModal && (
         <EndSessionModal onResume={handleResume} onEnd={handleEndSession} />
       )}
       <motion.div
-        className="grid h-full"
+        className="relative z-10 grid h-full"
         animate={{ gridTemplateColumns: isSplit ? "1fr 1fr" : "1fr 0fr" }}
         transition={{ duration: reduceMotion ? 0 : 0.65, ease: [0.22, 1, 0.36, 1] }}
       >
-        <section className="relative flex min-w-0 flex-col overflow-hidden border-r border-transparent bg-[#0b0d0b] data-[split=true]:border-white/[0.07]" data-split={isSplit}>
+        <section
+          className={`relative flex min-w-0 flex-col overflow-hidden border-r border-transparent data-[split=true]:border-white/[0.07] ${
+            isLofiMode ? "bg-black/35" : "bg-[#0b0d0b]"
+          }`}
+          data-split={isSplit}
+        >
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(234,255,222,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(234,255,222,0.018)_1px,transparent_1px)] bg-[size:56px_56px]" />
-          <FocusAmbientBackground active={isRunning} />
+          {!isLofiMode && <FocusAmbientBackground active={isRunning} />}
 
           <main className="relative z-10 flex flex-1 flex-col items-center justify-center">
             <div className="absolute inset-x-4 top-7 flex items-center justify-end sm:inset-x-7">
@@ -174,7 +187,10 @@ export default function CountingPage() {
                 <StatusBadge isRunning={isRunning} />
               </div>
 
-              <CountingSettingsTab />
+              <CountingSettingsTab
+                selectedLofi={selectedLofi}
+                onSelectLofi={setSelectedLofi}
+              />
             </div>
 
             <motion.div
