@@ -24,6 +24,7 @@ import CountingSettingsTab, {
   type LofiTrack,
 } from "../components/counting/CountingSettingsTab";
 import LofiBackgroundPlayer from "../components/counting/LofiBackgroundPlayer";
+import AmbientSoundSettings from "../components/counting/AmbientSoundSettings";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -187,10 +188,13 @@ export default function CountingPage() {
                 <StatusBadge isRunning={isRunning} />
               </div>
 
-              <CountingSettingsTab
-                selectedLofi={selectedLofi}
-                onSelectLofi={setSelectedLofi}
-              />
+              <div className="flex items-center gap-2">
+                <AmbientSoundSettings />
+                <CountingSettingsTab
+                  selectedLofi={selectedLofi}
+                  onSelectLofi={setSelectedLofi}
+                />
+              </div>
             </div>
 
             <motion.div
