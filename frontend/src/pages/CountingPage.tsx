@@ -25,6 +25,7 @@ import CountingSettingsTab, {
 } from "../components/counting/CountingSettingsTab";
 import LofiBackgroundPlayer from "../components/counting/LofiBackgroundPlayer";
 import AmbientSoundSettings from "../components/counting/AmbientSoundSettings";
+import DraggableNote from "../components/counting/DraggableNote";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -165,6 +166,7 @@ export default function CountingPage() {
   return (
     <div className="relative h-screen overflow-hidden bg-[#080a08] pt-16">
       <LofiBackgroundPlayer src={selectedLofi?.link ?? null} volume={lofiVolume} />
+      <DraggableNote />
 
       {showModal && (
         <EndSessionModal onResume={handleResume} onEnd={handleEndSession} />
