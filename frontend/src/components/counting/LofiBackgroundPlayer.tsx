@@ -3,19 +3,27 @@ import ReactPlayer from "react-player";
 
 type LofiBackgroundPlayerProps = {
   src: string | null;
+  volume: number;
 };
 
 const LOADING_HIDE_DELAY_MS = 3100;
 
 export default function LofiBackgroundPlayer({
   src,
+  volume,
 }: LofiBackgroundPlayerProps) {
   if (!src) return null;
 
-  return <ActiveLofiBackgroundPlayer key={src} src={src} />;
+  return <ActiveLofiBackgroundPlayer key={src} src={src} volume={volume} />;
 }
 
-function ActiveLofiBackgroundPlayer({ src }: { src: string }) {
+function ActiveLofiBackgroundPlayer({
+  src,
+  volume,
+}: {
+  src: string;
+  volume: number;
+}) {
   const [isBuffering, setIsBuffering] = useState(true);
   const hideLoadingTimeoutRef = useRef<number | null>(null);
 
@@ -63,7 +71,7 @@ function ActiveLofiBackgroundPlayer({ src }: { src: string }) {
           playing
           playsInline
           controls={false}
-          volume={0.2}
+          volume={volume}
           width="100%"
           height="100%"
           className="h-full w-full"

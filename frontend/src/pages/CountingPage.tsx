@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { useTimer } from "../hooks/useTimer";
 import StatusBadge from "../components/counting/StatusBadge";
 import TimerDisplay from "../components/counting/TimerDisplay";
@@ -41,6 +41,7 @@ export default function CountingPage() {
   const [isStartingActivity, setIsStartingActivity] = useState(false);
   const [isSplit, setIsSplit] = useState(false);
   const [selectedLofi, setSelectedLofi] = useState<LofiTrack | null>(null);
+  const [lofiVolume, setLofiVolume] = useState(0.2);
   const [activityDetails, setActivityDetails] = useState<SessionDetails>({
     title: "",
     appName: "",
@@ -163,7 +164,7 @@ export default function CountingPage() {
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#080a08] pt-16">
-      <LofiBackgroundPlayer src={selectedLofi?.link ?? null} />
+      <LofiBackgroundPlayer src={selectedLofi?.link ?? null} volume={lofiVolume} />
 
       {showModal && (
         <EndSessionModal onResume={handleResume} onEnd={handleEndSession} />
@@ -196,6 +197,38 @@ export default function CountingPage() {
                 />
               </div>
             </div>
+
+            {isLofiMode && (
+              <label
+                className="lofi-volume-shell group absolute right-4 top-20 z-20 flex h-10 w-10 cursor-pointer items-center overflow-hidden rounded-[999px] border border-white/[0.08] bg-black/35 text-on-surface-variant shadow-[0_10px_26px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-[width,border-color,background-color,box-shadow] duration-300 ease-out hover:w-[min(11.75rem,calc(100vw-2rem))] hover:border-primary/25 hover:bg-[#07110a]/80 hover:shadow-[0_14px_34px_rgba(0,0,0,0.34),0_0_24px_rgba(156,255,147,0.1)] focus-within:w-[min(11.75rem,calc(100vw-2rem))] focus-within:border-primary/35 focus-within:bg-[#07110a]/85 focus-within:ring-2 focus-within:ring-primary/45 motion-reduce:transition-none sm:right-7"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+                  <span className="material-symbols-outlined block text-[1rem] leading-none text-primary/85 drop-shadow-[0_0_10px_rgba(156,255,147,0.24)] transition-transform duration-300 group-hover:scale-90 group-focus-within:scale-90 motion-reduce:transition-none">
+                    {lofiVolume === 0 ? "volume_off" : "volume_up"}
+                  </span>
+                </span>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={lofiVolume}
+                  aria-label="Lofi volume"
+                  onChange={(event) => setLofiVolume(Number(event.target.value))}
+                  style={
+                    {
+                      "--lofi-volume": `${lofiVolume * 100}%`,
+                    } as CSSProperties
+                  }
+                  className="lofi-volume-slider w-24 shrink-0 cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+                />
+
+                <span className="ml-2 w-7 shrink-0 text-right font-mono text-[9px] text-primary/70 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none">
+                  {Math.round(lofiVolume * 100)}
+                </span>
+              </label>
+            )}
 
             <motion.div
               layout

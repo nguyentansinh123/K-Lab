@@ -342,3 +342,101 @@ body {
 .ambient-glow-hover:hover {
   box-shadow: 0 0 30px rgba(156, 255, 147, 0.25);
 }
+
+.lofi-volume-shell {
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 46%),
+    linear-gradient(180deg, rgba(156, 255, 147, 0.08), transparent);
+}
+
+.lofi-volume-slider {
+  --lofi-volume: 20%;
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+}
+
+.lofi-volume-slider:focus {
+  outline: none;
+}
+
+.lofi-volume-slider::-webkit-slider-runnable-track {
+  height: 0.35rem;
+  border: 1px solid rgba(156, 255, 147, 0.14);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(156, 255, 147, 0.95) 0 var(--lofi-volume), rgba(255, 255, 255, 0.12) var(--lofi-volume) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.lofi-volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: -0.3rem;
+  border: 2px solid #07110a;
+  border-radius: 999px;
+  background: #deffab;
+  box-shadow:
+    0 0 0 1px rgba(156, 255, 147, 0.55),
+    0 0 14px rgba(156, 255, 147, 0.5);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.lofi-volume-slider:hover::-webkit-slider-thumb,
+.lofi-volume-slider:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.14);
+  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(156, 255, 147, 0.8),
+    0 0 20px rgba(156, 255, 147, 0.7);
+}
+
+.lofi-volume-slider::-moz-range-track {
+  height: 0.35rem;
+  border: 1px solid rgba(156, 255, 147, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.lofi-volume-slider::-moz-range-progress {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: rgba(156, 255, 147, 0.95);
+}
+
+.lofi-volume-slider::-moz-range-thumb {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid #07110a;
+  border-radius: 999px;
+  background: #deffab;
+  box-shadow:
+    0 0 0 1px rgba(156, 255, 147, 0.55),
+    0 0 14px rgba(156, 255, 147, 0.5);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.lofi-volume-slider:hover::-moz-range-thumb,
+.lofi-volume-slider:focus-visible::-moz-range-thumb {
+  transform: scale(1.14);
+  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(156, 255, 147, 0.8),
+    0 0 20px rgba(156, 255, 147, 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lofi-volume-slider::-webkit-slider-thumb,
+  .lofi-volume-slider::-moz-range-thumb {
+    transition: none;
+  }
+}
