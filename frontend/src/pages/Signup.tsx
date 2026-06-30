@@ -53,199 +53,185 @@ export default function Signup() {
     }` + ` delay-[${delay}ms]`;
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col md:flex-row pt-16">
-      {/* Left — registration form */}
-      <section className="w-full md:w-[45%] lg:w-[40%] flex items-center justify-center overflow-y-auto px-6 py-4 lg:px-12 bg-surface-dim">
-        <div className="w-full max-w-sm space-y-4">
-          {/* Header */}
-          <header className={`space-y-2 ${reveal(100)}`}>
-            <h1 className="text-3xl lg:text-[2.15rem] font-black font-headline tracking-tighter uppercase leading-[0.95] text-on-surface">
-              COMMENCE YOUR <span className="text-primary">STUDY JOURNEY</span>
-            </h1>
-            <p className="text-on-surface-variant text-[11px] max-w-[88%] uppercase tracking-wide leading-relaxed">
-              Initialize your performance profile to track peak cognitive
-              output.
-            </p>
-          </header>
+    <div className="relative min-h-screen overflow-hidden bg-[#050806] pt-16 text-on-surface">
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(229,255,222,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(229,255,222,0.025)_1px,transparent_1px)] bg-[size:52px_52px]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,8,6,0.88)_78%)]" />
 
-          {/* Form */}
-          <form
-            className={`space-y-3 ${reveal(200)}`}
-            onSubmit={RegisterHandler}
-          >
-            {/* Firstname name */}
-            <div className="space-y-1.5 group">
-              <label className="block text-[10px] font-black font-headline tracking-[0.2em] text-outline uppercase group-focus-within:text-primary transition-colors">
-                First Name
-              </label>
-              <input
-                name="firstName"
-                type="text"
-                required
-                value={registerData.firstName}
-                onChange={handleRegisterChange}
-                placeholder="FIRST_NAME"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
-              />
-            </div>
+      <main className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-[1180px] grid-cols-1 gap-4 px-4 py-4 md:grid-cols-[1.02fr_0.98fr] md:px-6">
+        <section className="flex min-h-0 items-center justify-center overflow-y-auto rounded-[1.35rem] border border-white/[0.08] bg-black/45 px-4 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.35),0_0_40px_rgba(0,252,64,0.05)] backdrop-blur-xl sm:px-6 md:px-9">
+          <div className="w-full max-w-[460px] space-y-5">
+            <header className={`space-y-3 ${reveal(100)}`}>
+              <div className="inline-flex items-center gap-2 rounded-[999px] border border-primary-fixed/20 bg-primary-fixed/10 px-3 py-1.5">
+                <span className="material-symbols-outlined text-sm text-primary-fixed">
+                  auto_stories
+                </span>
+                <span className="font-headline text-[10px] font-black uppercase tracking-[0.22em] text-primary-fixed">
+                  New focus profile
+                </span>
+              </div>
+              <div className="space-y-2">
+                <h1 className="font-headline text-3xl font-black uppercase leading-none tracking-normal text-on-surface sm:text-4xl">
+                  Build your <span className="text-primary-fixed">study lab</span>
+                </h1>
+                <p className="max-w-md text-sm leading-6 text-on-surface-variant">
+                  Initialize the profile that powers your sessions, notes, and
+                  background focus setup.
+                </p>
+              </div>
+            </header>
 
-            {/* LastName name */}
-            <div className="space-y-1.5 group">
-              <label className="block text-[10px] font-black font-headline tracking-[0.2em] text-outline uppercase group-focus-within:text-primary transition-colors">
-                Last Name
-              </label>
-              <input
-                name="lastName"
-                type="text"
-                required
-                value={registerData.lastName}
-                onChange={handleRegisterChange}
-                placeholder="LAST_NAME"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
-              />
-            </div>
-            {/* Email */}
-            <div className="space-y-1.5 group">
-              <label className="block text-[10px] font-black font-headline tracking-[0.2em] text-outline uppercase group-focus-within:text-primary transition-colors">
-                Data Uplink
-              </label>
-              <input
-                name="email"
-                type="email"
-                required
-                value={registerData.email}
-                onChange={handleRegisterChange}
-                placeholder="ACADEMIC_EMAIL@LAB.NET"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
-              />
-            </div>
+            <form className={`space-y-3.5 ${reveal(200)}`} onSubmit={RegisterHandler}>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="group space-y-2">
+                  <label className="block font-headline text-[10px] font-black uppercase tracking-[0.18em] text-outline transition-colors group-focus-within:text-primary-fixed">
+                    First Name
+                  </label>
+                  <input
+                    name="firstName"
+                    type="text"
+                    required
+                    value={registerData.firstName}
+                    onChange={handleRegisterChange}
+                    placeholder="FIRST_NAME"
+                    className="w-full rounded-[1rem] border border-white/[0.08] bg-white/[0.035] px-4 py-3.5 font-body text-sm text-on-surface outline-none transition-all duration-300 placeholder:text-outline-variant hover:border-white/15 focus:border-primary-fixed/45 focus:bg-primary-fixed/[0.035] focus:shadow-[0_0_0_3px_rgba(0,252,64,0.10)]"
+                  />
+                </div>
 
-            {/* Password */}
-            <div className="space-y-1.5 group">
-              <label className="block text-[10px] font-black font-headline tracking-[0.2em] text-outline uppercase group-focus-within:text-primary transition-colors">
-                Security Protocol
-              </label>
-              <input
-                name="password"
-                type="password"
-                required
-                value={registerData.password}
-                onChange={handleRegisterChange}
-                placeholder="••••••••••••"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
-              />
-            </div>
+                <div className="group space-y-2">
+                  <label className="block font-headline text-[10px] font-black uppercase tracking-[0.18em] text-outline transition-colors group-focus-within:text-primary-fixed">
+                    Last Name
+                  </label>
+                  <input
+                    name="lastName"
+                    type="text"
+                    required
+                    value={registerData.lastName}
+                    onChange={handleRegisterChange}
+                    placeholder="LAST_NAME"
+                    className="w-full rounded-[1rem] border border-white/[0.08] bg-white/[0.035] px-4 py-3.5 font-body text-sm text-on-surface outline-none transition-all duration-300 placeholder:text-outline-variant hover:border-white/15 focus:border-primary-fixed/45 focus:bg-primary-fixed/[0.035] focus:shadow-[0_0_0_3px_rgba(0,252,64,0.10)]"
+                  />
+                </div>
+              </div>
 
-            {/* Confirm Password */}
-            <div className="space-y-1.5 group">
-              <label className="block text-[10px] font-black font-headline tracking-[0.2em] text-outline uppercase group-focus-within:text-primary transition-colors">
-                Confirm Security Protocol
-              </label>
-              <input
-                name="confirmPassword"
-                type="password"
-                required
-                value={registerData.confirmPassword}
-                onChange={handleRegisterChange}
-                placeholder="••••••••••••"
-                className="w-full bg-surface-container-lowest border-0 border-l-2 border-l-transparent focus:border-l-primary focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline-variant font-headline text-sm py-3 px-4 transition-all duration-300"
-              />
-            </div>
+              <div className="group space-y-2">
+                <label className="block font-headline text-[10px] font-black uppercase tracking-[0.18em] text-outline transition-colors group-focus-within:text-primary-fixed">
+                  Data Uplink
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  value={registerData.email}
+                  onChange={handleRegisterChange}
+                  placeholder="ACADEMIC_EMAIL@LAB.NET"
+                  className="w-full rounded-[1rem] border border-white/[0.08] bg-white/[0.035] px-4 py-3.5 font-body text-sm text-on-surface outline-none transition-all duration-300 placeholder:text-outline-variant hover:border-white/15 focus:border-primary-fixed/45 focus:bg-primary-fixed/[0.035] focus:shadow-[0_0_0_3px_rgba(0,252,64,0.10)]"
+                />
+              </div>
 
-            {/* Submit */}
-            <div className="pt-1">
-              <button
-                type="submit"
-                className="w-full bg-primary-container text-on-primary font-black font-headline tracking-widest uppercase py-3.5 px-8 hover:bg-primary hover:shadow-[0_0_20px_rgba(0,252,64,0.25)] transition-all duration-200 active:scale-[0.98] neon-glow-sm"
-              >
-                ENTER THE FLOW STATE
-              </button>
-            </div>
-          </form>
+              <div className="group space-y-2">
+                <label className="block font-headline text-[10px] font-black uppercase tracking-[0.18em] text-outline transition-colors group-focus-within:text-primary-fixed">
+                  Security Protocol
+                </label>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  value={registerData.password}
+                  onChange={handleRegisterChange}
+                  placeholder="••••••••••••"
+                  className="w-full rounded-[1rem] border border-white/[0.08] bg-white/[0.035] px-4 py-3.5 font-body text-sm text-on-surface outline-none transition-all duration-300 placeholder:text-outline-variant hover:border-white/15 focus:border-primary-fixed/45 focus:bg-primary-fixed/[0.035] focus:shadow-[0_0_0_3px_rgba(0,252,64,0.10)]"
+                />
+              </div>
 
-          {/* Footer link */}
-          <footer
-            className={`pt-3 border-t border-outline-variant/10 text-center ${reveal(300)}`}
-          >
-            <p className="text-xs tracking-[0.1em] text-on-surface-variant uppercase">
-              Existing Node?{" "}
-              <Link
-                to="/login"
-                className="text-primary font-black ml-2 hover:underline decoration-2 underline-offset-4 transition-all duration-200"
-              >
-                LOGIN INSTEAD
-              </Link>
-            </p>
-          </footer>
-        </div>
-      </section>
+              <div className="group space-y-2">
+                <label className="block font-headline text-[10px] font-black uppercase tracking-[0.18em] text-outline transition-colors group-focus-within:text-primary-fixed">
+                  Confirm Security Protocol
+                </label>
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={registerData.confirmPassword}
+                  onChange={handleRegisterChange}
+                  placeholder="••••••••••••"
+                  className="w-full rounded-[1rem] border border-white/[0.08] bg-white/[0.035] px-4 py-3.5 font-body text-sm text-on-surface outline-none transition-all duration-300 placeholder:text-outline-variant hover:border-white/15 focus:border-primary-fixed/45 focus:bg-primary-fixed/[0.035] focus:shadow-[0_0_0_3px_rgba(0,252,64,0.10)]"
+                />
+              </div>
 
-      {/* Right — bold visual panel */}
-      <section className="hidden md:flex w-full md:w-[55%] lg:w-[60%] bg-surface-container relative overflow-hidden">
-        {/* Background image */}
-        <img
-          alt="Student focused at desk"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaxA6TWwvq3Rvu3SvPRWSVhHsw_07pPq-_DSjxzFiPi3vR6PTJg0dGdwmgnipMCHvikXrBJHsikzeVPJOoS6MugPvrXP3js98xI6PWEIj7tzpDi5QNNvu9PU746OYHdVMrbE2NVNi-Vhvdq5bRUTJ43BPBDTvWJznDN71HEzvGjThi_cj5HdTxmy_ggfKQAi8LfOyahZP3FV3rRgxPvrfiySYpTNywjzLJSiKAWpaHSwhF-o5dsWpYtlMl9fZxZPPf6N4QTWypapA"
-          className="absolute inset-0 w-full h-full object-cover grayscale brightness-[0.2] contrast-125 z-0"
-        />
+              <div className="pt-1">
+                <button
+                  type="submit"
+                  className="w-full rounded-[999px] bg-primary-container px-6 py-4 font-headline text-[11px] font-black uppercase tracking-[0.18em] text-on-primary-container shadow-[0_0_24px_rgba(0,252,64,0.12)] transition-all duration-200 hover:bg-primary-fixed hover:shadow-[0_0_28px_rgba(0,252,64,0.24)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-fixed focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                >
+                  Enter the flow state
+                </button>
+              </div>
+            </form>
 
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-surface-dim via-transparent to-transparent z-10" />
-        <div className="absolute top-1/4 -right-20 w-96 h-96 bg-primary/10 blur-[120px] rounded-full z-10" />
+            <footer
+              className={`border-t border-outline-variant/20 pt-4 text-center ${reveal(300)}`}
+            >
+              <p className="text-xs uppercase tracking-[0.12em] text-on-surface-variant">
+                Existing node?{" "}
+                <Link
+                  to="/login"
+                  className="ml-2 font-black text-primary-fixed transition-colors hover:text-on-surface"
+                >
+                  Login instead
+                </Link>
+              </p>
+            </footer>
+          </div>
+        </section>
 
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.03] z-10"
-          style={{
-            backgroundImage:
-              "linear-gradient(#00fc40 1px, transparent 1px), linear-gradient(90deg, #00fc40 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+        <section className="relative hidden overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-surface-container-low shadow-[0_24px_80px_rgba(0,0,0,0.38)] md:block">
+          <video
+            src="/template/265816_medium.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover opacity-55"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,252,64,0.10)_1px,transparent_1px)] bg-[size:74px_74px] opacity-35" />
 
-        {/* Content overlay */}
-        <div className="relative z-20 w-full h-full flex flex-col justify-end p-10 lg:p-16 space-y-6">
-          <div className={`max-w-xl space-y-4 ${reveal(400)}`}>
-            {/* Status badge */}
-            <div className="inline-flex items-center gap-3 bg-primary/10 backdrop-blur-md px-4 py-1.5 border-l-4 border-primary">
-              <span
-                className="material-symbols-outlined text-primary text-sm"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                auto_stories
+          <div className={`absolute inset-x-7 bottom-7 z-10 space-y-5 ${reveal(400)}`}>
+            <div className="inline-flex items-center gap-2 rounded-[999px] border border-primary-fixed/25 bg-black/45 px-3 py-1.5 backdrop-blur-xl">
+              <span className="material-symbols-outlined text-sm text-primary-fixed">
+                radio_button_checked
               </span>
-              <span className="text-[10px] font-black font-headline tracking-widest text-primary uppercase">
-                STATUS: READY FOR SESSION
+              <span className="font-headline text-[10px] font-black uppercase tracking-[0.18em] text-primary-fixed">
+                Status: ready for session
               </span>
             </div>
 
-            {/* Big headline */}
-            <h2 className="text-5xl lg:text-7xl font-black font-headline tracking-tighter uppercase leading-[0.9] text-on-surface">
-              THE <br />
-              <span className="text-primary-container">ARCHITECT</span> <br />
-              OF FOCUS.
+            <h2 className="max-w-xl font-headline text-5xl font-black uppercase leading-[0.9] tracking-normal text-on-surface lg:text-6xl">
+              The architect of <span className="text-primary-fixed">focus</span>
             </h2>
 
-            {/* Stats row */}
-            <div className={`flex gap-10 pt-4 ${reveal(500)}`}>
+            <div className="grid max-w-lg grid-cols-3 gap-2">
               {[
-                { label: "RETENTION", value: "94.5%" },
-                { label: "SESSION TIME", value: "4.2H" },
-                { label: "DEEP WORK", value: "ACTIVE" },
+                { label: "Retention", value: "94.5%" },
+                { label: "Session", value: "4.2H" },
+                { label: "Deep work", value: "Active" },
               ].map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-[10px] font-black font-headline tracking-widest text-outline uppercase mb-1">
+                <div
+                  key={stat.label}
+                  className="rounded-[0.9rem] border border-white/[0.08] bg-black/35 px-3 py-3 backdrop-blur-xl"
+                >
+                  <p className="font-headline text-[9px] font-black uppercase tracking-[0.18em] text-outline">
                     {stat.label}
                   </p>
-                  <p className="text-xl font-headline font-bold text-on-surface">
+                  <p className="mt-1 font-headline text-sm font-black uppercase text-on-surface">
                     {stat.value}
                   </p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </div>
   );
 }
