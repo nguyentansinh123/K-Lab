@@ -1,20 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
+import type { LofiTrack } from "./CountingSettingsTab";
 
 type LofiBackgroundPlayerProps = {
-  src: string | null;
+  track: LofiTrack | null;
   volume: number;
 };
 
 const LOADING_HIDE_DELAY_MS = 3100;
 
 export default function LofiBackgroundPlayer({
-  src,
+  track,
   volume,
 }: LofiBackgroundPlayerProps) {
-  if (!src) return null;
+  if (!track) return null;
 
-  return <ActiveLofiBackgroundPlayer key={src} src={src} volume={volume} />;
+  if (track.sourceType === "audio") {
+    return <LoopingAudio key={track.link} src={track.link} volume={volume} />;
+  }
+
+  return <ActiveLofiBackgroundPlayer key={track.link} src={track.link} volume={volume} />;
+}
+
+function LoopingAudio({ src, volume }: { src: string; volume: number }) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume;
+  }, [volume]);
+
+  return <audio ref={audioRef} src={src} autoPlay loop preload="auto" className="hidden" />;
 }
 
 function ActiveLofiBackgroundPlayer({
@@ -69,6 +85,7 @@ function ActiveLofiBackgroundPlayer({
         <ReactPlayer
           src={src}
           playing
+          loop
           playsInline
           controls={false}
           volume={volume}

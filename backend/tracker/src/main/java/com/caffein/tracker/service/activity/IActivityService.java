@@ -8,9 +8,15 @@ import com.caffein.tracker.model.User;
 
 public interface IActivityService {
 
-    Activity startActivity(User user, String title, String appName, String topic);
+    Activity startActivity(User user, String title, String appName, String topic, boolean paperMode);
 
-    Activity stopCurrentActivity(User user);
+    Activity stopCurrentActivity(
+            User user,
+            Boolean paperMode,
+            Integer totalSamples,
+            Integer faceDetectedSamples,
+            Double averageYawDegrees,
+            Double averagePitchDegrees);
 
     Activity getCurrentActivity(User user);
     

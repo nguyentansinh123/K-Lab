@@ -38,6 +38,12 @@ export type ActivityDTO = {
   topic: string;
   duration: string;
   activityPauses: ActivityPauseDTO[];
+  paperMode: boolean;
+  focusScore: number | null;
+  trackingSamples: number;
+  faceDetectedSamples: number;
+  averageYawDegrees: number | null;
+  averagePitchDegrees: number | null;
 };
 
 export type StudySessionDTO = {

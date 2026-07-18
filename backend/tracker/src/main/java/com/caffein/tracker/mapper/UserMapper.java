@@ -39,7 +39,7 @@ public class UserMapper {
                 .firstName(req.getFirstName())
                 .lastName(req.getLastName())
                 .email(req.getEmail())
-                .emailVerified(false)
+                .emailVerified(req.isEmailVerified())
                 .role(RoleType.USER)
                 .imgUrl(req.getImageUrl())
                 .build();

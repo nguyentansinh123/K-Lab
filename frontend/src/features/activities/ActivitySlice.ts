@@ -13,6 +13,7 @@ import {
   startPausingforAct,
   stopPausingforAct,
 } from "../../fetchLib/activitiesapi";
+import type { FocusTrackingSnapshot } from "../focus/focusTracking";
 
 type ActivityStatus =
   | "not_finished"
@@ -56,8 +57,8 @@ export const startActivities = createAsyncThunk(
 
 export const stopActivitiies = createAsyncThunk(
   "activity/stopActivity",
-  async (): Promise<ActivityReturnData> => {
-    return stopActivity();
+  async (tracking: FocusTrackingSnapshot): Promise<ActivityReturnData> => {
+    return stopActivity(tracking);
   },
 );
 

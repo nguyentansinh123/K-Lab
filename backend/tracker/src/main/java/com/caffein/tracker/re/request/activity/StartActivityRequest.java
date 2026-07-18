@@ -7,4 +7,5 @@ public class StartActivityRequest {
     private String title;
     private String appName;
     private String topic;
+    private Boolean paperMode;
 }

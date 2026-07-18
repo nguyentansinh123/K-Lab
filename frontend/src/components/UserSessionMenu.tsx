@@ -1,24 +1,34 @@
 import { useEffect, useRef, useState } from "react";
 import type { UserType } from "../fetchLib/authapi";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../features/auth/AuthSlice";
+import { useAppDispatch } from "../hooks/dispatch";
+import { useLanguage } from "../i18n/LanguageContext";
 
 type UserSessionMenuProps = {
   user: UserType | null;
 };
-
-const sessionActions = [
-  ["person", "PROFILE_SETTINGS", "/person"],
-  ["tune", "SYSTEM_CALIBRATION", "/tune"],
-  ["security", "ENCRYPTION_KEYS", "/security"],
-  ["history", "HISTORY_LOGS", "/history"],
-  ["schedule", "SESSIONS", "/session"],
-];
 
 export default function UserSessionMenu({ user }: UserSessionMenuProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const userInitials =
     `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}` || "KL";
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const sessionActions = [
+    ["person", t("profile"), "/person"],
+    ["history", t("history"), "/history"],
+    ["schedule", t("sessions"), "/session"],
+  ];
+
+  const handleLogout = () => {
+    setProfileOpen(false);
+    dispatch(logout());
+    navigate("/login", { replace: true });
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,6 +76,8 @@ export default function UserSessionMenu({ user }: UserSessionMenuProps) {
             <img
               src={user.imgUrl}
               alt="User avatar"
+              crossOrigin="anonymous"
+              referrerPolicy="no-referrer"
               className="h-8 w-8 rounded-[999px] border border-white/10 object-cover transition-transform duration-300 group-hover:scale-[1.04]"
             />
           ) : (
@@ -124,13 +136,14 @@ export default function UserSessionMenu({ user }: UserSessionMenuProps) {
 
             <button
               type="button"
+              onClick={handleLogout}
               className="mt-2 flex w-full cursor-pointer items-center gap-3 rounded-[0.85rem] border-t border-error/10 px-3 py-3 text-left text-error outline-none transition-colors hover:bg-error/10 focus-visible:ring-2 focus-visible:ring-error/60"
             >
               <span className="material-symbols-outlined text-base">
                 power_settings_new
               </span>
               <span className="font-headline text-[10px] font-bold uppercase tracking-[0.13em]">
-                TERMINATE_SESSION
+                {t("logout")}
               </span>
             </button>
           </div>

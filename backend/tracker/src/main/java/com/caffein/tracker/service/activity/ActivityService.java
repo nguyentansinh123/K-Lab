@@ -26,7 +26,7 @@ public class ActivityService implements IActivityService {
     private final StudySessionService studySessionService;
 
     @Override
-    public Activity startActivity(User user, String title, String appName, String topic) {
+    public Activity startActivity(User user, String title, String appName, String topic, boolean paperMode) {
         LocalDateTime startTime = LocalDateTime.now();
         StudySession studySession = studySessionService.getOrCreateTodaySession(user);
 
@@ -43,12 +43,19 @@ public class ActivityService implements IActivityService {
                 .appName(appName)
                 .activityStartAt(String.valueOf(startTime))
                 .topic(topic)
+                .paperMode(paperMode)
                 .studySession(studySession)
                 .build());
     }
 
     @Override
-    public Activity stopCurrentActivity(User user) {
+    public Activity stopCurrentActivity(
+            User user,
+            Boolean paperMode,
+            Integer totalSamples,
+            Integer faceDetectedSamples,
+            Double averageYawDegrees,
+            Double averagePitchDegrees) {
         LocalDateTime endTime = LocalDateTime.now();
         Activity activity = activityRepository
                 .findFirstByStudySessionUserIdAndActivityEndAtIsNull(user.getId())
@@ -62,7 +69,59 @@ public class ActivityService implements IActivityService {
 
         activity.setDuration(String.valueOf(activeSession));
 
+        boolean effectivePaperMode = paperMode != null
+                ? paperMode
+                : Boolean.TRUE.equals(activity.getPaperMode());
+        int safeTotalSamples = Math.max(0, totalSamples == null ? 0 : totalSamples);
+        int safeDetectedSamples = Math.max(
+                0,
+                Math.min(safeTotalSamples, faceDetectedSamples == null ? 0 : faceDetectedSamples));
+        Double safeYaw = isFinite(averageYawDegrees) ? averageYawDegrees : null;
+        Double safePitch = isFinite(averagePitchDegrees) ? averagePitchDegrees : null;
+
+        activity.setPaperMode(effectivePaperMode);
+        activity.setTrackingSamples(safeTotalSamples);
+        activity.setFaceDetectedSamples(safeDetectedSamples);
+        activity.setAverageYawDegrees(safeYaw);
+        activity.setAveragePitchDegrees(safePitch);
+        activity.setFocusScore(calculateFocusScore(
+                effectivePaperMode,
+                safeTotalSamples,
+                safeDetectedSamples,
+                safeYaw,
+                safePitch));
+
         return activityRepository.save(activity);
+    }
+
+    static Integer calculateFocusScore(
+            boolean paperMode,
+            int totalSamples,
+            int faceDetectedSamples,
+            Double averageYawDegrees,
+            Double averagePitchDegrees) {
+        if (totalSamples <= 0) {
+            return null;
+        }
+
+        double presence = Math.min(1D, Math.max(0D, (double) faceDetectedSamples / totalSamples));
+        if (faceDetectedSamples <= 0 || averageYawDegrees == null || averagePitchDegrees == null) {
+            return (int) Math.round(presence * 40D);
+        }
+
+        double pitchTarget = paperMode ? 22D : 0D;
+        double pitchTolerance = paperMode ? 36D : 24D;
+        double pitchValue = paperMode ? Math.abs(averagePitchDegrees) : averagePitchDegrees;
+        double yawAlignment = Math.max(0D, 1D - Math.abs(averageYawDegrees) / 35D);
+        double pitchAlignment = Math.max(
+                0D,
+                1D - Math.abs(pitchValue - pitchTarget) / pitchTolerance);
+
+        return (int) Math.round(100D * (presence * 0.4D + yawAlignment * 0.3D + pitchAlignment * 0.3D));
+    }
+
+    private static boolean isFinite(Double value) {
+        return value != null && Double.isFinite(value);
     }
 
     private Long calculateTotalPauseTime(Activity activity) {

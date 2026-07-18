@@ -13,9 +13,8 @@ import com.cloudinary.utils.ObjectUtils;
 
 import jakarta.transaction.Transactional;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
+
+    private static final long MAX_AVATAR_BYTES = 5L * 1024L * 1024L;
 
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
@@ -57,72 +58,80 @@ public class UserService implements IUserService {
 
     @Override
     public User addImageUrl(MultipartFile imageUrl) {
+        String contentType = imageUrl.getContentType();
+        if (imageUrl.isEmpty()
+                || imageUrl.getSize() > MAX_AVATAR_BYTES
+                || contentType == null
+                || !List.of("image/jpeg", "image/png", "image/webp").contains(contentType)) {
+            throw new AppException(ErrorCode.INVALID_IMAGE);
+        }
+
         User user = (User) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        String oldUrl = user.getImgUrl();
 
         try {
-            File convFile = new File(
-                    System.getProperty("java.io.tmpdir") +
-                            "/" +
-                            imageUrl.getOriginalFilename());
-            FileOutputStream fos = new FileOutputStream(convFile);
-            fos.write(imageUrl.getBytes());
-            fos.close();
+            Map<?, ?> picture = cloudinary.uploader().upload(
+                    imageUrl.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "userAva",
+                            "public_id", user.getId(),
+                            "overwrite", true,
+                            "invalidate", true,
+                            "resource_type", "image"));
 
-            var pic = cloudinary
-                    .uploader()
-                    .upload(convFile, ObjectUtils.asMap("folder", "/userAva/"));
-
-            user.setImgUrl(pic.get("url").toString());
-
-            User saved = userRepository.save(user);
-
-            if (oldUrl != null && oldUrl.contains("res.cloudinary.com")) {
-                String publicId = extractPublicId(oldUrl);
-                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            Object secureUrl = picture.get("secure_url");
+            if (secureUrl == null) {
+                throw new IllegalStateException("Cloudinary did not return a secure URL");
             }
-            return saved;
+
+            user.setImgUrl(secureUrl.toString());
+            return userRepository.save(user);
         } catch (Exception e) {
             throw new AppException(ErrorCode.IMAGE_UPLOAD_FAILED);
         }
     }
 
-    private String extractPublicId(String url) {
-        int uploadIdx = url.indexOf("/upload/");
-        String afterUpload = url.substring(uploadIdx + "/upload/".length());
-        if (afterUpload.startsWith("v")) {
-            afterUpload = afterUpload.substring(afterUpload.indexOf('/') + 1); // strip v123/
-        }
-        int dot = afterUpload.lastIndexOf('.');
-        return dot > 0 ? afterUpload.substring(0, dot) : afterUpload;
-    }
-
     @Transactional
     @Override
-    public User findOrCreateUserLoginByGoogle(String name, String email, String imageUrl) {
+    public User findOrCreateUserLoginByGoogle(
+            String name,
+            String email,
+            String imageUrl,
+            boolean emailVerified) {
         Optional<User> user = userRepository.findByEmailIgnoreCase(email);
-        if (!user.isPresent()) {
-            // Create User
-            String[] parts = name.trim().split("\\s", 2);
-            String firstName = parts[0];
-            String lastName = parts.length > 1 ? parts[1] : "";
-
-            CreateGoogleUser req = CreateGoogleUser.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .imageUrl(imageUrl)
-                    .build();
-
-            User createdUser = userMapper.toUserWithGoogle(req);
-            User mySaveUser = userRepository.save(createdUser);
-            return mySaveUser;
+        if (user.isPresent()) {
+            User existingUser = user.get();
+            if (emailVerified && !Boolean.TRUE.equals(existingUser.getEmailVerified())) {
+                existingUser.setEmailVerified(true);
+                return userRepository.save(existingUser);
+            }
+            return existingUser;
         }
 
-        // already in database
-        return user.get();
+        String safeName = name == null ? "" : name.trim();
+        String firstName;
+        String lastName;
+
+        if (safeName.isBlank()) {
+            int atIndex = email.indexOf('@');
+            firstName = atIndex > 0 ? email.substring(0, atIndex) : "Google User";
+            lastName = "";
+        } else {
+            String[] parts = safeName.split("\\s+", 2);
+            firstName = parts[0];
+            lastName = parts.length > 1 ? parts[1] : "";
+        }
+
+        CreateGoogleUser request = CreateGoogleUser.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .imageUrl(imageUrl)
+                .emailVerified(emailVerified)
+                .build();
+
+        return userRepository.save(userMapper.toUserWithGoogle(request));
     }
 
 }

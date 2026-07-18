@@ -18,6 +18,12 @@ public class ActivityMapper {
                 .activityEndAt(activity.getActivityEndAt())
                 .topic(activity.getTopic())
                 .duration(activity.getDuration())
+                .paperMode(Boolean.TRUE.equals(activity.getPaperMode()))
+                .focusScore(activity.getFocusScore())
+                .trackingSamples(activity.getTrackingSamples())
+                .faceDetectedSamples(activity.getFaceDetectedSamples())
+                .averageYawDegrees(activity.getAverageYawDegrees())
+                .averagePitchDegrees(activity.getAveragePitchDegrees())
                 .activityPauses(
                         activity.getActivityPauses() == null
                                 ? List.of()

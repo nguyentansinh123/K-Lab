@@ -15,5 +15,9 @@ public interface IUserService extends UserDetailsService {
 
     User addImageUrl(MultipartFile imageUrl);
 
-    User findOrCreateUserLoginByGoogle(String name, String email, String imageUrl);
+    User findOrCreateUserLoginByGoogle(
+            String name,
+            String email,
+            String imageUrl,
+            boolean emailVerified);
 }

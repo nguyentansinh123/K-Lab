@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+  exchangeGoogleCode,
   getCurrentUser,
   normalLogin,
   normalSignup,
+  uploadCurrentUserAvatar,
   type AuthReturnType,
   type LoginType,
   type RegisterType,
@@ -56,10 +58,40 @@ export const login = createAsyncThunk(
   },
 );
 
+export const loginWithGoogleCode = createAsyncThunk(
+  "auth/loginWithGoogleCode",
+  async (code: string): Promise<AuthReturnType> => {
+    return exchangeGoogleCode(code);
+  },
+);
+
+export const uploadAvatar = createAsyncThunk(
+  "auth/uploadAvatar",
+  async (image: File): Promise<UserType> => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) throw new Error("No access token");
+    return uploadCurrentUserAvatar(accessToken, image);
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout(state) {
+      state.user = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.tokenType = null;
+      state.status = "idle";
+      state.error = null;
+
+      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("tokenType");
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
@@ -107,6 +139,29 @@ const authSlice = createSlice({
         state.error = action.error.message ?? "Login failed";
       })
 
+      .addCase(loginWithGoogleCode.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(loginWithGoogleCode.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.tokenType = action.payload.tokenType;
+        state.status = "authenticated";
+
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("accessToken", action.payload.accessToken);
+        localStorage.setItem("refreshToken", action.payload.refreshToken);
+        localStorage.setItem("tokenType", action.payload.tokenType);
+      })
+
+      .addCase(loginWithGoogleCode.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message ?? "Google login failed";
+      })
+
       .addCase(checkCurrentUser.pending, (state) => {
         state.status = "checking";
         state.error = null;
@@ -132,8 +187,18 @@ const authSlice = createSlice({
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("tokenType");
+      })
+      .addCase(uploadAvatar.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.status = "authenticated";
+        state.error = null;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(uploadAvatar.rejected, (state, action) => {
+        state.error = action.error.message ?? "Avatar upload failed";
       });
   },
 });
 
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

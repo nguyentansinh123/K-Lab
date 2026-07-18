@@ -1,4 +1,5 @@
 import { apiFetch } from "./fetch";
+import type { FocusTrackingSnapshot } from "../features/focus/focusTracking";
 
 export const PStatus = {
   UNPAUSE : "UNPAUSE",
@@ -18,6 +19,7 @@ export type startActivityData = {
   title: string;
   appName: string;
   topic: string;
+  paperMode: boolean;
 };
 
 export type ActivityReturnData = {
@@ -28,6 +30,12 @@ export type ActivityReturnData = {
   topic: string;
   duration: string;
   activityPauses: ActivityPause[];
+  paperMode: boolean;
+  focusScore: number | null;
+  trackingSamples: number;
+  faceDetectedSamples: number;
+  averageYawDegrees: number | null;
+  averagePitchDegrees: number | null;
 };
 
 export type LatestPausingActEmptyResponse = {
@@ -69,7 +77,9 @@ export const getCurrentActivity = async (): Promise<ActivityReturnData> => {
 
 }
 
-export const stopActivity = async (): Promise<ActivityReturnData> => {
+export const stopActivity = async (
+  tracking: FocusTrackingSnapshot,
+): Promise<ActivityReturnData> => {
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
@@ -78,6 +88,13 @@ export const stopActivity = async (): Promise<ActivityReturnData> => {
   return apiFetch("/activity/stopActivity", {
     method: "POST",
     token: accessToken,
+    body: JSON.stringify({
+      paperMode: tracking.paperMode,
+      totalSamples: tracking.totalSamples,
+      faceDetectedSamples: tracking.faceDetectedSamples,
+      averageYawDegrees: tracking.averageYawDegrees,
+      averagePitchDegrees: tracking.averagePitchDegrees,
+    }),
   });
 };
 

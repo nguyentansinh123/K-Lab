@@ -22,9 +22,12 @@ public enum ErrorCode {
     INVALID_JWT_TOKEN("INVALID_JWT_TOKEN", "Invalid JWT token", UNAUTHORIZED),
     INVALID_TOKEN_TYPE("INVALID_TOKEN_TYPE", "Invalid token type", UNAUTHORIZED),
     REFRESH_TOKEN_EXPIRED("REFRESH_TOKEN_EXPIRED", "Refresh token expired", UNAUTHORIZED),
+    INVALID_GOOGLE_LOGIN_CODE("INVALID_GOOGLE_LOGIN_CODE", "Google login code is invalid or expired", UNAUTHORIZED),
+    INVALID_IMAGE("INVALID_IMAGE", "Image must be a JPG, PNG, or WebP file no larger than 5 MB", BAD_REQUEST),
     IMAGE_UPLOAD_FAILED("IMAGE_UPLOAD_FAILED", "Could not upload image", INTERNAL_SERVER_ERROR),
     INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Something went wrong", INTERNAL_SERVER_ERROR),
     STUDY_SESSION_NOT_FOUND("STUDY_SESSION_NOT_FOUND", "Study session not found", NOT_FOUND),
+    USER_NOT_FOUND("USER_NOT_FOUND", "User not found", NOT_FOUND),
     ACTIVITY_NOT_FOUND("ACTIVITY_NOT_FOUND", "Activity not found", NOT_FOUND);
 
     private final String code;

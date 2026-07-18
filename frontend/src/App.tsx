@@ -10,12 +10,14 @@ import HistoryPage from "./pages/HistoryPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./protected/ProtectedRoute";
 import GuestRoute from "./guest/GuestRoute";
+import GoogleAuthCallback from "./pages/GoogleAuthCallback";
 
 export default function App() {
   return (
     <Routes>
       <Route element={<RootLayout />}>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/oauth/callback" element={<GoogleAuthCallback />} />
 
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<Login />} />

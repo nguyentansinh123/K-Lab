@@ -4,6 +4,7 @@ import type { LoginType } from "../fetchLib/authapi";
 import { login } from "../features/auth/AuthSlice";
 import { useAppDispatch } from "../hooks/dispatch";
 import { toast } from "react-toastify";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function Login() {
   const [mounted, setMounted] = useState(false);
@@ -195,20 +196,7 @@ export default function Login() {
                 <div className="h-px flex-grow bg-outline-variant/25" />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <button className="flex items-center justify-center gap-2.5 rounded-[999px] border border-white/[0.08] bg-white/[0.035] py-3 font-headline text-[10px] uppercase tracking-[0.12em] text-on-surface transition-all duration-200 hover:border-primary-fixed/30 hover:bg-primary-fixed/10 hover:text-primary-fixed">
-                  <span className="material-symbols-outlined text-sm">
-                    terminal
-                  </span>
-                  Kinetic.sys
-                </button>
-                <button className="flex items-center justify-center gap-2.5 rounded-[999px] border border-white/[0.08] bg-white/[0.035] py-3 font-headline text-[10px] uppercase tracking-[0.12em] text-on-surface transition-all duration-200 hover:border-primary-fixed/30 hover:bg-primary-fixed/10 hover:text-primary-fixed">
-                  <span className="material-symbols-outlined text-sm">
-                    token
-                  </span>
-                  Focus.link
-                </button>
-              </div>
+              <GoogleAuthButton label="Sign in with Google" />
 
               <p className="text-center font-body text-xs uppercase tracking-[0.12em] text-on-surface-variant">
                 New researcher?{" "}

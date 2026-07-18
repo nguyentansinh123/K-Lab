@@ -13,6 +13,10 @@ export type LoginType = {
   password: string;
 };
 
+export type GoogleCodeExchangeType = {
+  code: string;
+};
+
 export type UserType = {
   id: string;
   firstName: string;
@@ -53,6 +57,17 @@ export const normalLogin = async (
   });
 };
 
+export const exchangeGoogleCode = async (
+  code: string,
+): Promise<AuthReturnType> => {
+  const exchangeData: GoogleCodeExchangeType = { code };
+
+  return apiFetch<AuthReturnType>("/auth/google/exchange", {
+    method: "POST",
+    body: JSON.stringify(exchangeData),
+  });
+};
+
 export const refreshAccessToken = async (
   refreshToken: string,
 ): Promise<RefreshReturnType> => {
@@ -66,5 +81,19 @@ export const getCurrentUser = async (accessToken: string): Promise<UserType> => 
   return apiFetch<UserType>("/users/me", {
     method: "GET",
     token: accessToken,
+  });
+};
+
+export const uploadCurrentUserAvatar = async (
+  accessToken: string,
+  image: File,
+): Promise<UserType> => {
+  const formData = new FormData();
+  formData.append("image", image);
+
+  return apiFetch<UserType>("/users/me/avatar", {
+    method: "POST",
+    token: accessToken,
+    body: formData,
   });
 };

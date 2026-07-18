@@ -8,15 +8,18 @@ import { store } from './features/app/store.ts'
 import AuthInitializer from './features/auth/AuthInitializer.tsx'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { LanguageProvider } from './i18n/LanguageContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <AuthInitializer>
-          <App />
-          <ToastContainer theme="dark" position="top-right" />
-        </AuthInitializer>
+        <LanguageProvider>
+          <AuthInitializer>
+            <App />
+            <ToastContainer theme="dark" position="top-right" />
+          </AuthInitializer>
+        </LanguageProvider>
       </Provider>
     </BrowserRouter>
   </StrictMode>,

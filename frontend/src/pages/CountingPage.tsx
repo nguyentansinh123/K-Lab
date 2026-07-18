@@ -26,6 +26,13 @@ import CountingSettingsTab, {
 import LofiBackgroundPlayer from "../components/counting/LofiBackgroundPlayer";
 import AmbientSoundSettings from "../components/counting/AmbientSoundSettings";
 import DraggableNote from "../components/counting/DraggableNote";
+import {
+  emptyFocusSnapshot,
+  getStoredStudyMode,
+  storeStudyMode,
+  type FocusTrackingSnapshot,
+  type StudyMode,
+} from "../features/focus/focusTracking";
 
 // Todo: save current timer
 // use currentActivity to check if any activity is running
@@ -43,6 +50,11 @@ export default function CountingPage() {
   const [isSplit, setIsSplit] = useState(false);
   const [selectedLofi, setSelectedLofi] = useState<LofiTrack | null>(null);
   const [lofiVolume, setLofiVolume] = useState(0.2);
+  const [studyMode, setStudyMode] = useState<StudyMode>(getStoredStudyMode);
+  const [focusTracking, setFocusTracking] = useState<FocusTrackingSnapshot>(() =>
+    emptyFocusSnapshot(getStoredStudyMode()),
+  );
+  const [trackingResetToken, setTrackingResetToken] = useState(0);
   const [activityDetails, setActivityDetails] = useState<SessionDetails>({
     title: "",
     appName: "",
@@ -65,6 +77,9 @@ export default function CountingPage() {
       console.log(myData);
 
       if (myData) {
+        const restoredMode: StudyMode = myData.paperMode ? "paper" : "screen";
+        setStudyMode(restoredMode);
+        storeStudyMode(restoredMode);
         const totalPauseTime = myData.activityPauses.reduce((total, obj) => {
           let time = 0;
           if (obj.pauseTimeEnd == null) {
@@ -122,7 +137,15 @@ export default function CountingPage() {
     setIsStartingActivity(true);
 
     try {
-      await dispatch(startActivities(activityDetails)).unwrap();
+      const cleanTracking = emptyFocusSnapshot(studyMode);
+      setFocusTracking(cleanTracking);
+      setTrackingResetToken((token) => token + 1);
+      await dispatch(
+        startActivities({
+          ...activityDetails,
+          paperMode: studyMode === "paper",
+        }),
+      ).unwrap();
       setHasStartedActivity(true);
       start();
     } finally {
@@ -148,7 +171,7 @@ export default function CountingPage() {
     setActivityDetails({ title: "", appName: "", topic: "" });
 
     try {
-      await dispatch(stopActivitiies()).unwrap();
+      await dispatch(stopActivitiies(focusTracking)).unwrap();
     } catch (err) {
       console.log(err);
     }
@@ -159,13 +182,18 @@ export default function CountingPage() {
       console.log(error);
     }
 
+    const cleanTracking = emptyFocusSnapshot(studyMode);
+    setFocusTracking(cleanTracking);
+    setTrackingResetToken((token) => token + 1);
+
   }
 
-  const isLofiMode = selectedLofi !== null;
+  const isLofiMode = selectedLofi?.sourceType === "youtube";
+  const hasMusic = selectedLofi !== null;
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#080a08] pt-16">
-      <LofiBackgroundPlayer src={selectedLofi?.link ?? null} volume={lofiVolume} />
+      <LofiBackgroundPlayer track={selectedLofi} volume={lofiVolume} />
       <DraggableNote />
 
       {showModal && (
@@ -200,7 +228,7 @@ export default function CountingPage() {
               </div>
             </div>
 
-            {isLofiMode && (
+            {hasMusic && (
               <label
                 className="lofi-volume-shell group absolute right-4 top-20 z-20 flex h-10 w-10 cursor-pointer items-center overflow-hidden rounded-[999px] border border-white/[0.08] bg-black/35 text-on-surface-variant shadow-[0_10px_26px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-[width,border-color,background-color,box-shadow] duration-300 ease-out hover:w-[min(11.75rem,calc(100vw-2rem))] hover:border-primary/25 hover:bg-[#07110a]/80 hover:shadow-[0_14px_34px_rgba(0,0,0,0.34),0_0_24px_rgba(156,255,147,0.1)] focus-within:w-[min(11.75rem,calc(100vw-2rem))] focus-within:border-primary/35 focus-within:bg-[#07110a]/85 focus-within:ring-2 focus-within:ring-primary/45 motion-reduce:transition-none sm:right-7"
               >
@@ -266,7 +294,13 @@ export default function CountingPage() {
               transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.15 }}
               className=" min-w-0 overflow-hidden bg-black"
             >
-              <Video/>
+              <Video
+                collecting={isRunning}
+                mode={studyMode}
+                resetToken={trackingResetToken}
+                onModeChange={setStudyMode}
+                onTrackingChange={setFocusTracking}
+              />
             </motion.aside>
           ) : null}
         </AnimatePresence>

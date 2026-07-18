@@ -2,19 +2,25 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "../hooks/dispatch";
 import UserSessionMenu from "./UserSessionMenu";
-
-const navLinks = [
-  { label: "Dashboard", to: "/dashboard" },
-  { label: "How it Works", to: "/#how-it-works" },
-  { label: "Docs", to: "/#docs" },
-  { label: "GitHub", to: "/#github" },
-];
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../hooks/dispatch";
+import { logout } from "../features/auth/AuthSlice";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { accessToken, status, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const navLinks = [
+    { label: t("dashboard"), to: "/dashboard" },
+    { label: t("howItWorks"), to: "/#how-it-works" },
+    { label: t("docs"), to: "/#docs" },
+    { label: t("github"), to: "/#github" },
+  ];
 
   const isAuthenticated = Boolean(accessToken) && status === "authenticated";
   const isActive = (to: string) => {
@@ -112,7 +118,7 @@ export default function NavBar() {
                   to="/register"
                   className="group hidden items-center gap-2 rounded-[999px] bg-primary-container py-2 pl-4 pr-2 font-headline text-[10px] font-black uppercase tracking-[0.16em] text-on-primary-container outline-none transition-all hover:bg-primary-fixed hover:shadow-[0_0_20px_rgba(0,252,64,0.22)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary-fixed focus-visible:ring-offset-2 focus-visible:ring-offset-black md:flex"
                 >
-                  Get Started
+                  {t("getStarted")}
                   <span className="flex h-6 w-6 items-center justify-center rounded-[999px] bg-black/10 text-sm transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">
                     →
                   </span>
@@ -183,20 +189,45 @@ export default function NavBar() {
           })}
 
           <div className="mt-2 grid grid-cols-2 gap-2 border-t border-outline-variant/20 pt-3">
-            <Link
-              to="/login"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-[999px] border border-outline-variant/40 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-on-surface outline-none transition-colors hover:border-primary-fixed/40 hover:bg-primary-fixed/5 focus-visible:ring-2 focus-visible:ring-primary-fixed/70"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              onClick={() => setMobileOpen(false)}
-              className="rounded-[999px] bg-primary-container px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-on-primary-container outline-none transition-all hover:bg-primary-fixed active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary-fixed/70"
-            >
-              Get Started
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/person"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-[999px] border border-outline-variant/40 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-on-surface outline-none transition-colors hover:border-primary-fixed/40 hover:bg-primary-fixed/5 focus-visible:ring-2 focus-visible:ring-primary-fixed/70"
+                >
+                  {t("profile")}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    dispatch(logout());
+                    navigate("/login", { replace: true });
+                  }}
+                  className="cursor-pointer rounded-[999px] border border-error/30 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-error outline-none transition-colors hover:bg-error/10 focus-visible:ring-2 focus-visible:ring-error/60"
+                >
+                  {t("logout")}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-[999px] border border-outline-variant/40 px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-on-surface outline-none transition-colors hover:border-primary-fixed/40 hover:bg-primary-fixed/5 focus-visible:ring-2 focus-visible:ring-primary-fixed/70"
+                >
+                  {t("login")}
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-[999px] bg-primary-container px-4 py-3 text-center text-[10px] font-black uppercase tracking-[0.16em] text-on-primary-container outline-none transition-all hover:bg-primary-fixed active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary-fixed/70"
+                >
+                  {t("getStarted")}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

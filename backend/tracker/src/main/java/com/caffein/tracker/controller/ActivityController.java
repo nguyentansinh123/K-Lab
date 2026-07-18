@@ -20,6 +20,7 @@ import com.caffein.tracker.model.Activity;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.model.type.PStatus;
 import com.caffein.tracker.re.request.activity.StartActivityRequest;
+import com.caffein.tracker.re.request.activity.StopActivityRequest;
 import com.caffein.tracker.repository.ActivityRepository;
 import com.caffein.tracker.service.ActivityPause.IActivityPauseService;
 import com.caffein.tracker.service.activity.IActivityService;
@@ -41,16 +42,24 @@ public class ActivityController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
         Activity activity = activityService.startActivity(user, request.getTitle(), request.getAppName(),
-                request.getTopic());
+                request.getTopic(), Boolean.TRUE.equals(request.getPaperMode()));
 
         return ResponseEntity.ok(activityMapper.toDTO(activity));
     }
 
     @PostMapping("/stopActivity")
-    public ResponseEntity<ActivityDTO> stopActivity() {
+    public ResponseEntity<ActivityDTO> stopActivity(
+            @RequestBody(required = false) StopActivityRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
-        Activity activity = activityService.stopCurrentActivity(user);
+        StopActivityRequest metrics = request == null ? new StopActivityRequest() : request;
+        Activity activity = activityService.stopCurrentActivity(
+                user,
+                metrics.getPaperMode(),
+                metrics.getTotalSamples(),
+                metrics.getFaceDetectedSamples(),
+                metrics.getAverageYawDegrees(),
+                metrics.getAveragePitchDegrees());
 
         return ResponseEntity.ok(activityMapper.toDTO(activity));
     }

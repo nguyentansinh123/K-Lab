@@ -4,6 +4,7 @@ import type { RegisterType } from "../fetchLib/authapi";
 import { register } from "../features/auth/AuthSlice";
 import { useAppDispatch } from "../hooks/dispatch";
 import { toast } from "react-toastify";
+import GoogleAuthButton from "../components/GoogleAuthButton";
 
 export default function Signup() {
   const [mounted, setMounted] = useState(false);
@@ -168,8 +169,20 @@ export default function Signup() {
               </div>
             </form>
 
+            <div className={`space-y-4 pt-1 ${reveal(300)}`}>
+              <div className="relative flex items-center">
+                <div className="h-px flex-grow bg-outline-variant/25" />
+                <span className="mx-4 shrink-0 font-headline text-[10px] uppercase tracking-[0.18em] text-outline">
+                  Or sync via
+                </span>
+                <div className="h-px flex-grow bg-outline-variant/25" />
+              </div>
+
+              <GoogleAuthButton label="Sign up with Google" />
+            </div>
+
             <footer
-              className={`border-t border-outline-variant/20 pt-4 text-center ${reveal(300)}`}
+              className={`border-t border-outline-variant/20 pt-4 text-center ${reveal(400)}`}
             >
               <p className="text-xs uppercase tracking-[0.12em] text-on-surface-variant">
                 Existing node?{" "}

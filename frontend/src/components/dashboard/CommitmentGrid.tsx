@@ -5,6 +5,7 @@ import { getSessionBetweenAPI } from "../../features/studysessions/SessionSlice"
 import type { StudySessionDTO } from "../../fetchLib/studysessionapi";
 import ScrollRevealSection from "../ScrollRevealSection";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useLanguage } from "../../i18n/LanguageContext";
 
 interface ActivityData {
   date: string;
@@ -54,29 +55,46 @@ const dateStartAndDateEnd = (years: Array<number>): Array<string> => {
 //   return data;
 // }
 
-//TODO: need adjustment less than 1 mins should still be shown as long as u show up
-const decidingLevel = (mins: number): number => {
-  if (mins <= 0) {
-    return 0;
-  }
-  if (mins < 30) {
-    return 1;
-  }
-  if (mins < 180) {
-    return 2;
-  }
-  if (mins < 240) {
-    return 3;
-  }
+const HEAT_COLORS = [
+  "#171b18",
+  "#d8fbd7",
+  "#a9f7a5",
+  "#70eb71",
+  "#35cf4d",
+  "#0b9f36",
+  "#006b29",
+];
 
-  return 4;
+const decidingLevel = (seconds: number): number => {
+  if (seconds < 1) return 0;
+  if (seconds < 30 * 60) return 1;
+  if (seconds < 60 * 60) return 2;
+  if (seconds < 3 * 60 * 60) return 3;
+  if (seconds < 5 * 60 * 60) return 4;
+  if (seconds < 10 * 60 * 60) return 5;
+  return 6;
+};
+
+const formatDuration = (seconds: number) => {
+  if (seconds <= 0) return "0s";
+  if (seconds < 60) return `${seconds}s`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours === 0) return `${minutes}m`;
+  return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`;
 };
 
 const heatDateGenerator = (
   year: number,
   sessions: StudySessionDTO[],
 ): ActivityData[] => {
-  const sessionByDate = new Map(sessions.map((ss) => [ss.date, ss]));
+  const secondsByDate = new Map<string, number>();
+  sessions.forEach((session) => {
+    secondsByDate.set(
+      session.date,
+      (secondsByDate.get(session.date) ?? 0) + Math.max(0, session.totalDurationSeconds ?? 0),
+    );
+  });
 
   const data: ActivityData[] = [];
   const start = new Date(year, 0, 1);
@@ -85,16 +103,15 @@ const heatDateGenerator = (
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-    const session = sessionByDate.get(date);
-    const mins = session ? Math.floor(session.totalDurationSeconds / 60) : 0;
-
-    data.push({ date, count: mins, level: decidingLevel(mins) });
+    const seconds = secondsByDate.get(date) ?? 0;
+    data.push({ date, count: seconds, level: decidingLevel(seconds) });
   }
 
   return data;
 };
 
 export default function CommitmentGrid() {
+  const { language, t } = useLanguage();
   const reduceMotion = useReducedMotion();
   const [year, setYear] = useState(CURRENT_YEAR);
   const [sessions, setSessions] = useState<StudySessionDTO[]>([]);
@@ -102,6 +119,20 @@ export default function CommitmentGrid() {
     () => heatDateGenerator(year, sessions),
     [year, sessions],
   );
+  const stats = useMemo(() => {
+    const studied = calendarData.filter((day) => day.count > 0);
+    const total = studied.reduce((sum, day) => sum + day.count, 0);
+    const best = studied.reduce<ActivityData | null>(
+      (current, day) => (!current || day.count > current.count ? day : current),
+      null,
+    );
+    return {
+      activeDays: studied.length,
+      total,
+      average: studied.length ? Math.round(total / studied.length) : 0,
+      best,
+    };
+  }, [calendarData]);
 
   const dispatch = useAppDispatch();
 
@@ -118,24 +149,18 @@ export default function CommitmentGrid() {
 
     const getDateForHeatMap = async () => {
       const fromTo = dateStartAndDateEnd(YEARS);
-      const sessionsWithActivities = await dispatch(
-        getSessionBetweenAPI({
-          dateStart: fromTo[0],
-          dateEnd: fromTo[1],
-        }),
+      return dispatch(
+        getSessionBetweenAPI({ dateStart: fromTo[0], dateEnd: fromTo[1] }),
       ).unwrap();
-      console.log("fromto" + fromTo);
-      return sessionsWithActivities;
     };
 
     const run = async () => {
-      const data = await getDateForHeatMap();
-      if (data) {
-        setSessions(data);
+      try {
+        const data = await getDateForHeatMap();
+        if (data) setSessions(data);
+      } catch (error) {
+        console.error("Could not load heatmap data", error);
       }
-
-      console.log("This is session data");
-      console.log(data);
     };
 
     run();
@@ -157,14 +182,14 @@ export default function CommitmentGrid() {
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="mb-3 w-fit rounded-[999px] bg-primary-fixed/[0.07] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.17em] text-primary-fixed">
-            Learning signal
+            {t("learningSignal")}
           </div>
           <h3 className="text-3xl font-bold tracking-[-0.04em] text-on-surface sm:text-4xl">
-            Consistency Grid
+            {t("consistencyGrid")}
           </h3>
         </div>
         <div className="rounded-[999px] border border-white/[0.06] bg-white/[0.03] px-4 py-2 text-[9px] font-body uppercase tracking-[0.13em] text-outline">
-          Each square = 30 mins of deep work
+          {t("heatHint")}
         </div>
       </div>
 
@@ -209,6 +234,24 @@ export default function CommitmentGrid() {
 
         {/* Activity calendar */}
         <div className="hide-scrollbar min-w-0 flex-1 overflow-x-auto rounded-[1.75rem] border border-white/[0.06] bg-surface-container-lowest/55 p-5 sm:p-7 lg:overflow-hidden lg:p-8">
+          <div className="mb-7 grid min-w-[42rem] grid-cols-4 gap-3 lg:min-w-0">
+            {[
+              [t("activeDays"), String(stats.activeDays)],
+              [t("totalFocus"), formatDuration(stats.total)],
+              [t("dailyAverage"), formatDuration(stats.average)],
+              [
+                t("bestDay"),
+                stats.best
+                  ? `${new Intl.DateTimeFormat(language, { month: "short", day: "numeric" }).format(new Date(`${stats.best.date}T00:00:00`))} · ${formatDuration(stats.best.count)}`
+                  : t("noStudy"),
+              ],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-[1rem] border border-white/[0.06] bg-white/[0.025] p-3">
+                <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-outline">{label}</p>
+                <p className="mt-2 font-headline text-sm font-black text-white">{value}</p>
+              </div>
+            ))}
+          </div>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={year}
@@ -222,14 +265,9 @@ export default function CommitmentGrid() {
                 className="dashboard-activity-calendar"
                 data={calendarData}
                 theme={{
-                  dark: [
-                    "#1a1919",
-                    "rgba(156,255,147,0.2)",
-                    "rgba(156,255,147,0.4)",
-                    "rgba(156,255,147,0.6)",
-                    "rgba(156,255,147,0.8)",
-                  ],
+                  dark: HEAT_COLORS,
                 }}
+                maxLevel={6}
                 colorScheme="dark"
                 showWeekdayLabels
                 showColorLegend={false}
@@ -239,36 +277,36 @@ export default function CommitmentGrid() {
                 blockRadius={4}
                 fontSize={12}
                 style={{ color: "#777575" }}
+                renderBlock={(block, activity) => (
+                  <g>
+                    <title>{`${activity.date}: ${formatDuration(activity.count)}`}</title>
+                    {block}
+                  </g>
+                )}
               />
 
               {/* Custom legend */}
               <div className="mt-6 flex items-center gap-2 text-[10px] font-label text-outline">
-                Less focus
+                {t("lessFocus")}
                 <div className="ml-2 mr-2 flex gap-[3px]">
-                  {(
-                    [
-                      "#1a1919",
-                      "rgba(156,255,147,0.2)",
-                      "rgba(156,255,147,0.4)",
-                      "rgba(156,255,147,0.6)",
-                      "rgba(156,255,147,0.8)",
-                      "#9cff93",
-                    ] as string[]
-                  ).map((color, i) => (
+                  {HEAT_COLORS.map((color, i) => (
                     <div
                       key={i}
                       className="h-[12px] w-[12px] rounded-[3px]"
                       style={{
                         backgroundColor: color,
                         boxShadow:
-                          i === 5
+                          i === HEAT_COLORS.length - 1
                             ? "0 0 6px rgba(156,255,147,0.4)"
                             : undefined,
                       }}
                     />
                   ))}
                 </div>
-                More focus
+                {t("moreFocus")}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[8px] uppercase tracking-[0.1em] text-outline">
+                <span>1s</span><span>30m</span><span>1h</span><span>3h</span><span>5h</span><span>10h+</span>
               </div>
             </motion.div>
           </AnimatePresence>

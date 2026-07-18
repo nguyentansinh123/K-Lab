@@ -38,6 +38,18 @@ public class Activity {
     private String topic;
 
     private String duration;
+
+    private Boolean paperMode;
+
+    private Integer focusScore;
+
+    private Integer trackingSamples;
+
+    private Integer faceDetectedSamples;
+
+    private Double averageYawDegrees;
+
+    private Double averagePitchDegrees;
     
     @ManyToOne
     private StudySession studySession;
