@@ -14,4 +14,6 @@ public interface IUserService extends UserDetailsService {
     List<User> getAllUser();
 
     User addImageUrl(MultipartFile imageUrl);
+
+    User findOrCreateUserLoginByGoogle(String name, String email, String imageUrl);
 }

@@ -9,6 +9,8 @@ import com.caffein.tracker.dto.UserDTO;
 import com.caffein.tracker.model.User;
 import com.caffein.tracker.model.type.RoleType;
 import com.caffein.tracker.re.request.auth.RegistrationReq;
+import com.caffein.tracker.re.request.auth.google.CreateGoogleUser;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -29,6 +31,17 @@ public class UserMapper {
                 .emailVerified(false)
                 .role(RoleType.USER)
                 .imgUrl(avatarUrl)
+                .build();
+    }
+
+    public User toUserWithGoogle(CreateGoogleUser req) {
+        return User.builder()
+                .firstName(req.getFirstName())
+                .lastName(req.getLastName())
+                .email(req.getEmail())
+                .emailVerified(false)
+                .role(RoleType.USER)
+                .imgUrl(req.getImageUrl())
                 .build();
     }
 

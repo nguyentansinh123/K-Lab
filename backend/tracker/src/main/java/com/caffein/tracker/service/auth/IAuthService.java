@@ -6,6 +6,8 @@ import com.caffein.tracker.re.request.auth.RegistrationReq;
 import com.caffein.tracker.re.response.LoginResponse;
 import com.caffein.tracker.re.response.RefreshResponse;
 
+import com.caffein.tracker.model.User;
+
 public interface IAuthService {
 
     LoginResponse login(LoginRequest request);

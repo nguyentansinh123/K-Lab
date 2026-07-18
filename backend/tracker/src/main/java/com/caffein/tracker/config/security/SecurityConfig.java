@@ -21,8 +21,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.caffein.tracker.config.security.googleHandler.Oauth2OnSuccessHandler;
 import com.caffein.tracker.config.security.jwt.JwtFilterChain;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -31,11 +33,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilterChain jwtFilterChain;
+    private final Oauth2OnSuccessHandler oauth2OnSuccessHandler;
 
     public static final String[] PUBLIC_URLS = {
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/refresh",
+            "/api/v1/auth/login/google"
     };
 
     @Bean
@@ -48,6 +52,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oauth2OnSuccessHandler)
+                        .failureHandler((request, response, exception) -> response.sendError(
+                                HttpServletResponse.SC_UNAUTHORIZED,
+                                "Google authentication failed")))
                 .build();
     }
 
